@@ -25,11 +25,11 @@ export default (sequelize) => {
             allowNull: false,
         },
         createBy: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         updateBy: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: true,
         },
     };

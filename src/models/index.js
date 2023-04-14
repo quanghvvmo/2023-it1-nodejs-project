@@ -3,11 +3,12 @@ import applyExtraSetup from "./associates.js";
 
 import config from "../config/index.js";
 import userModel from "./user.model.js";
-import formModel from "./form.model.js";
 import roleModel from "./role.model.js";
 import roleModulesModel from "./roleModules.model.js";
-import formCategoryModel from "./formCategory.js";
-import userFormModel from "./userForm.js";
+import formModel from "./form.model.js";
+import formCategoryModel from "./formCategory.model.js";
+import userFormModel from "./userForm.model.js";
+import userFormDetailModel from "./userFormDetail.model.js";
 
 const sequelize = new Sequelize(config.db_database, config.db_username, config.db_password, {
     host: config.db_host,
@@ -23,6 +24,7 @@ const models = [
     roleModulesModel,
     formCategoryModel,
     userFormModel,
+    userFormDetailModel,
 ];
 
 for (const model of models) {

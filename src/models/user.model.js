@@ -17,11 +17,6 @@ export default (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        employeeId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true,
-        },
         firstName: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -32,25 +27,25 @@ export default (sequelize) => {
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         phone: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         address: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         CMND: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             unique: true,
         },
         isActive: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 1,
+            defaultValue: true,
         },
     };
 

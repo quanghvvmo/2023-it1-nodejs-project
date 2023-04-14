@@ -40,7 +40,7 @@ const initSequelize = () => {
 
 const handleError = () => {
     // if error is not an instanceOf APIError, convert it.
-    app.use(converter);
+    // app.use(converter);
 
     // catch 404 and forward to error handler
     app.use(notFound);

@@ -81,7 +81,6 @@ const updateUser = async (userId, payload) => {
         throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
     }
 
-    delete updatedUser.dataValues.password;
     return new ApiDataResponse(httpStatus.OK, "update success", updatedUser);
 };
 
@@ -91,7 +90,6 @@ const activeUser = async (userId) => {
         throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
     }
 
-    delete activatedUser.dataValues.password;
     return new ApiDataResponse(httpStatus.OK, "active success", activatedUser);
 };
 
@@ -101,17 +99,7 @@ const inactiveUser = async (userId) => {
         throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
     }
 
-    delete inactivatedUser.dataValues.password;
     return new ApiDataResponse(httpStatus.OK, "inactive success", inactivatedUser);
-};
-
-const hardDeleteUser = async (userId) => {
-    const deletedUser = await User.destroy({ where: { id: userId } });
-    if (!deletedUser) {
-        throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
-    }
-
-    return new ApiDataResponse(httpStatus.OK, "hard delete success", deletedUser);
 };
 
 export {
@@ -122,5 +110,4 @@ export {
     updateUser,
     activeUser,
     inactiveUser,
-    hardDeleteUser,
 };

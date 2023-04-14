@@ -6,7 +6,6 @@ import {
     updateUser,
     activeUser,
     inactiveUser,
-    hardDeleteUser,
 } from "../services/user.service.js";
 import httpStatus from "http-status";
 import { createUserSchema, updateUserSchema, loginSchema } from "../validations/user.validation.js";
@@ -99,15 +98,6 @@ const inactiveUserController = async (req, res, next) => {
     }
 };
 
-const hardDeleteUserController = async (req, res, next) => {
-    try {
-        const userId = await hardDeleteUser(req.params.id);
-        return res.status(httpStatus.OK).json(userId);
-    } catch (error) {
-        next(error);
-    }
-};
-
 export {
     loginController,
     addUserController,
@@ -116,5 +106,4 @@ export {
     updateUserController,
     activeUserController,
     inactiveUserController,
-    hardDeleteUserController,
 };
