@@ -4,8 +4,9 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
+import { Roles } from "../_utils/constants.js";
 
-const { User } = sequelize.models;
+const { User, UserRole, Role } = sequelize.models;
 
 const login = async (payload) => {
     const user = await User.findOne({ where: { username: payload.username } });
@@ -29,7 +30,24 @@ const addUser = async (payload) => {
         throw new APIError({ message: "User already exist !", status: httpStatus.CONFLICT });
     }
 
-    const newUser = await User.create(payload);
+    const transaction = await sequelize.transaction();
+    let newUser;
+
+    try {
+        newUser = await User.create(payload, { transaction });
+
+        await UserRole.create({ RoleId: Roles[payload.role], UserId: newUser.id }, { transaction });
+
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+
+        throw new APIError({
+            message: "Transaction got error !",
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+        });
+    }
+
     delete newUser.dataValues.password;
 
     return new ApiDataResponse(httpStatus.CREATED, "create success", newUser);
@@ -37,7 +55,8 @@ const addUser = async (payload) => {
 
 const getUserDetail = async (userId) => {
     const user = await User.findOne({
-        where: { id: userId },
+        include: [Role],
+        where: { id: userId, isDeleted: false },
         attributes: { exclude: ["password"] },
     });
 
@@ -51,6 +70,7 @@ const getUserDetail = async (userId) => {
 const getListUsers = async (pageIndex, pageSize) => {
     const users = await User.findAll({
         attributes: { exclude: ["password"] },
+        where: { isDeleted: false },
     });
 
     const totalCount = users.length;
@@ -76,7 +96,7 @@ const getListUsers = async (pageIndex, pageSize) => {
 };
 
 const updateUser = async (userId, payload) => {
-    const updatedUser = await User.update(payload, { where: { id: userId } });
+    const updatedUser = await User.update(payload, { where: { id: userId, isDeleted: false } });
     if (!updatedUser) {
         throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
     }
@@ -84,30 +104,13 @@ const updateUser = async (userId, payload) => {
     return new ApiDataResponse(httpStatus.OK, "update success", updatedUser);
 };
 
-const activeUser = async (userId) => {
-    const activatedUser = await User.update({ isActive: true }, { where: { id: userId } });
-    if (!activatedUser) {
-        throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
-    }
-
-    return new ApiDataResponse(httpStatus.OK, "active success", activatedUser);
-};
-
-const inactiveUser = async (userId) => {
-    const inactivatedUser = await User.update({ isActive: false }, { where: { id: userId } });
+const deleteUser = async (userId) => {
+    const inactivatedUser = await User.update({ isDeleted: true }, { where: { id: userId } });
     if (!inactivatedUser) {
         throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "inactive success", inactivatedUser);
+    return new ApiDataResponse(httpStatus.OK, "delete success", inactivatedUser);
 };
 
-export {
-    login,
-    addUser,
-    getUserDetail,
-    getListUsers,
-    updateUser,
-    activeUser,
-    inactiveUser,
-};
+export { login, addUser, getUserDetail, getListUsers, updateUser, deleteUser };

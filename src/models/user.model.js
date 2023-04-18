@@ -42,10 +42,9 @@ export default (sequelize) => {
             allowNull: true,
             unique: true,
         },
-        isActive: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: true,
+        isDeleted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     };
 

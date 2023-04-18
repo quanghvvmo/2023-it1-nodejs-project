@@ -47,11 +47,15 @@ const authorize = async (req, res, next) => {
 
     let isPassPermission = false;
     const { Roles } = req.user;
-    const api = req._parsedUrl.path;
+
+    const path = req._parsedUrl.path;
+    const api = path.substring(0, path.lastIndexOf("/")); // remove the :id
+
     const method = req.method.toString().toLowerCase();
 
     for (let i = 0; i < Roles.length; i++) {
         const roleModule = await RoleModules.findOne({ where: { api, RoleId: Roles[i].id } });
+        if (!roleModule) break;
 
         switch (method) {
             case "get":

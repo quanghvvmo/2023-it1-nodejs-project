@@ -28,9 +28,9 @@ export default (sequelize) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        status: {
-            type: DataTypes.ENUM(["open", "closed"]),
-            allowNull: false,
+        isDeleted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     };
 

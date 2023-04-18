@@ -4,8 +4,7 @@ import {
     getUserDetail,
     getListUsers,
     updateUser,
-    activeUser,
-    inactiveUser,
+    deleteUser,
 } from "../services/user.service.js";
 import httpStatus from "http-status";
 import { createUserSchema, updateUserSchema, loginSchema } from "../validations/user.validation.js";
@@ -32,8 +31,8 @@ const addUserController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const createdUserId = await addUser(value);
-        return res.status(httpStatus.CREATED).json(createdUserId);
+        const createdUser = await addUser(value);
+        return res.status(httpStatus.CREATED).json(createdUser);
     } catch (error) {
         next(error);
     }
@@ -55,8 +54,6 @@ const updateUserController = async (req, res, next) => {
 
 const getUserDetailController = async (req, res, next) => {
     try {
-        console.log(req.params.id);
-
         const user = await getUserDetail(req.params.id);
         return res.status(httpStatus.OK).json(user);
     } catch (error) {
@@ -80,18 +77,9 @@ const getListUsersController = async (req, res, next) => {
     }
 };
 
-const activeUserController = async (req, res, next) => {
+const deleteUserController = async (req, res, next) => {
     try {
-        const userId = await activeUser(req.params.id);
-        return res.status(httpStatus.OK).json(userId);
-    } catch (error) {
-        next(error);
-    }
-};
-
-const inactiveUserController = async (req, res, next) => {
-    try {
-        const userId = await inactiveUser(req.params.id);
+        const userId = await deleteUser(req.params.id);
         return res.status(httpStatus.OK).json(userId);
     } catch (error) {
         next(error);
@@ -104,6 +92,5 @@ export {
     getUserDetailController,
     getListUsersController,
     updateUserController,
-    activeUserController,
-    inactiveUserController,
+    deleteUserController,
 };

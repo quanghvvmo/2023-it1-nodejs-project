@@ -1,4 +1,5 @@
 import { DataTypes } from "sequelize";
+import { Roles } from "../_utils/constants.js";
 
 export default (sequelize) => {
     const columns = {
@@ -9,7 +10,7 @@ export default (sequelize) => {
             primaryKey: true,
         },
         name: {
-            type: DataTypes.ENUM(["admin", "director", "hr", "manager", "employee"]),
+            type: DataTypes.ENUM([...Object.keys(Roles)]),
             allowNull: false,
         },
         description: {

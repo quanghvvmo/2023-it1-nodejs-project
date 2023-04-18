@@ -52,7 +52,6 @@ const startServer = async () => {
 };
 
 getEnvironmentSetting()
-    // .then(registerMiddleware.bind(this, app))
     .then(initSequelize.bind(this))
     .then(initService.bind(this))
     .then(handleError.bind(this))

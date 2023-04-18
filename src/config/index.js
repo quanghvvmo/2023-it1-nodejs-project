@@ -21,8 +21,8 @@ const configs = {
         db_database: process.env.DB_DATABASE,
 
         // Security
-        token_secret: process.env.TOKEN_SECRET || "ITSASECRET",
-        token_expiry: process.env.TOKEN_EXPIRY || "1d",
+        token_secret: process.env.TOKEN_SECRET,
+        token_expiry: process.env.TOKEN_EXPIRY,
 
         // Pagination
         default_index_pagination: process.env.DEFAULT_INDEX_PAGINATION || 1,
