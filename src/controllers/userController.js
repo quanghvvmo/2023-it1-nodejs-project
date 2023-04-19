@@ -45,26 +45,6 @@ class UserController {
             next(error);
         }
     };
-
-    inactiveUser = async (req, res, next) => {
-        try {
-            const { id } = req.params;
-            const user = await userService.inactiveUser(id);
-            return res.status(httpStatus.OK).json(user);
-        } catch (error) {
-            next(error);
-        }
-    };
-    
-    activeUser = async (req, res, next) => {
-        try {
-            const { id } = req.params;
-            const user = await userService.activeUser(id);
-            return res.status(httpStatus.OK).json(user);
-        } catch (error) {
-            next(error);
-        }
-    };
     
     getListUsers = async (req, res, next) => {
         try {

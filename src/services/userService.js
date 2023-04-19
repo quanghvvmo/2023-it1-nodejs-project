@@ -1,66 +1,39 @@
-const sequelize = require('../models/dbconfig');
-const { User, Customer } = sequelize.models;
+const sequelize = require("../models/dbconfig")
 const APIError = require('../helper/apiError');
-const { ApiResponse, ApiPagingResponse } = require('../helper/apiResponse');
 const userMessage = require('../constants/userMessage');
 const httpStatus = require('http-status');
-const jwt = require('jsonwebtoken');
-const config = require('../config/index');
+const jwt = require("jsonwebtoken");
+const config = require("../config/index");
+const { APIResponse, APIPagingResponse } = require("../helper/apiResponse");
+const { User } = sequelize.models;
 
 class UserService {
     login = async (data) => {
-        const { username, password } = data;
-        const user = await User.findOne({ 
-            where: { username } 
-        });
-        if(!user) {
-            throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
-        }
-        if(!user.checkPassword(password, user.password)) {
-            throw new APIError({ message: userMessage.PASSWORDS_DONT_MATCH, status: httpStatus.UNAUTHORIZED });
-        }
-        const id = user.id;
-        const token = jwt.sign({ id }, config.token_secret, { expiresIn: config.token_expiry });
-        return new ApiResponse({ token }, userMessage.LOGIN_SUCCEED, httpStatus.OK);
-    }
-
-    createUser = async (data) => {
         const { username } = data;
-        const currentUser = await User.findOne({ where: { username } });
-        if(currentUser) {
-            throw new APIError({ message: userMessage.DUPLICATE_USERNAME, status: httpStatus.CONFLICT });
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+            throw new APIError(userMessage.USER_NOT_FOUND, httpStatus.NOT_FOUND);
         }
-        const user = await User.create(data);
-        return new ApiResponse(user, userMessage.USER_CREATED, httpStatus.CREATED);
+        if (user.password !== data.password) {
+            throw new APIError(userMessage.PASSWORDS_DONT_MATCH, httpStatus.UNAUTHORIZED);
+        }
+        const { id } = user;
+        const userPayload = { id }
+        const token = jwt.sign(userPayload, config.token_secret, {
+            expiresIn: config.token_expiry
+        })
+        return new APIResponse({ token }, httpStatus.OK, userMessage.LOGIN_SUCCEED);
     }
 
-    updateUser = async (id, data) => {
-        const user = await User.update(data, { where: { id } });
+    getUserDetail = async (id) => {
+        const user = await User.findOne({ where: { id } });
         if (!user) {
             throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
-        
-        return new ApiResponse(user, httpStatus.OK, userMessage.USER_UPDATED);
+    
+        return user;
     };
-
-    inactiveUser = async (id) => {
-        const user = await User.update({ isActive: false }, { where: { id} });
-        if (!user.at(0)) {
-            throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
-        }
-
-        return new ApiResponse(user, httpStatus.OK, userMessage.USER_INACTIVE);
-    };
-
-    activeUser = async (id) => {
-        const user = await User.update({ isActive: true }, { where: { id } });
-        if (!user) {
-            throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
-        }
-        
-        return new ApiResponse(user, httpStatus.OK, userMessage.USER_ACTIVE);
-    };
-
+    
     getListUsers = async (pageIndex, pageSize) => {
         const users = await User.findAll();
     
@@ -69,46 +42,52 @@ class UserService {
             throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
     
-        const totalPage = parseInt((numOfUsers / pageSize) + 1);
-        console.log(69, pageSize, totalPage)
-        if (pageIndex > totalPage) {
+        const totalPages = parseInt((numOfUsers / pageSize) + 1);
+        if (pageIndex > totalPages) {
             throw new APIError({ message: userMessage.INVALID_PAGGING, status: httpStatus.BAD_REQUEST });
         }
     
         const start = (pageIndex - 1) * pageSize;
         const end = start + pageSize;
     
-        return new ApiPagingResponse(
+        return new APIPagingResponse(
             users.slice(start, end),
             pageIndex,
             pageSize,
             numOfUsers,
-            totalPage,
+            totalPages,
         );
     };
 
-    getUserDetail = async (id) => {
-        const user = await User.findOne({
-            include: [Customer],
-            where: { id },
-        });
+    createUser = async (data) => {
+        const { username } = data;
+        const existingUser = await User.findOne({ where: { username } });
+        if (existingUser) {
+            throw new APIError({ message: userMessage.USER_EXISTS, status: httpStatus.CONFLICT });
+        }
+
+        const user = await User.create(data);
+
+        return new APIResponse(user, httpStatus.CREATED, userMessage.USER_CREATED);
+    }
     
+    updateUser = async (id, data) => {
+        const user = await User.update(data, { where: { id } });
         if (!user) {
             throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
-        return user;
+    
+        return new APIResponse(user, httpStatus.OK, userMessage.USER_UPDATED);
     };
-
-    deleteUser = async (id) => {
-        await Customer.destroy({ where: { userId: id } });
-        const user = await User.destroy({ where: { id } });
+    
+    deleteUser = async (userId) => {
+        const user = await User.update({ isDeleted: true }, { where: { id: userId } });
         if (!user) {
             throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
     
-        return new ApiResponse(user, httpStatus.OK, userMessage.USER_DELETED);
+        return new ApiDataResponse(user, httpStatus.OK, userMessage.USER_DELETED);
     };
-
 }
 
 module.exports = new UserService();

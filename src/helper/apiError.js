@@ -1,11 +1,6 @@
 const httpStatus = require('http-status');
 
 class APIError extends Error {
-    /**
-     * Creates an API error.
-     * @param {string} message - Error message.
-     * @param {number} status - HTTP status code of error.
-     */
     constructor({
       message,
       errors,

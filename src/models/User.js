@@ -17,6 +17,14 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        firstName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        lastName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         age: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -31,10 +39,13 @@ module.exports = (sequelize) => {
         address: {
             type: DataTypes.STRING,
         },
-        isActive: {
-            type: DataTypes.BOOLEAN,
+        identificationCard: {
+            type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: true
+        },
+        isDeleted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     }
 

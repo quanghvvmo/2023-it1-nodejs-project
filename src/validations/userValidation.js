@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const regularExpressions = require('../_utils/regularExpressions');
+const { roles } = require("../constants/constants")
 
 const userValidation = {
     loginSchema: Joi.object({
@@ -10,19 +11,23 @@ const userValidation = {
     createUserSchema: Joi.object({
         username: Joi.string().required().pattern(regularExpressions.USERNAME),
         password: Joi.string().required().pattern(regularExpressions.PASSWORD),
-        age: Joi.number().required().greater(0),
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
         email: Joi.string().email().pattern(regularExpressions.EMAIL),
         phone: Joi.string().pattern(regularExpressions.PHONE),
         address: Joi.string(),
+        identificationCard: Joi.string(),
+        role: Joi.string().required().valid([...Object.keys(roles)]),
     }),
 
     updateUserSchema: Joi.object({
-        email: Joi.string().email().pattern(regularExpressions.EMAIL),
         password: Joi.string().pattern(regularExpressions.PASSWORD),
-        age: Joi.number().greater(0),
+        firstName: Joi.string(),
+        lastName: Joi.string(),
         email: Joi.string().email().pattern(regularExpressions.EMAIL),
         phone: Joi.string().pattern(regularExpressions.PHONE),
         address: Joi.string(),
+        identificationCard: Joi.string(),
     })
 }
 

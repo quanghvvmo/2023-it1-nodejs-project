@@ -3,7 +3,8 @@ const httpStatus = require('http-status');
 const authMessage = require('../constants/authMessage');
 const config = require('../config/index');
 const sequelize = require("../models/dbconfig");
-const { User, Customer } = sequelize.models;
+const { User, Role, RoleModule } = sequelize.models;
+const APIError = require('../helper/apiError');
 const jwt = require('jsonwebtoken');
 
 const getToken = (req) => {
@@ -15,7 +16,7 @@ const getToken = (req) => {
     }
 }
 
-const authMiddleware = async (req, res, next) => {
+const authenticate = async (req, res, next) => {
     const token = getToken(req);
     if(!token) {
         return res.status(httpStatus.UNAUTHORIZED).json(authMessage.NO_TOKEN);
@@ -27,7 +28,7 @@ const authMiddleware = async (req, res, next) => {
         }
         const userId = decoded.id;
         const user = await User.findOne({
-            include: [Customer],
+            include: [Role],
             where: { id: userId },
         });
         req.user = user;
@@ -35,4 +36,38 @@ const authMiddleware = async (req, res, next) => {
     })
 }
 
-module.exports = authMiddleware;
+const authorize = async (req, res, next) => {
+    const { user } = req;
+    if(!user) {
+        return next(new APIError({ message: authMessage.NOT_LOGGED_IN, status: httpStatus.UNAUTHORIZED}));
+    }
+    const { path } = req._parsedUrl;
+    const api = path.substring(0, path.lastIndexOf("/"));
+    const { method } = req;
+
+    for(const role in user.Roles) {
+        const RoleId = role.id;
+        const roleModule = await RoleModule.findOne({ where: { api, RoleId } });
+
+        if (roleModule) {
+            switch (method) {
+              case "GET":
+                if (roleModule.canRead) return next();
+                break;
+              case "POST":
+                if (roleModule.canWrite) return next();
+                break;
+              case "PUT":
+                if (roleModule.canUpdate) return next();
+                break;
+              case "DELETE":
+                if (roleModule.canDelete) return next();
+                break;
+            }
+        }
+    }
+
+    return next(new APIError({ message: authMessage.AUTHORIZE_FORBIDDEN, status: httpStatus.FORBIDDEN }));
+}
+
+module.exports = { authenticate, authorize};

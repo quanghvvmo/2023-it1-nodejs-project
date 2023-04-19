@@ -4,6 +4,7 @@ const { setUpAssociations } = require('./association.js');
 const { setUpHooks } = require('./hooks.js');
 
 const User = require('./User.js');
+const Role = require('./Role.js');
 
 const sequelize = new Sequelize(config.db_database, config.db_username, config.db_password, {
     host: config.db_host,
@@ -11,7 +12,7 @@ const sequelize = new Sequelize(config.db_database, config.db_username, config.d
     dialect: config.db_dialect,
 });
 
-const models = [User];
+const models = [User, Role];  
 
 models.forEach(model => {
     model(sequelize);

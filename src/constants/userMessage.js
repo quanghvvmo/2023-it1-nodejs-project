@@ -7,8 +7,7 @@ const userMessage = {
     USER_DELETED: "User deleted successfully",
     INVALID_PAGGING: "Invalid paging index",
     USER_UPDATED: "User updated successfully",
-    USER_ACTIVE: "Active user successfully",
-    USER_INACTIVE: "Inactive user successfully",
+    USER_EXISTS: "User already exists in database"
 }
 
 module.exports = userMessage;
