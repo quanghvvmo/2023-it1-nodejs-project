@@ -10,8 +10,8 @@ import { authJWT, authorize } from "../middlewares/auth.middleware.js";
 
 const formRouter = express.Router();
 
-formRouter.get("/forms", getListFormsController);
-formRouter.get("/forms/:id", getFormController);
+formRouter.get("/forms", authJWT, authorize, getListFormsController);
+formRouter.get("/forms/:id", authJWT, authorize, getFormController);
 
 formRouter.post("/forms", authJWT, authorize, addFormController);
 

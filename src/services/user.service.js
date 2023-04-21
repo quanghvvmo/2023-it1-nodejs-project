@@ -6,7 +6,7 @@ import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
 import { Roles } from "../_utils/constants.js";
 
-const { User, UserRole, Role } = sequelize.models;
+const { User, UserRole, Role, UserForm } = sequelize.models;
 
 const login = async (payload) => {
     const user = await User.findOne({ where: { username: payload.username } });
@@ -105,9 +105,22 @@ const updateUser = async (userId, payload) => {
 };
 
 const deleteUser = async (userId) => {
-    const inactivatedUser = await User.update({ isDeleted: true }, { where: { id: userId } });
-    if (!inactivatedUser) {
-        throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
+    const transaction = await sequelize.transaction();
+
+    let inactivatedUser;
+    try {
+        inactivatedUser = await User.update({ isDeleted: true }, { where: { id: userId } });
+
+        await UserForm.update({ isDeleted: true }, { where: { UserId: userId } });
+
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+
+        throw new APIError({
+            message: "Transaction got error !",
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+        });
     }
 
     return new ApiDataResponse(httpStatus.OK, "delete success", inactivatedUser);

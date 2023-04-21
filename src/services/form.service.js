@@ -2,12 +2,30 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { FormStatus } from "../_utils/constants.js";
-import { FormCategories, UserFormStatus } from "../_utils/constants.js";
+import { FormStatus, UserFormStatus, FormCategories } from "../_utils/constants.js";
 
-const { Form, UserForm, UserFormDetail } = sequelize.models;
+const { Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
 
 const addForm = async (currentUser, payload) => {
+    // Each user only has 1 type of form haven't closed
+    const formsInvalid = await UserForm.findAll({
+        where: { UserId: payload.userIds, status: [UserFormStatus.NEW, UserFormStatus.SUBMITTED] },
+        include: [
+            {
+                model: Form,
+                include: { model: FormCategory, where: { name: payload.formCategory } },
+            },
+        ],
+    });
+
+    if (formsInvalid.length) {
+        throw new APIError({
+            message: "Each user only has 1 type of form haven't closed",
+            status: httpStatus.BAD_REQUEST,
+        });
+    }
+
+    // create form
     let newForm;
     const transaction = await sequelize.transaction();
 
@@ -108,7 +126,15 @@ const deleteForm = async (formId) => {
     try {
         deletedForm = await Form.update({ isDeleted: true }, { where: { id: formId } });
 
-        await UserForm.update({ isDeleted: true }, { where: { FormId: formId } });
+        const userFormDeleted = await UserForm.update(
+            { isDeleted: true },
+            { where: { FormId: formId }, returning: true, plain: true }
+        );
+
+        await UserFormDetail.update(
+            { isDeleted: true },
+            { where: { UserFormId: userFormDeleted.id } }
+        );
 
         await transaction.commit();
     } catch (error) {

@@ -14,11 +14,17 @@ function applyExtraSetup(sequelize) {
     Form.hasMany(UserForm);
     UserForm.belongsTo(Form);
 
-    UserForm.hasOne(UserFormDetail);
+    UserForm.hasMany(UserFormDetail);
     UserFormDetail.belongsTo(UserForm);
 
     User.hasMany(UserForm);
     UserForm.belongsTo(User);
+
+    User.hasMany(UserForm, { foreignKey: "ManagerId" });
+    UserForm.belongsTo(User, { foreignKey: "ManagerId" });
+
+    User.hasOne(User, { foreignKey: "ManagerId" });
+    User.belongsTo(User, { foreignKey: "ManagerId" });
 }
 
 export default applyExtraSetup;
