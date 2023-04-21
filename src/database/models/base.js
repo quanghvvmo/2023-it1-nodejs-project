@@ -14,11 +14,7 @@ module.exports = class BaseModel extends Sequelize.Model {
    */
 
   static init(sequelize) {
-    if (
-      !this.tableName ||
-      !this.modelName ||
-      !Object.keys(this.schema).length
-    ) {
+    if (!this.tableName || !this.modelName || !Object.keys(this.schema).length) {
       throw new Error("model name or table name and schema can not be empty");
     }
     return super.init(
@@ -37,6 +33,7 @@ module.exports = class BaseModel extends Sequelize.Model {
         },
         updatedAt: {
           type: Sequelize.DATE,
+          allowNull: true,
         },
       },
       //These options are merged with the default define options provided to the Sequelize constructor

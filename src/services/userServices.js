@@ -50,25 +50,9 @@ const login = async (payload) => {
   return new response(httpStatus.OK, "Login successful", token);
 };
 const createUser = async (payload) => {
-  const { username, password, firstName, lastName, email, phone, avatar, managerId, address, createdBy, createdAt, updatedBy, updatedAt, isActive } = payload;
   const [newUser, created] = await User.findOrCreate({
-    where: { username: payload.username },
-    defaults: {
-      username,
-      password,
-      firstName,
-      lastName,
-      email,
-      phone,
-      avatar,
-      managerId,
-      address,
-      isActive,
-      createdBy,
-      createdAt,
-      updatedBy,
-      updatedAt,
-    },
+    where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
+    defaults: { ...payload },
   });
 
   if (!created) {
@@ -108,19 +92,13 @@ const getUsers = async (Page, Size) => {
 };
 const updateUser = async (userId, payload) => {
   const user = await User.update(payload, { where: { [Op.and]: [{ id: userId }, { isActive: true }] } });
-  if (!user) {
+  if (user == 0) {
     throw new APIError({
       message: "Users not found",
       status: httpStatus.NOT_FOUND,
     });
   }
-  console.log(user);
   return new response(httpStatus.OK, "updated successfully", user);
-  const result = User.update(payload, { where: { id: userId } });
-  result.then(() => {
-    console.log("Record updated successfully");
-    return new response(httpStatus.OK, "updated successfully", "ok");
-  });
 };
 const disableUser = async (userID) => {
   const user = await User.update({ isActive: false }, { where: { id: userID } });

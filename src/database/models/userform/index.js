@@ -23,6 +23,7 @@ module.exports = class UserForm extends BaseModel {
   static associate(models) {
     this.belongsTo(models.Form);
     this.belongsTo(models.User);
+    this.belongsTo(models.User, { foreignKey: "managerId" });
     this.hasMany(models.FormDetail);
   }
 };

@@ -6,6 +6,10 @@ module.exports = {
     primaryKey: true,
     defaultValue: Sequelize.UUIDV1,
   },
+  name: {
+    type: Sequelize.STRING(100),
+    allowNull: false,
+  },
   dueDate: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -17,6 +21,6 @@ module.exports = {
   status: {
     type: Sequelize.STRING(10),
     allowNull: false,
-    defaultValue: "online",
+    defaultValue: "OPEN",
   },
 };
