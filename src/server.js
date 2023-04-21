@@ -30,12 +30,10 @@ const initSequelize = () => {
 };
 const startServer = async () => {
   app.listen(config.port, config.host);
-
+  //db.seedData();
   initSequelize();
   initService();
-  console.log(
-    `Listening on host ${config.host} on port ${config.port} http://${config.host}:${config.port}`
-  );
+  console.log(`Listening on host ${config.host} on port ${config.port} http://${config.host}:${config.port}`);
 };
 
 startServer();

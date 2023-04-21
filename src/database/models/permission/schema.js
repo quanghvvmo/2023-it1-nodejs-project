@@ -6,6 +6,10 @@ module.exports = {
     primaryKey: true,
     defaultValue: Sequelize.UUIDV1,
   },
+  api: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   read: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
@@ -18,7 +22,7 @@ module.exports = {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  udate: {
+  update: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },

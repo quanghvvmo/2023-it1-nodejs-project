@@ -1,25 +1,42 @@
 const User = require("../database/models/user");
 const UserRole = require("../database/models/userRole");
 const Rolee = require("../database/models/role");
-//import { sequelize } from "squelize";
 const httpStatus = require("http-status");
+const { Op } = require("sequelize");
+
 import Role from "../database/models/role";
 import APIError from "../utils/errorHandler";
-import response from "../utils/responseHandler";
-//import generateToken from "./tokenService";
+import { response, paginatedResponse } from "../utils/responseHandler";
 import jwt from "jsonwebtoken";
 
-//const t = await sequelize.transaction();
 const login = async (payload) => {
-  const user = await User.findOne({ where: { username: payload.username } });
+  const user = await User.findOne(
+    {
+      include: [
+        {
+          model: UserRole,
+          include: [
+            {
+              model: Role,
+            },
+          ],
+        },
+      ],
+    },
+
+    { where: { username: payload.username } }
+  );
+
   if (!user) {
     throw new APIError({
       message: "Wrong username or password",
       status: httpStatus.NOT_FOUND,
     });
   }
+  const roleArr = user.userRoles.map((user) => user.Role.id);
   const dataForAccessToken = {
     username: user.username,
+    roles: roleArr,
   };
   if (user.password !== payload.password) {
     throw new APIError({
@@ -27,7 +44,6 @@ const login = async (payload) => {
       status: httpStatus.UNAUTHORIZED,
     });
   }
-  //const token = generateToken(dataForAccessToken);
   const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
@@ -73,4 +89,47 @@ const getUser = async (userID) => {
   }
   return new response(httpStatus.OK, "User found", result);
 };
-export { login, createUser, getUser };
+const getUsers = async (Page, Size) => {
+  const users = await User.findAll({ attributes: { exclude: ["password"] }, where: { isActive: true } });
+  const totalUsers = users.length;
+  const totalPages = Math.ceil(totalUsers / Size);
+  if (Page > totalPages) {
+    throw new APIError({ message: "Invalid index", status: httpStatus.BAD_REQUEST });
+  }
+  const startIndex = (Page - 1) * Size;
+  const endIndex = startIndex + Size;
+  if (!users) {
+    throw new APIError({
+      message: "Users not found",
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+  return new paginatedResponse(Page, Size, totalUsers, totalPages, users.slice(startIndex, endIndex));
+};
+const updateUser = async (userId, payload) => {
+  const user = await User.update(payload, { where: { [Op.and]: [{ id: userId }, { isActive: true }] } });
+  if (!user) {
+    throw new APIError({
+      message: "Users not found",
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+  console.log(user);
+  return new response(httpStatus.OK, "updated successfully", user);
+  const result = User.update(payload, { where: { id: userId } });
+  result.then(() => {
+    console.log("Record updated successfully");
+    return new response(httpStatus.OK, "updated successfully", "ok");
+  });
+};
+const disableUser = async (userID) => {
+  const user = await User.update({ isActive: false }, { where: { id: userID } });
+  if (!user) {
+    throw new APIError({
+      message: "User not found",
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+  return new response(httpStatus.OK, "deleted successful", user);
+};
+export { login, createUser, getUser, getUsers, disableUser, updateUser };

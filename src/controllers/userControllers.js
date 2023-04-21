@@ -1,8 +1,7 @@
-import { login, createUser, getUser } from "../services/userServices";
+import { login, createUser, getUser, getUsers, disableUser, updateUser } from "../services/userServices";
 import httpStatus from "http-status";
-import { Loginschema, UserSchema } from "../validate/userValidate";
+import { Loginschema, UserSchema, UserUpdateSchema } from "../validate/userValidate";
 const User = require("../database/models/user");
-import verifyToken from "../middlewares/auth";
 
 const loginController = async (req, res, next) => {
   try {
@@ -39,4 +38,35 @@ const getUserByID = async (req, res, next) => {
     next(err);
   }
 };
-export { loginController, createUserController, getUserByID };
+const getListUser = async (req, res, next) => {
+  try {
+    const { page, size } = req.query;
+    const users = await getUsers(page, size);
+    res.status(httpStatus.FOUND).json(users);
+  } catch (err) {
+    next(err);
+  }
+};
+const deleteUser = async (req, res, next) => {
+  try {
+    const userID = req.params.id;
+    const deleted = await disableUser(userID);
+    res.status(httpStatus.OK).json(deleted);
+  } catch (err) {
+    next(err);
+  }
+};
+const editUser = async (req, res, next) => {
+  try {
+    const { error, value } = UserUpdateSchema.validate(req.body);
+    if (error) {
+      return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+    }
+    const userID = req.params.id;
+    const user = await updateUser(userID, value);
+    res.status(httpStatus.OK).json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+export { loginController, createUserController, getUserByID, getListUser, deleteUser, editUser };

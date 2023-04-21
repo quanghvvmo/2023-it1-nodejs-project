@@ -23,6 +23,6 @@ module.exports = class UserForm extends BaseModel {
   static associate(models) {
     this.belongsTo(models.Form);
     this.belongsTo(models.User);
-    this.hasOne(models.FormDetail);
+    this.hasMany(models.FormDetail);
   }
 };
