@@ -31,7 +31,7 @@ module.exports = {
     },
     age: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
     address: {
         type: Sequelize.STRING
@@ -43,7 +43,8 @@ module.exports = {
         type: Sequelize.STRING
     },
     isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: 0,
     }
 
 }

@@ -1,4 +1,6 @@
 import User from '../_database/models/user'
+import UserRole from '../_database/models/userRole'
+import Role from '../_database/models/role'
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 require('dotenv').config();
@@ -63,17 +65,9 @@ class UserService {
         } else {
             let passwordHahsed = await hashUserPassword(data.password);
             const newUser = await User.create({
-                empCode: data.empCode,
-                email: data.email,
+                ...data,
                 password: passwordHahsed,
-                firstname: data.firstname,
-                lastname: data.lastname,
-                age: data.age,
-                phone: data.phone,
-                address: data.address,
-                bhxh: data.bhxh,
                 avatar: avatar,
-                isDeleted: data.isDeleted
             })
             return ({
                 newUser,
@@ -91,34 +85,29 @@ class UserService {
             raw: false
         })
         if (!emailExist) {
-            let userUpdate = await User.findOne({
-                where: {
-                    id: data.id,
+            let passwordHahsed = await hashUserPassword(data.password)
+            const user = await User.update(
+                {
+                    ...data,
+                    password: passwordHahsed,
+                    avatar: avatar
                 },
-                raw: false
-            })
-            if (userUpdate) {
-                let passwordHahsed = await hashUserPassword(data.password)
-                userUpdate.empCode = data.empCode,
-                    userUpdate.email = data.email,
-                    userUpdate.password = passwordHahsed,
-                    userUpdate.firstname = data.firstname,
-                    userUpdate.lastname = data.lastname,
-                    userUpdate.age = data.age,
-                    userUpdate.phone = data.phone,
-                    userUpdate.address = data.address,
-                    userUpdate.bhxh = data.bhxh,
-                    userUpdate.avatar = avatar,
-                    userUpdate.isDeleted = data.isDeleted
-                await userUpdate.save();
+                {
+                    where: {
+                        id: data.id,
+                        isDeleted: 0
+                    }
+                }
+            );
+            if (!user) {
                 return ({
-                    errCode: 0,
-                    errMsg: 'The user is updated'
+                    errCode: 1,
+                    errMsg: "User not found!"
                 })
             } else {
                 return ({
-                    errCode: 1,
-                    errMsg: 'Not found User!'
+                    errCode: 0,
+                    errMsg: "User updating succesfull!"
                 })
             }
         } else {
@@ -132,12 +121,12 @@ class UserService {
         let user = await User.findOne({
             where: {
                 id: userid,
-                isDeleted: false
+                isDeleted: 0
             },
             raw: false
         })
         if (user) {
-            user.isDeleted = true;
+            user.isDeleted = 1;
             await user.save();
             return ({
                 errCode: 0,
@@ -149,6 +138,39 @@ class UserService {
         })
     }
 
+    getUserById = async (userId) => {
+        const user = await User.findAll({
+            where: {
+                id: userId
+            },
+            include: [
+                {
+                    model: UserRole,
+                    include: [
+                        {
+                            model: Role,
+                            as: "roleData",
+                            attributes: ["name"],
+                        },
+                    ],
+                    attributes: ["userid", "roleid"],
+                    as: "userRole"
+                },
+            ],
+            raw: true,
+            nest: true
+        })
+        if (user) {
+            return ({
+                user,
+                errCode: 0,
+                errMsg: 'Ok',
+            })
+        } else return ({
+            errCode: -1,
+            errMsg: 'Not found user'
+        })
+    }
 
 
 

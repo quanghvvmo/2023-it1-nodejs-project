@@ -1,4 +1,4 @@
-import UserService from '../_services/userService'
+import userService from '../_services/userService'
 import userValidation from '../validation/userValidation'
 
 class UserController {
@@ -10,7 +10,7 @@ class UserController {
             if (error) {
                 return res.status(400).json(error.details[0].message)
             }
-            let result = await UserService.handleLogin(value);
+            const result = await userService.handleLogin(value);
             if (result.errCode === 0) {
                 return res.status(200).json(result);
             } else if (result.errCode === -1) {
@@ -35,7 +35,7 @@ class UserController {
             if (error) {
                 return res.status(400).json(error.details[0].message)
             }
-            let result = await UserService.createUser(value, avatar);
+            const result = await userService.createUser(value, avatar);
             if (result.errCode === 1) {
                 return res.status(400).json(result);
             } else if (result.errCode === 0) {
@@ -65,9 +65,11 @@ class UserController {
             if (error) {
                 return res.status(400).json(error.details[0].message)
             }
-            let result = await UserService.updateUser(value, avatar);
+            const result = await userService.updateUser(value, avatar);
             if (result.errCode === -1) {
-                return res.status(404).json(result);
+                return res.status(400).json(result);
+            } if (result.errCode === 1) {
+                return res.status(403).json(result);
             } else return res.status(200).json(result)
         } catch (error) {
             return res.status(500).json(error);
@@ -77,7 +79,7 @@ class UserController {
     softDelete = async (req, res) => {
         try {
             const userid = req.params.id
-            let result = await UserService.softDelete(userid);
+            const result = await userService.softDelete(userid);
             if (result.errCode === -1) {
                 return res.status(404).json(result)
             } else return res.status(200).json(result);
@@ -85,6 +87,22 @@ class UserController {
             return res.status(500).json(error);
         }
     }
+
+    getUserById = async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const result = await userService.getUserById(userId);
+            if (result.errCode === -1) {
+                return res.status(404).json(result);
+            } else {
+                return res.status(200).json(result)
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error);
+        }
+
+    };
 }
 
 module.exports = new UserController();

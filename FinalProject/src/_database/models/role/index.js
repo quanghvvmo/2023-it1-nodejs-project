@@ -1,23 +1,22 @@
 const BaseModel = require('../base');
-const UserRole = require('../user_role')
 
 module.exports = class Role extends BaseModel {
-    static tableName = 'role';
-    static modelName = 'role';
+    static tableName = 'Role';
+    static modelName = 'Role';
     static schema = require('./schema')
-    static include = [
-        {
-            model: UserRole,
-            as: 'roleData'
-        }
-    ]
     static associate(models) {
         this.hasMany(models.UserRole, {
-            foreignkey: 'roleid',
+            foreignKey: 'roleid',
             as: 'roleData',
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
-        })
+        }),
+            this.hasMany(models.RoleModule, {
+                foreignKey: 'roleid',
+                as: 'roleModule',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
+            })
     }
 
 }

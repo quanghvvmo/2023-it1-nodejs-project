@@ -6,20 +6,21 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
     },
-    userid: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        references: {
-            model: 'user',
-            key: 'id'
-        }
-    },
-    roleid: {
+    formid: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-            model: 'role',
-            key: 'id'
-        }
+    },
+    result: {
+        type: Sequelize.STRING,
+    },
+    point: {
+        type: Sequelize.INTEGER,
+    },
+    descTask: {
+        type: Sequelize.TEXT,
+    },
+    isDeleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: 0
     }
 }

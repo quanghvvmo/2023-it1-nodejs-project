@@ -5,7 +5,6 @@ module.exports = class BaseModel extends Sequelize.Model {
     static modelName = '';
     static schema = {};
     static timestamps = true;
-    static include = null;
     static association(models) {
     }
     /**

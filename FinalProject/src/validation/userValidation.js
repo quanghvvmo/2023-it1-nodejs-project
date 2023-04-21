@@ -12,12 +12,11 @@ const userValidation = {
         phone: Joi.string().pattern(PHONE_NUMBER_REGEX),
         address: Joi.string(),
         bhxh: Joi.string(),
-        isDeleted: Joi.boolean.required()
     }),
 
     login: Joi.object({
         email: Joi.string().required(),
-        password: Joi.string().required()
+        password: Joi.string().required(),
     })
 }
 
