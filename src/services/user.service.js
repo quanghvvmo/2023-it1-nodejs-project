@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import config from "../config/index.js";
 import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
@@ -14,7 +15,8 @@ const login = async (payload) => {
         throw new APIError({ message: "Username doesn't exist !", status: httpStatus.NOT_FOUND });
     }
 
-    if (user.password !== payload.password) {
+    const isPasswordValid = await bcrypt.compare(payload.password, user.password);
+    if (!isPasswordValid) {
         throw new APIError({ message: "Incorrect password !", status: httpStatus.UNAUTHORIZED });
     }
 
@@ -29,6 +31,9 @@ const addUser = async (payload) => {
     if (existingUser) {
         throw new APIError({ message: "User already exist !", status: httpStatus.CONFLICT });
     }
+
+    const salt = await bcrypt.genSalt(10);
+    payload.password = await bcrypt.hash(payload.password, salt);
 
     const transaction = await sequelize.transaction();
     let newUser;
