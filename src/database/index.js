@@ -26,20 +26,6 @@ class Db {
   getSequelize() {
     return sequelize;
   }
-  seedData() {
-    sequelize.sync({ force: true }).then(async () => {
-      for (let i = 0; i < 30; i++) {
-        const user = {
-          id: i,
-          username: `user${i}`,
-          password: `123456`,
-          createdBy: "admin",
-          updatedBy: "admin",
-        };
-        await User.create(user);
-      }
-    });
-  }
   connect() {
     let connectPromise = sequelize
       .authenticate()

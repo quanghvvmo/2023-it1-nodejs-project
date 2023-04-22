@@ -28,12 +28,21 @@ const authorize = async (req, res, next) => {
     return res.status(401).json("unauthenticated");
   }
   const path = req._parsedUrl.path;
-  const api = path.substring(0, path.lastIndexOf("/"));
+  var api;
+  if (path.lastIndexOf("/") != 0) {
+    api = path.substring(0, path.lastIndexOf("/"));
+  } else {
+    api = path.substring(0, path.lastIndexOf("?"));
+  }
   const { method } = req;
   let isPass = false;
   for (let i = 0; i < user.roles.length; i++) {
     let RoleId = user.roles[i];
     const permission = await permissions.findOne({ where: { api, RoleId } });
+    console.log("this is path: " + path);
+    console.log("this is api: " + api);
+    console.log("this is permission: " + permission);
+    console.log(path.lastIndexOf("/"));
     if (permission) {
       switch (method) {
         case "GET":
