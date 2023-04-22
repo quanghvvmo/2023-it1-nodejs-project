@@ -8,10 +8,10 @@ class APIError extends Error {
       status = httpStatus.INTERNAL_SERVER_ERROR,
     }) 
     {
-        super(message);
-        this.errors = errors;
-        this.stack = stack;
-        this.status = status;
+      super(message);
+      this.errors = errors;
+      this.stack = stack;
+      this.status = status;
     }
 }
 

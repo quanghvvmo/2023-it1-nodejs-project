@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const roleTypes = require("../constants/types/role");
+const formCategoryTypes = require("../constants/types/formCategory");
 
 export default (sequelize) => {
     const columns = {
@@ -10,7 +10,7 @@ export default (sequelize) => {
             allowNull: false
         },
         name: {
-            type: DataTypes.ENUM(Object.values(roleTypes)),
+            type: DataTypes.ENUM(Object.values(formCategoryTypes)),
             allowNull: false,
         },
         description: {
@@ -21,8 +21,7 @@ export default (sequelize) => {
 
     const timestampConfig = {
         timestamps: true,
-        tableName: 'roles'
     }
 
-    return sequelize.define("Role", columns, timestampConfig);
+    return sequelize.define("FormCategory", columns, timestampConfig);
 };

@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+const formTypes = require("../constants/types/form");
 
 export default (sequelize) => {
     const columns = {
@@ -8,36 +9,39 @@ export default (sequelize) => {
             defaultValue: DataTypes.UUIDV4,
             allowNull: false
         },
-        api: {
+        creator: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        canRead: {
-            type: DataTypes.BOOLEAN,
+        name: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        canWrite: {
-            type: DataTypes.BOOLEAN,
+        description: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        canUpdate: {
-            type: DataTypes.BOOLEAN,
+        status: {
+            type: DataTypes.ENUM(Object.values(formTypes)),
             allowNull: false,
         },
-        canDelete: {
-            type: DataTypes.BOOLEAN,
+        dueTo: {
+            type: DataTypes.DATE,
             allowNull: false,
         },
-        canApprove: {
+        updateBy: {
+            type: DataTypes.STRING,
+        },
+        isDeleted: {
             type: DataTypes.BOOLEAN,
-            allowNull: false,
-        }
+            defaultValue: false,
+        },
     };
 
     const timestampConfig = {
         timestamps: true,
-        tableName: 'roleModules'
-    };
+        tableName: 'forms'
+    }
 
-    return sequelize.define("RoleModule", columns, timestampConfig);
+    return sequelize.define("Form", columns, timestampConfig);
 };

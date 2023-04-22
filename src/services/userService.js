@@ -1,11 +1,11 @@
 const sequelize = require("../models/dbconfig")
 const APIError = require('../helper/apiError');
-const userMessage = require('../constants/userMessage');
+const userMessage = require('../constants/messages/user');
 const httpStatus = require('http-status');
 const jwt = require("jsonwebtoken");
 const config = require("../config/index");
 const { APIResponse, APIPagingResponse } = require("../helper/apiResponse");
-const { User } = sequelize.models;
+const { User, Role, UserRole, UserForm } = sequelize.models;
 
 class UserService {
     login = async (data) => {
@@ -26,7 +26,10 @@ class UserService {
     }
 
     getUserDetail = async (id) => {
-        const user = await User.findOne({ where: { id } });
+        const user = await User.findOne({ 
+            include: [Role], 
+            where: { id, isDeleted: false } 
+        });
         if (!user) {
             throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
@@ -35,7 +38,10 @@ class UserService {
     };
     
     getListUsers = async (pageIndex, pageSize) => {
-        const users = await User.findAll();
+        const users = await User.findAll({ 
+            include: [Role], 
+            where: { isDeleted: false } 
+        });
     
         const numOfUsers = users.length;
         if (!numOfUsers) {
@@ -66,13 +72,28 @@ class UserService {
             throw new APIError({ message: userMessage.USER_EXISTS, status: httpStatus.CONFLICT });
         }
 
-        const user = await User.create(data);
+        const transaction = await sequelize.transaction();
+        let user;
+
+        try {
+            user = await User.create(data, { transaction });
+            const RoleId = data.role;
+            const UserId = user.id;
+            await UserRole.create({ RoleId, UserId }, { transaction });
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new APIError({
+                message: "Transaction failed",
+                status: httpStatus.INTERNAL_SERVER_ERROR
+            });
+        }
 
         return new APIResponse(user, httpStatus.CREATED, userMessage.USER_CREATED);
     }
     
     updateUser = async (id, data) => {
-        const user = await User.update(data, { where: { id } });
+        const user = await User.update(data, { where: { id, isDeleted: false } });
         if (!user) {
             throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
@@ -80,13 +101,23 @@ class UserService {
         return new APIResponse(user, httpStatus.OK, userMessage.USER_UPDATED);
     };
     
-    deleteUser = async (userId) => {
-        const user = await User.update({ isDeleted: true }, { where: { id: userId } });
-        if (!user) {
-            throw new APIError({ message: userMessage.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
+    deleteUser = async (id) => {
+        const transaction = await sequelize.transaction();
+
+        let user;
+        try {
+            user = await User.update({ isDeleted: true }, { where: { id } });
+            await UserForm.update({ isDeleted: true }, { where: { UserId: id } });
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new APIError({
+                message: "Transaction failed",
+                status: httpStatus.INTERNAL_SERVER_ERROR,
+            });
         }
-    
-        return new ApiDataResponse(user, httpStatus.OK, userMessage.USER_DELETED);
+
+        return new APIResponse(user, httpStatus.OK, userMessage.USER_DELETED);
     };
 }
 

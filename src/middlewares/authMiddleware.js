@@ -1,6 +1,6 @@
 const regularExpressions = require('../_utils/regularExpressions');
 const httpStatus = require('http-status');
-const authMessage = require('../constants/authMessage');
+const authMessage = require('../constants/messages/auth');
 const config = require('../config/index');
 const sequelize = require("../models/dbconfig");
 const { User, Role, RoleModule } = sequelize.models;

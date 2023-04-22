@@ -1,5 +1,3 @@
-const httpStatus = require('http-status');
-
 class APIResponse {
     constructor(data, status, message) {
         this.data = data;

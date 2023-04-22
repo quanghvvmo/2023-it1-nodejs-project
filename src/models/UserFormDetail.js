@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize');
-const roleTypes = require("../constants/types/role");
 
 export default (sequelize) => {
     const columns = {
@@ -9,20 +8,23 @@ export default (sequelize) => {
             defaultValue: DataTypes.UUIDV4,
             allowNull: false
         },
-        name: {
-            type: DataTypes.ENUM(Object.values(roleTypes)),
-            allowNull: false,
-        },
         description: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        rating: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        isDeleted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     };
 
     const timestampConfig = {
         timestamps: true,
-        tableName: 'roles'
     }
 
-    return sequelize.define("Role", columns, timestampConfig);
+    return sequelize.define("UserFormDetail", columns, timestampConfig);
 };
