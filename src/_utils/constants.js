@@ -1,26 +1,26 @@
-const Roles = {
-    admin: 1,
-    director: 2,
-    hr: 3,
-    manager: 4,
-    employee: 5,
+const ROLES = {
+    ADMIN: 1,
+    DIRECTOR: 2,
+    HR: 3,
+    MANAGER: 4,
+    EMPLOYEE: 5,
 };
 
-const FormCategories = {
-    probationary: 1,
-    annual: 2,
+const FORM_CATEGORIES = {
+    PROBATIONARY: 1,
+    ANNUAL: 2,
 };
 
-const FormStatus = {
+const FORM_STATUS = {
     CLOSE: "close",
     OPEN: "open",
 };
 
-const UserFormStatus = {
+const USER_FORM_STATUS = {
     NEW: "new",
     SUBMITTED: "submitted",
     APPROVED: "approved",
     CLOSED: "closed",
 };
 
-export { Roles, FormCategories, FormStatus, UserFormStatus };
+export { ROLES, FORM_CATEGORIES, FORM_STATUS, USER_FORM_STATUS };

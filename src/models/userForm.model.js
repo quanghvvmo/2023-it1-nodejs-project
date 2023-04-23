@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { UserFormStatus } from "../_utils/constants.js";
+import { USER_FORM_STATUS } from "../_utils/constants.js";
 
 export default (sequelize) => {
     const columns = {
@@ -19,10 +19,10 @@ export default (sequelize) => {
         },
         status: {
             type: DataTypes.ENUM([
-                UserFormStatus.NEW,
-                UserFormStatus.SUBMITTED,
-                UserFormStatus.APPROVED,
-                UserFormStatus.CLOSED,
+                USER_FORM_STATUS.NEW,
+                USER_FORM_STATUS.SUBMITTED,
+                USER_FORM_STATUS.APPROVED,
+                USER_FORM_STATUS.CLOSED,
             ]),
             allowNull: false,
         },

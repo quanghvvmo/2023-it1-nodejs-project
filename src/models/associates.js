@@ -1,6 +1,13 @@
 function applyExtraSetup(sequelize) {
-    const { User, Role, RoleModules, FormCategory, Form, UserForm, UserFormDetail } =
-        sequelize.models;
+    const { 
+        User, 
+        Role, 
+        RoleModules, 
+        FormCategory, 
+        Form, 
+        UserForm, 
+        UserFormDetail 
+    } = sequelize.models;
 
     Role.belongsToMany(User, { through: "UserRole" });
     User.belongsToMany(Role, { through: "UserRole" });

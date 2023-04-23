@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { FormCategories } from "../_utils/constants.js";
+import { FORM_CATEGORIES } from "../_utils/constants.js";
 
 export default (sequelize) => {
     const columns = {
@@ -11,7 +11,7 @@ export default (sequelize) => {
         },
         name: {
             type: DataTypes.STRING,
-            type: DataTypes.ENUM([...Object.keys(FormCategories)]),
+            type: DataTypes.ENUM([...Object.keys(FORM_CATEGORIES)]),
             allowNull: false,
         },
         description: {

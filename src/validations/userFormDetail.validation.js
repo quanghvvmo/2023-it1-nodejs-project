@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { FormCategories } from "../_utils/constants.js";
+import { FORM_CATEGORIES } from "../_utils/constants.js";
 
 const createUserFormDetailSchema = Joi.object({
     name: Joi.string().required(),
@@ -8,14 +8,14 @@ const createUserFormDetailSchema = Joi.object({
     userIds: Joi.array().required(),
     UserCategory: Joi.string()
         .required()
-        .valid(...Object.keys(FormCategories)),
+        .valid(...Object.keys(FORM_CATEGORIES)),
 });
 
 const updateUserFormDetailSchema = Joi.object({
     name: Joi.string(),
     description: Joi.string(),
     dueDate: Joi.date(),
-    formCategory: Joi.string().valid(...Object.keys(FormCategories)),
+    formCategory: Joi.string().valid(...Object.keys(FORM_CATEGORIES)),
 });
 
 export { createUserFormDetailSchema, updateUserFormDetailSchema };

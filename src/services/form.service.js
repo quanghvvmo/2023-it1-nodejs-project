@@ -2,14 +2,17 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { FormStatus, UserFormStatus, FormCategories } from "../_utils/constants.js";
+import { FORM_STATUS, USER_FORM_STATUS, FORM_CATEGORIES } from "../_utils/constants.js";
 
 const { Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
 
 const addForm = async (currentUser, payload) => {
     // Each user only has 1 type of form haven't closed
     const formsInvalid = await UserForm.findAll({
-        where: { UserId: payload.userIds, status: [UserFormStatus.NEW, UserFormStatus.SUBMITTED] },
+        where: {
+            UserId: payload.userIds,
+            status: [USER_FORM_STATUS.NEW, USER_FORM_STATUS.SUBMITTED],
+        },
         include: [
             {
                 model: Form,
@@ -34,26 +37,19 @@ const addForm = async (currentUser, payload) => {
             {
                 ...payload,
                 createBy: currentUser.id,
-                status: FormStatus.OPEN,
-                FormCategoryId: FormCategories[payload.formCategory],
+                status: FORM_STATUS.OPEN,
+                FormCategoryId: FORM_CATEGORIES[payload.formCategory],
             },
             { transaction }
         );
 
-        await Promise.all(
-            payload.userIds.map(async (userFormId) => {
-                const newUserForm = await UserForm.create(
-                    {
-                        UserId: userFormId,
-                        FormId: newForm.id,
-                        status: UserFormStatus.NEW,
-                    },
-                    { transaction }
-                );
+        const userForms = payload.userIds.map((userId) => ({
+            UserId: userId,
+            FormId: newForm.id,
+            status: USER_FORM_STATUS.NEW,
+        }));
 
-                await UserFormDetail.create({ UserFormId: newUserForm.id }, { transaction });
-            })
-        );
+        await UserForm.bulkCreate(userForms, { transaction });
 
         await transaction.commit();
     } catch (error) {

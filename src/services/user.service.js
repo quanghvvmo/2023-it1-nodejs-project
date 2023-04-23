@@ -5,7 +5,7 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { Roles } from "../_utils/constants.js";
+import { ROLES } from "../_utils/constants.js";
 
 const { User, UserRole, Role, UserForm } = sequelize.models;
 
@@ -41,7 +41,7 @@ const addUser = async (payload) => {
     try {
         newUser = await User.create(payload, { transaction });
 
-        await UserRole.create({ RoleId: Roles[payload.role], UserId: newUser.id }, { transaction });
+        await UserRole.create({ RoleId: ROLES[payload.role], UserId: newUser.id }, { transaction });
 
         await transaction.commit();
     } catch (error) {

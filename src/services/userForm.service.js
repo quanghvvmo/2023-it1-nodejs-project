@@ -3,13 +3,13 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { Roles, FormStatus, UserFormStatus, FormCategories } from "../_utils/constants.js";
+import { ROLES, FORM_STATUS, USER_FORM_STATUS, FORM_CATEGORIES } from "../_utils/constants.js";
 
 const { UserForm, UserFormDetail } = sequelize.models;
 
 const getUserForm = async (currentUser, userFormId) => {
     const isHrOrAdmin = currentUser.Roles.some(
-        (role) => role.id === Roles["hr"] || role.id === Roles["admin"]
+        (role) => role.id === ROLES["hr"] || role.id === ROLES["admin"]
     );
 
     const userForm = await UserForm.findOne({
