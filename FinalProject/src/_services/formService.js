@@ -172,8 +172,9 @@ class formService {
 
     reportLabour = async (pageIndex, pageSize) => {
         const currentTime = new Date();
-        const users = []
-        const forms = await Form.findAll({
+        let users = [];
+        const offset = (parseInt(pageIndex) - 1) * pageSize;
+        const forms = await Form.findAndCountAll({
             where: {
                 typeid: FormCategory.LABOUR_CONTRACT,
                 status: {
@@ -186,6 +187,11 @@ class formService {
             include: [
                 {
                     model: Userform,
+                    where: {
+                        status: {
+                            [Op.notLike]: FormStatus.CLOSE
+                        },
+                    },
                     attributes: ["userid", "status"],
                     as: "userform",
                     include: [
@@ -196,14 +202,20 @@ class formService {
                     ]
                 }
             ],
+            limit: pageSize,
+            offset: offset,
             raw: true,
             nest: true
         })
-        for (let i = 0; i < forms.length; i++) {
-            users.push(forms[i].userform.user);
+        for (let i = 0; i < forms.count; i++) {
+            users.push(forms.rows[i].userform.user);
         }
         return ({
             data: users,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            totalCount: users.length,
+            totalPage: Math.round(users.length / pageSize),
             errCode: 0,
             errMsg: "Sucess"
         })
@@ -211,8 +223,9 @@ class formService {
 
     reportPerfomance = async (pageIndex, pageSize) => {
         const currentTime = new Date();
-        const users = []
-        const forms = await Form.findAll({
+        let users = [];
+        const offset = (parseInt(pageIndex) - 1) * pageSize;
+        const forms = await Form.findAndCountAll({
             where: {
                 typeid: FormCategory.PERFORMANCE_REVIEW,
                 status: {
@@ -225,6 +238,11 @@ class formService {
             include: [
                 {
                     model: Userform,
+                    where: {
+                        status: {
+                            [Op.notLike]: FormStatus.CLOSE
+                        },
+                    },
                     attributes: ["userid", "status"],
                     as: "userform",
                     include: [
@@ -235,14 +253,20 @@ class formService {
                     ]
                 }
             ],
+            limit: pageSize,
+            offset: offset,
             raw: true,
             nest: true
         })
-        for (let i = 0; i < forms.length; i++) {
-            users.push(forms[i].userform.user);
+        for (let i = 0; i < forms.count; i++) {
+            users.push(forms.rows[i].userform.user);
         }
         return ({
             data: users,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            totalCount: users.length,
+            totalPage: Math.round(users.length / pageSize),
             errCode: 0,
             errMsg: "Sucess"
         })

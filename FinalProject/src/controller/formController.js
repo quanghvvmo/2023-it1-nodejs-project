@@ -21,7 +21,8 @@ class UserController {
                 return res.status(200).json(result);
             } else if (result.errCode === -1) {
                 return res.status(500).json(result);
-            } else return res.status(400).json(result)
+            }
+            return res.status(400).json(result)
         } catch (error) {
             console.log(error);
             return res.status(500).json(error);
@@ -32,9 +33,7 @@ class UserController {
         try {
             const userid = req.user.id;
             const result = await formService.myForm(userid);
-            if (result.errCode === 0) {
-                return res.status(200).json(result);
-            }
+            return res.status(200).json(result);
         } catch (error) {
             console.log(error);
             return res.status(500).json(error);
