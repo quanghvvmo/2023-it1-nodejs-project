@@ -1,4 +1,5 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
+import { FormStatus } from "../../../common/constant";
 module.exports = {
     id: {
         type: Sequelize.INTEGER,
@@ -16,7 +17,7 @@ module.exports = {
     },
     status: {
         type: Sequelize.STRING,
-        defaultValue: 'OPEN'
+        defaultValue: FormStatus.OPEN
     },
     expDate: {
         type: Sequelize.DATE,

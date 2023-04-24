@@ -1,5 +1,6 @@
 const BaseModel = require("../base");
 
+
 module.exports = class userRole extends BaseModel {
     static tableName = "userRole";
     static modelName = "userRole";

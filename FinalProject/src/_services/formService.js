@@ -1,9 +1,10 @@
-import Form from '../_database/models/form'
-import Userform from '../_database/models/userForm'
-import FormDetail from '../_database/models/formDetail'
-import { sequelize } from '../config/database'
-import { FormCategory, FormStatus } from '../common/constant'
-import { Op } from 'sequelize';
+import Form from "../_database/models/form"
+import Userform from "../_database/models/userForm"
+import FormDetail from "../_database/models/formDetail"
+import User from "../_database/models/user"
+import { sequelize } from "../config/database"
+import { FormCategory, FormStatus } from "../common/constant"
+import { Op } from "sequelize";
 
 class formService {
 
@@ -15,7 +16,7 @@ class formService {
         return ({
             data: form,
             errCode: 0,
-            errMsg: 'Success'
+            errMsg: "Success"
         })
     }
 
@@ -24,47 +25,43 @@ class formService {
         const check = await Userform.findAll({
             where: {
                 userid: {
-                    [Op.in]: data.userid
+                    [Op.in]: data.userids
                 },
                 status: {
-                    [Op.notLike]: FormStatus.Close
+                    [Op.notLike]: FormStatus.CLOSE
                 }
             }
         })
         if (check && check.length > 0) {
             return ({
                 errCode: -1,
-                errMsg: "Can't creating form with this User right now!"
+                errMsg: "Unable to create form with this User right now!"
             })
         } else {
             const transaction = await sequelize.transaction();
             try {
+                let userForms = [];
                 const form = await Form.create({
                     ...data,
                     typeid: FormCategory[data.category]
                 },
                     { transaction }
                 );
-                await Promise.all(
-                    data.userid.map(async (u) => {
-                        await Userform.create(
-                            {
-                                userid: u,
-                                formid: form.id,
-                                managerid: data.managerid,
-                            },
-                            { transaction }
-                        )
+                for (let i = 0; i < data.userids.length; i++) {
+                    userForms.push({
+                        userid: data.userids[i],
+                        formid: form.id,
+                        managerid: data.managerid,
                     })
-                );
+                }
+                await Userform.bulkCreate(userForms, { transaction })
                 await transaction.commit();
                 return ({
                     data: form,
                     errCode: 0,
-                    errMsg: 'Success'
+                    errMsg: "Success"
                 })
             } catch (error) {
-                console.log(error);
                 await transaction.rollback();
                 return ({
                     errCode: 1,
@@ -102,12 +99,13 @@ class formService {
             errMsg: "Success"
         })
     }
+
     submitUserForm = async (data, givenId, user) => {
         const transaction = await sequelize.transaction();
         try {
             const submitForm = await Userform.update(
-                { userComment: data.userComment, status: FormStatus.Submitted },
-                { where: { id: givenId, userid: user.id, status: FormStatus.New }, },
+                { userComment: data.userComment, status: FormStatus.SUBMITTED },
+                { where: { id: givenId, userid: user.id, status: FormStatus.NEW }, },
                 { transaction }
             );
             if (!submitForm) {
@@ -142,8 +140,8 @@ class formService {
         const transaction = await sequelize.transaction();
         try {
             const approvalForm = await Userform.update(
-                { managerComment: data.managerComment, status: FormStatus.Approval },
-                { where: { id: givenId, status: FormStatus.Submitted } },
+                { managerComment: data.managerComment, status: FormStatus.APPROVAL },
+                { where: { id: givenId, status: FormStatus.SUBMITTED } },
                 { transaction }
             )
             if (!approvalForm) {
@@ -170,6 +168,84 @@ class formService {
                 errMsg: "Transaction Error!"
             })
         }
+    }
+
+    reportLabour = async (pageIndex, pageSize) => {
+        const currentTime = new Date();
+        const users = []
+        const forms = await Form.findAll({
+            where: {
+                typeid: FormCategory.LABOUR_CONTRACT,
+                status: {
+                    [Op.notLike]: FormStatus.CLOSE
+                },
+                expDate: {
+                    [Op.lte]: currentTime
+                }
+            },
+            include: [
+                {
+                    model: Userform,
+                    attributes: ["userid", "status"],
+                    as: "userform",
+                    include: [
+                        {
+                            model: User,
+                            as: "user"
+                        }
+                    ]
+                }
+            ],
+            raw: true,
+            nest: true
+        })
+        for (let i = 0; i < forms.length; i++) {
+            users.push(forms[i].userform.user);
+        }
+        return ({
+            data: users,
+            errCode: 0,
+            errMsg: "Sucess"
+        })
+    }
+
+    reportPerfomance = async (pageIndex, pageSize) => {
+        const currentTime = new Date();
+        const users = []
+        const forms = await Form.findAll({
+            where: {
+                typeid: FormCategory.PERFORMANCE_REVIEW,
+                status: {
+                    [Op.notLike]: FormStatus.CLOSE
+                },
+                expDate: {
+                    [Op.lte]: currentTime
+                }
+            },
+            include: [
+                {
+                    model: Userform,
+                    attributes: ["userid", "status"],
+                    as: "userform",
+                    include: [
+                        {
+                            model: User,
+                            as: "user"
+                        }
+                    ]
+                }
+            ],
+            raw: true,
+            nest: true
+        })
+        for (let i = 0; i < forms.length; i++) {
+            users.push(forms[i].userform.user);
+        }
+        return ({
+            data: users,
+            errCode: 0,
+            errMsg: "Sucess"
+        })
     }
 }
 

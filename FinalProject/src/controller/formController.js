@@ -1,7 +1,9 @@
-import formService from '../_services/formService'
-import formValidation from '../validation/formValidation'
+import formService from "../_services/formService"
+import formValidation from "../validation/formValidation"
+import config from "../config";
 
 class UserController {
+
     createForm = async (req, res) => {
         try {
             let result = {};
@@ -10,7 +12,7 @@ class UserController {
             if (error) {
                 return res.status(500).json(error.details[0].message);
             }
-            if (data.userid && data.userid.length > 0) {
+            if (data.userids && data.userids.length > 0) {
                 result = await formService.createUserForm(value);
             } else {
                 result = await formService.createForm(value);
@@ -56,6 +58,7 @@ class UserController {
             return res.status(500).json(error);
         }
     }
+
     submitForm = async (req, res) => {
         try {
             const data = req.body;
@@ -73,6 +76,7 @@ class UserController {
             return res.status(500).json(error);
         }
     }
+
     approvalForm = async (req, res) => {
         try {
             const data = req.body;
@@ -85,6 +89,30 @@ class UserController {
                 return res.status(200).json(result);
             }
             return res.status(404).json(result);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error);
+        }
+    }
+
+    reportLabour = async (req, res) => {
+        try {
+            const pageIndex = parseInt(req.query.pageIndex) || config.query_default_page_index;
+            const pageSize = parseInt(req.query.pageSize) || config.query_default_page_size;
+            const result = await formService.reportLabour(pageIndex, pageSize);
+            return res.status(200).json(result)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error);
+        }
+    }
+
+    reportPerfomance = async (req, res) => {
+        try {
+            const pageIndex = parseInt(req.query.pageIndex) || config.query_default_page_index;
+            const pageSize = parseInt(req.query.pageSize) || config.query_default_page_size;
+            const result = await formService.reportPerfomance(pageIndex, pageSize);
+            return res.status(200).json(result)
         } catch (error) {
             console.log(error);
             return res.status(500).json(error);

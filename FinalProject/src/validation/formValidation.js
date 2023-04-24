@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { FormCategory } from '../common/constant'
+import { FormCategory } from "../common/constant"
 
 
 const formValidation = {
@@ -7,7 +7,7 @@ const formValidation = {
         category: Joi.string().required().valid(...Object.keys(FormCategory)),
         name: Joi.string().required(),
         expDate: Joi.date().required(),
-        userid: Joi.array(),
+        userids: Joi.array(),
         managerid: Joi.string().required(),
     }),
 
@@ -21,7 +21,7 @@ const formValidation = {
     }),
     approvalUserForm: Joi.object({
         managerComment: Joi.string().required(),
-        result: Joi.string.required(),
+        result: Joi.string().required(),
         point: Joi.number().greater(0).required(),
     })
 }

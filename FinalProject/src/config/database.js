@@ -1,5 +1,5 @@
-const { Sequelize } = require('sequelize');
-const config = require('./');
+const { Sequelize } = require("sequelize");
+const config = require("./");
 
 const options = {
     username: config.db_username,

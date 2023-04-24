@@ -1,4 +1,5 @@
 const BaseModel = require("../base");
+import { Options } from "../../../common/constant"
 
 module.exports = class userForm extends BaseModel {
     static tableName = "userForm";
@@ -21,10 +22,10 @@ module.exports = class userForm extends BaseModel {
             as: "userform",
         });
         this.hasMany(models.FormDetail, {
-            foreignKey: 'formid',
-            as: 'formdetail',
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
+            foreignKey: "formid",
+            as: "formdetail",
+            onDelete: Options.CASCADE,
+            onUpdate: Options.CASCADE,
         })
     }
 };

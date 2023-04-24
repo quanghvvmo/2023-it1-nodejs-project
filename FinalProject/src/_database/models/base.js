@@ -1,8 +1,8 @@
-const { Sequelize } = require('sequelize')
+const { Sequelize } = require("sequelize")
 
 module.exports = class BaseModel extends Sequelize.Model {
-    static tableName = '';
-    static modelName = '';
+    static tableName = "";
+    static modelName = "";
     static schema = {};
     static timestamps = true;
     static association(models) {
@@ -15,7 +15,7 @@ module.exports = class BaseModel extends Sequelize.Model {
 
     static init(sequelize) {
         if (!this.tableName || !this.modelName || !Object.keys(this.schema).length) {
-            throw new Error('model name or table name and schema can not be empty')
+            throw new Error("model name or table name and schema can not be empty")
         }
         return super.init({
             ...this.schema,

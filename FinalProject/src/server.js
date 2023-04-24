@@ -5,26 +5,26 @@ import db from "./_database/db";
 import routes from "./routes"
 
 //import connectDB from "./config/database"
-require('dotenv').config();
+require("dotenv").config();
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/Images', express.static('./Images'))
+app.use("/Images", express.static("./Images"))
 
 const initSequelize = async () => {
     await db.connect()
         .then(() => {
-            console.log('Connection has been established succesfully');
+            console.log("Connection has been established succesfully");
             return true;
         }).catch(err => {
-            console.log('Connection fail:', err);
+            console.log("Connection fail:", err);
             return false;
         })
 }
 const initWebroute = () => {
     app.use("/api/v1", routes);
-    console.log('Register services suceesfully');
+    console.log("Register services suceesfully");
 }
 const startServer = async () => {
     app.listen(config.port, config.host);

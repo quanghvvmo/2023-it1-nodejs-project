@@ -1,5 +1,5 @@
-import userService from '../_services/userService'
-import userValidation from '../validation/userValidation'
+import userService from "../_services/userService"
+import userValidation from "../validation/userValidation"
 
 class UserController {
 

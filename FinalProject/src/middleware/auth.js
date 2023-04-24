@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken'
-require('dotenv').config();
-import User from '../_database/models/user'
+import jwt from "jsonwebtoken"
+require("dotenv").config();
+import User from "../_database/models/user"
 
 const getToken = (req) => {
     if (req.headers.authorization && req.headers.authorization.length > 0) {

@@ -1,9 +1,9 @@
-import User from '../_database/models/user'
-import UserRole from '../_database/models/userRole'
-import Role from '../_database/models/role'
-import bcrypt from 'bcrypt';
+import User from "../_database/models/user"
+import UserRole from "../_database/models/userRole"
+import Role from "../_database/models/role"
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-require('dotenv').config();
+require("dotenv").config();
 
 var hashUserPassword = (password) => {
     return new Promise(async (resolve, reject) => {
@@ -35,20 +35,18 @@ class UserService {
                     user,
                     token,
                     errCode: 0,
-                    errMsg: 'Login successful!'
-                })
-            } else {
-                return ({
-                    errCode: 1,
-                    errMsg: "Password is wrong!"
+                    errMsg: "Login successful!"
                 })
             }
-        } else {
             return ({
-                errCode: -1,
-                errMsg: "Your email is not exsit!"
+                errCode: 1,
+                errMsg: "Password is wrong!"
             })
         }
+        return ({
+            errCode: -1,
+            errMsg: "Your email is not exsit!"
+        })
     }
 
     createUser = async (data, avatar) => {
@@ -60,21 +58,20 @@ class UserService {
         if (existUser) {
             return ({
                 errCode: 1,
-                errMsg: 'Email is already exsiting'
-            })
-        } else {
-            let passwordHahsed = await hashUserPassword(data.password);
-            const newUser = await User.create({
-                ...data,
-                password: passwordHahsed,
-                avatar: avatar,
-            })
-            return ({
-                newUser,
-                errCode: 0,
-                errMsg: 'The new User has been created'
+                errMsg: "Email is already exsiting"
             })
         }
+        let passwordHahsed = await hashUserPassword(data.password);
+        const newUser = await User.create({
+            ...data,
+            password: passwordHahsed,
+            avatar: avatar,
+        })
+        return ({
+            newUser,
+            errCode: 0,
+            errMsg: "The new User has been created"
+        })
     }
 
     updateUser = async (data, avatar) => {
@@ -104,19 +101,18 @@ class UserService {
                     errCode: 1,
                     errMsg: "User not found!"
                 })
-            } else {
-                return ({
-                    errCode: 0,
-                    errMsg: "User updating succesfull!"
-                })
             }
-        } else {
             return ({
-                errCode: -1,
-                errMsg: 'The email is already exsit, Please choose another email!'
+                errCode: 0,
+                errMsg: "User updating succesfull!"
             })
         }
+        return ({
+            errCode: -1,
+            errMsg: "The email is already exsit, Please choose another email!"
+        })
     }
+
     softDelete = async (userid) => {
         let user = await User.findOne({
             where: {
@@ -130,11 +126,12 @@ class UserService {
             await user.save();
             return ({
                 errCode: 0,
-                errMsg: 'The user is soft deleted',
+                errMsg: "The user is soft deleted",
             })
-        } else return ({
+        }
+        return ({
             errCode: -1,
-            errMsg: 'Not found user!'
+            errMsg: "Not found user!"
         })
     }
 
@@ -153,29 +150,25 @@ class UserService {
                             attributes: ["name"],
                         },
                     ],
-                    attributes: ["userid", "roleid"],
+                    attributes: ["roleid"],
                     as: "userRole"
                 },
             ],
             raw: true,
             nest: true
         })
-        if (user) {
+        if (user && user.length > 0) {
             return ({
                 user,
                 errCode: 0,
-                errMsg: 'Ok',
+                errMsg: "Ok",
             })
-        } else return ({
+        }
+        return ({
             errCode: -1,
-            errMsg: 'Not found user'
+            errMsg: "Not found user!"
         })
     }
-
-
-
-
-
 }
 
 module.exports = new UserService();
