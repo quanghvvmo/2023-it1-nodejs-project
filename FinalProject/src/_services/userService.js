@@ -3,6 +3,9 @@ import UserRole from "../_database/models/userRole"
 import Role from "../_database/models/role"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { USER_MESSAGE } from "../common/userMessage"
+import { ERR_CODE } from "../common/errCode";
+import status from "http-status";
 require("dotenv").config();
 
 var hashUserPassword = (password) => {
@@ -34,18 +37,21 @@ class UserService {
                 return ({
                     user,
                     token,
-                    errCode: 0,
-                    errMsg: "Login successful!"
+                    errCode: ERR_CODE.OK,
+                    errMsg: USER_MESSAGE.LOGIN_SUCCEED,
+                    status: status.OK
                 })
             }
             return ({
-                errCode: 1,
-                errMsg: "Password is wrong!"
+                errCode: ERR_CODE.ERROR_FROM_CLIENT,
+                errMsg: USER_MESSAGE.PASSWORDS_WRONG,
+                status: status.UNAUTHORIZED
             })
         }
         return ({
-            errCode: -1,
-            errMsg: "Your email is not exsit!"
+            errCode: ERR_CODE.ERROR_FROM_SEVER,
+            errMsg: USER_MESSAGE.USER_NOT_FOUND,
+            status: status.NOT_FOUND
         })
     }
 
@@ -57,8 +63,9 @@ class UserService {
         })
         if (existUser) {
             return ({
-                errCode: 1,
-                errMsg: "Email is already exsiting"
+                errCode: ERR_CODE.ERROR_FROM_CLIENT,
+                errMsg: USER_MESSAGE.DUPLICATE_EMAIL,
+                status: status.CONFLICT
             })
         }
         let passwordHahsed = await hashUserPassword(data.password);
@@ -69,8 +76,9 @@ class UserService {
         })
         return ({
             newUser,
-            errCode: 0,
-            errMsg: "The new User has been created"
+            errCode: ERR_CODE.OK,
+            errMsg: USER_MESSAGE.USER_CREATED,
+            status: status.CREATED
         })
     }
 
@@ -98,18 +106,21 @@ class UserService {
             );
             if (!user) {
                 return ({
-                    errCode: 1,
-                    errMsg: "User not found!"
+                    errCode: ERR_CODE.ERROR_FROM_CLIENT,
+                    errMsg: USER_MESSAGE.USER_NOT_FOUND,
+                    status: status.NOT_FOUND
                 })
             }
             return ({
-                errCode: 0,
-                errMsg: "User updating succesfull!"
+                errCode: ERR_CODE.OK,
+                errMsg: USER_MESSAGE.USER_UPDATED,
+                status: status.OK
             })
         }
         return ({
-            errCode: -1,
-            errMsg: "The email is already exsit, Please choose another email!"
+            errCode: ERR_CODE.ERROR_FROM_SEVER,
+            errMsg: USER_MESSAGE.DUPLICATE_EMAIL,
+            status: status.CONFLICT
         })
     }
 
@@ -125,13 +136,15 @@ class UserService {
             user.isDeleted = 1;
             await user.save();
             return ({
-                errCode: 0,
-                errMsg: "The user is soft deleted",
+                errCode: ERR_CODE.OK,
+                errMsg: USER_MESSAGE.USER_DELETED,
+                status: status.OK
             })
         }
         return ({
-            errCode: -1,
-            errMsg: "Not found user!"
+            errCode: ERR_CODE.ERROR_FROM_SEVER,
+            errMsg: USER_MESSAGE.USER_NOT_FOUND,
+            status: status.NOT_FOUND
         })
     }
 
@@ -160,13 +173,15 @@ class UserService {
         if (user && user.length > 0) {
             return ({
                 user,
-                errCode: 0,
-                errMsg: "Ok",
+                errCode: ERR_CODE.OK,
+                errMsg: USER_MESSAGE.USER_FOUND,
+                status: status.OK
             })
         }
         return ({
-            errCode: -1,
-            errMsg: "Not found user!"
+            errCode: ERR_CODE.ERROR_FROM_SEVER,
+            errMsg: USER_MESSAGE.USER_NOT_FOUND,
+            status: status.NOT_FOUND
         })
     }
 }

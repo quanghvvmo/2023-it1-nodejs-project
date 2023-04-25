@@ -5,6 +5,9 @@ import User from "../_database/models/user"
 import { sequelize } from "../config/database"
 import { FormCategory, FormStatus } from "../common/constant"
 import { Op } from "sequelize";
+import { FORM_MESSAGE } from "../common/formMessage"
+import { ERR_CODE } from "../common/errCode"
+import status from "http-status";
 
 class formService {
 
@@ -15,8 +18,9 @@ class formService {
         })
         return ({
             data: form,
-            errCode: 0,
-            errMsg: "Success"
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_CREATED,
+            status: status.CREATED
         })
     }
 
@@ -34,8 +38,9 @@ class formService {
         })
         if (check && check.length > 0) {
             return ({
-                errCode: -1,
-                errMsg: "Unable to create form with this User right now!"
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.USER_CONFLICT,
+                status: status.CONFLICT
             })
         } else {
             const transaction = await sequelize.transaction();
@@ -58,14 +63,16 @@ class formService {
                 await transaction.commit();
                 return ({
                     data: form,
-                    errCode: 0,
-                    errMsg: "Success"
+                    errCode: ERR_CODE.OK,
+                    errMsg: FORM_MESSAGE.FORM_CREATED,
+                    status: status.CREATED
                 })
             } catch (error) {
                 await transaction.rollback();
                 return ({
-                    errCode: 1,
-                    errMsg: "Transaction Error!"
+                    errCode: ERR_CODE.ERROR_FROM_SEVER,
+                    errMsg: FORM_MESSAGE.TRANSACTION_ERROR,
+                    status: status.INTERNAL_SERVER_ERROR
                 })
             }
         }
@@ -80,8 +87,9 @@ class formService {
         })
         return ({
             data: myForm,
-            errCode: 0,
-            errMsg: "Sucess"
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_FOUND,
+            status: status.OK
         })
     }
 
@@ -89,31 +97,36 @@ class formService {
         const updatedForm = await Userform.update(data, { where: { id: givenId, userid: user.id, } })
         if (!updatedForm) {
             return ({
-                errCode: -1,
-                errMsg: "Not found form of user"
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.FORM_FOUND,
+                status: status.NOT_FOUND
             })
         }
         return ({
             data: updatedForm,
-            errCode: 0,
-            errMsg: "Success"
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_UPDATED,
+            status: status.OK
         })
     }
 
     submitUserForm = async (data, givenId, user) => {
         const transaction = await sequelize.transaction();
         try {
-            const submitForm = await Userform.update(
-                { userComment: data.userComment, status: FormStatus.SUBMITTED },
-                { where: { id: givenId, userid: user.id, status: FormStatus.NEW }, },
-                { transaction }
-            );
+            const submitForm = await Userform.findOne({
+                where: { id: givenId, userid: user[0].id, status: FormStatus.NEW }
+            })
             if (!submitForm) {
                 return ({
-                    errCode: -1,
-                    errMsg: "Not found form of user"
+                    errCode: ERR_CODE.ERROR_FROM_SEVER,
+                    errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
+                    status: status.NOT_FOUND
                 })
             }
+            submitForm.userComment = data.userComment;
+            submitForm.status = FormStatus.SUBMITTED;
+            await submitForm.save({ transaction })
+
             await FormDetail.create(
                 {
                     formid: submitForm.id,
@@ -123,49 +136,61 @@ class formService {
             )
             await transaction.commit();
             return ({
-                errCode: 0,
-                errMsg: "Sucess"
+                errCode: ERR_CODE.OK,
+                errMsg: FORM_MESSAGE.FORM_SUBMITTED,
+                status: status.OK
             })
         } catch (error) {
-            console.log(error);
             await transaction.rollback();
             return ({
-                errCode: 1,
-                errMsg: "Transaction Error!"
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.TRANSACTION_ERROR,
+                status: status.INTERNAL_SERVER_ERROR
             })
         }
     }
 
-    approvalForm = async (data, givenId) => {
+    approvalForm = async (data, givenId, user) => {
         const transaction = await sequelize.transaction();
         try {
-            const approvalForm = await Userform.update(
-                { managerComment: data.managerComment, status: FormStatus.APPROVAL },
-                { where: { id: givenId, status: FormStatus.SUBMITTED } },
-                { transaction }
-            )
+            const approvalForm = await Userform.findOne({
+                where: { id: givenId, managerid: user[0].id, status: FormStatus.SUBMITTED }
+            })
             if (!approvalForm) {
                 return ({
-                    errCode: -1,
-                    errMsg: "Form not found"
+                    errCode: ERR_CODE.ERROR_FROM_SEVER,
+                    errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
+                    status: status.NOT_FOUND
+                })
+            }
+            approvalForm.managerCmt = data.managerComment;
+            approvalForm.status = FormStatus.APPROVAL;
+            await approvalForm.save({ transaction })
+            if (!approvalForm) {
+                return ({
+                    errCode: ERR_CODE.ERROR_FROM_SEVER,
+                    errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
+                    status: status.NOT_FOUND
                 })
             }
             await FormDetail.update(
                 { result: data.result, point: data.point },
-                { where: { formid: givenId } },
+                { where: { formid: approvalForm.id } },
                 { transaction }
             )
             await transaction.commit();
             return ({
-                errCode: 0,
-                errMsg: "Sucess"
+                errCode: ERR_CODE.OK,
+                errMsg: FORM_MESSAGE.FORM_APPROVALED,
+                status: status.OK
             })
         } catch (error) {
             console.log(error);
             await transaction.rollback();
             return ({
-                errCode: 1,
-                errMsg: "Transaction Error!"
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.TRANSACTION_ERROR,
+                status: status.INTERNAL_SERVER_ERROR
             })
         }
     }
@@ -216,8 +241,9 @@ class formService {
             pageSize: pageSize,
             totalCount: users.length,
             totalPage: Math.round(users.length / pageSize),
-            errCode: 0,
-            errMsg: "Sucess"
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_FOUND,
+            status: status.OK
         })
     }
 
@@ -267,8 +293,9 @@ class formService {
             pageSize: pageSize,
             totalCount: users.length,
             totalPage: Math.round(users.length / pageSize),
-            errCode: 0,
-            errMsg: "Sucess"
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_FOUND,
+            status: status.OK
         })
     }
 }

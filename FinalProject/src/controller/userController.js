@@ -1,5 +1,6 @@
 import userService from "../_services/userService"
 import userValidation from "../validation/userValidation"
+import status from "http-status";
 
 class UserController {
 
@@ -8,18 +9,13 @@ class UserController {
             const data = req.body;
             const { error, value } = userValidation.login.validate(data);
             if (error) {
-                return res.status(400).json(error.details[0].message)
+                return res.status(status.BAD_REQUEST).json(error.details[0].message)
             }
             const result = await userService.handleLogin(value);
-            if (result.errCode === 0) {
-                return res.status(200).json(result);
-            } else if (result.errCode === -1) {
-                return res.status(404).json(result)
-            }
-            return res.status(400).json(result)
+            return res.status(result.status).json(result);
         } catch (error) {
             console.log(error);
-            return res.status(500).json(error)
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -34,17 +30,14 @@ class UserController {
             }
             const { error, value } = userValidation.validateUser.validate(data);
             if (error) {
-                return res.status(400).json(error.details[0].message)
+                return res.status(status.BAD_REQUEST).json(error.details[0].message)
             }
             const result = await userService.createUser(value, avatar);
-            if (result.errCode === 1) {
-                return res.status(400).json(result);
-            }
-            return res.status(201).json(result);
+            return res.status(result.status).json(result);
 
         } catch (error) {
             console.log(error);
-            return res.status(500).json(error);
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     };
 
@@ -52,7 +45,7 @@ class UserController {
         try {
             const data = req.body;
             if (!data.id) {
-                return res.status(400).json({
+                return res.status(status.BAD_REQUEST).json({
                     errMsg: "Missing User id!"
                 })
             }
@@ -64,17 +57,12 @@ class UserController {
             }
             const { error, value } = userValidation.validateUser.validate(data);
             if (error) {
-                return res.status(400).json(error.details[0].message)
+                return res.status(status.BAD_REQUEST).json(error.details[0].message)
             }
             const result = await userService.updateUser(value, avatar);
-            if (result.errCode === -1) {
-                return res.status(400).json(result);
-            } else if (result.errCode === 1) {
-                return res.status(403).json(result);
-            }
-            return res.status(200).json(result)
+            return res.status(result.status).json(result)
         } catch (error) {
-            return res.status(500).json(error);
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     };
 
@@ -82,12 +70,9 @@ class UserController {
         try {
             const userid = req.params.id
             const result = await userService.softDelete(userid);
-            if (result.errCode === -1) {
-                return res.status(404).json(result)
-            }
-            return res.status(200).json(result);
+            return res.status(result.status).json(result);
         } catch (error) {
-            return res.status(500).json(error);
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
 
@@ -95,14 +80,11 @@ class UserController {
         try {
             const userId = req.params.id;
             const result = await userService.getUserById(userId);
-            if (result.errCode === -1) {
-                return res.status(404).json(result);
-            }
-            return res.status(200).json(result)
+            return res.status(result.status).json(result)
 
         } catch (error) {
             console.log(error);
-            return res.status(500).json(error);
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     };
 }

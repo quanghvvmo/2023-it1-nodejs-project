@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken"
 require("dotenv").config();
 import User from "../_database/models/user"
+import UserRole from "../_database/models/userRole"
+import Role from "../_database/models/role"
 
 const getToken = (req) => {
     if (req.headers.authorization && req.headers.authorization.length > 0) {
