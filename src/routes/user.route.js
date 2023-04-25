@@ -11,14 +11,14 @@ import { authJWT, authorize } from "../middlewares/auth.middleware.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/users", getListUsersController);
-userRouter.get("/users/:id", getUserDetailController);
+userRouter.get("/users", authJWT, authorize, getListUsersController);
+userRouter.get("/users/:id", authJWT, authorize, getUserDetailController);
 
 userRouter.post("/users/login", loginController);
-userRouter.post("/users", addUserController);
+userRouter.post("/users", authJWT, authorize, addUserController);
 
-userRouter.put("/users/:id", updateUserController);
+userRouter.put("/users/:id", authJWT, authorize, updateUserController);
 
-userRouter.delete("/users/:id", deleteUserController);
+userRouter.delete("/users/:id", authJWT, authorize, deleteUserController);
 
 export default userRouter;

@@ -83,10 +83,10 @@ export const converter = (err, req, res, next) => {
             }),
             status: httpStatus.UNPROCESSABLE_ENTITY,
         });
-    } else if (!(err instanceof APIError)) {
+    } else {
         convertedError = new APIError({
             message: err.message,
-            status: err.status,
+            status: httpStatus.INTERNAL_SERVER_ERROR,
             stack: err.stack,
         });
     }

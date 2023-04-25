@@ -1,21 +1,19 @@
 import Joi from "joi";
-import { FORM_CATEGORIES } from "../_utils/constants.js";
 
 const createUserFormDetailSchema = Joi.object({
-    name: Joi.string().required(),
-    description: Joi.string().required(),
-    dueDate: Joi.date().required(),
-    userIds: Joi.array().required(),
-    UserCategory: Joi.string()
-        .required()
-        .valid(...Object.keys(FORM_CATEGORIES)),
+    selfRating: Joi.string(),
+    achievements: Joi.string(),
+    description: Joi.string(),
+    others: Joi.string(),
+    result: Joi.string(),
 });
 
 const updateUserFormDetailSchema = Joi.object({
-    name: Joi.string(),
+    selfRating: Joi.string(),
+    achievements: Joi.string(),
     description: Joi.string(),
-    dueDate: Joi.date(),
-    formCategory: Joi.string().valid(...Object.keys(FORM_CATEGORIES)),
+    others: Joi.string(),
+    result: Joi.string(),
 });
 
 export { createUserFormDetailSchema, updateUserFormDetailSchema };

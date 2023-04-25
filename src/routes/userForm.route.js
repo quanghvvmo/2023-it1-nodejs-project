@@ -1,9 +1,18 @@
 import express from "express";
-import { getUserFormController } from "../controllers/userForm.controller.js";
-import { authJWT, authorize } from "../middlewares/auth.middleware.js";
+import {
+    getUserFormController,
+    updateUserFormController,
+    getListUserFormsController,
+    deleteUserFormController,
+} from "../controllers/userForm.controller.js";
 
 const userFormRouter = express.Router();
 
-userFormRouter.get("/user-forms/:id", authJWT, authorize, getUserFormController);
+userFormRouter.get("/user-forms/:id", getUserFormController);
+userFormRouter.get("/user-forms", getListUserFormsController);
+
+userFormRouter.put("/user-forms/:id", updateUserFormController);
+
+userFormRouter.delete("/user-forms/:id", deleteUserFormController);
 
 export default userFormRouter;

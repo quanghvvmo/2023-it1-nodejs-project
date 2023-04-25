@@ -9,6 +9,7 @@ const { Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
 const addForm = async (currentUser, payload) => {
     // Each user only has 1 type of form haven't closed
     const formsInvalid = await UserForm.findAll({
+        attributes: ["id"],
         where: {
             UserId: payload.userIds,
             status: [USER_FORM_STATUS.NEW, USER_FORM_STATUS.SUBMITTED],

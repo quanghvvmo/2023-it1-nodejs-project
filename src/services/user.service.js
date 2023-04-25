@@ -32,6 +32,7 @@ const addUser = async (payload) => {
         throw new APIError({ message: "User already exist !", status: httpStatus.CONFLICT });
     }
 
+    // hash password
     const salt = await bcrypt.genSalt(10);
     payload.password = await bcrypt.hash(payload.password, salt);
 
