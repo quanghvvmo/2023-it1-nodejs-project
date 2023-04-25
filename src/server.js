@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const config = require("./config/index.js");
 const getEnvironmentSetting = require("./_utils/enviromentSettings.js");
-const sequelize = require("./models/dbconfig.js");
+const sequelize = require("./models/helper/dbconfig.js");
 const routers = require("./routes/index.js");
 const app = express();
 

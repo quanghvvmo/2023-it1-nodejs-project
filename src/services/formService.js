@@ -1,34 +1,40 @@
-const sequelize = require('../models/dbconfig');
+const sequelize = require("./models/helper/dbconfig.js");
 const { UserForm, Form, UserFormDetail, FormCategory } = sequelize.models;
 const { Op } = require('sequelize');
-const userFormTypes = require("../constants/types/userForm");
+const { USER_FORM_TYPES } = require("../config/constants");
 const APIError = require('../helper/apiError');
 const { APIPagingResponse, APIResponse } = require('../helper/apiResponse');
-const formMessage = require('../constants/messages/form');
+const { FORM_MESSAGES } = require('../constants/messages');
 const httpStatus = require('http-status');
 
 class FormService {
     createForm = async (currentUser, data) => {
         const name = data.formCategory;
 
-        const customFormCategory =  {
-            model: FormCategory,
-            where: { name }
-        }
-
         const existingForm = await UserForm.findAll({
             where: { 
                 UserId: [data.UserIds], 
                 status: {
-                    [Op.in]: [userFormTypes.NEW, userFormTypes.PENDING_APPROVAL]
-                }
+                    [Op.in]: [USER_FORM_TYPES.NEW, USER_FORM_TYPES.PENDING_APPROVAL]
+                },
+                isDeleted: false
             },
-            include: [ customFormCategory ]
+            include: [ 
+                {
+                    model: Form,
+                    include: [
+                        { 
+                            model: FormCategory,
+                            where: { name } 
+                        }
+                    ]
+                }
+            ]
         });
 
         if(existingForm.length) {
             throw new APIError({
-                message: formMessage.USERFORM_NOT_PROCEED,
+                message: FORM_MESSAGES.USERFORM_NOT_PROCEED,
                 status: httpStatus.CONFLICT,
             });
         }
@@ -42,23 +48,31 @@ class FormService {
             form = await Form.create({
                 ...data,
                 creator,
-                status: userFormTypes.OPEN,
+                status: USER_FORM_TYPES.OPEN,
                 FormCategoryId: name
             }, { transaction });
             
             const FormId = form.id;
 
-            for (const UserId of data.userIds) {
-                const userForm = await UserForm.create({
+            const userForms = data.userIds.map((UserId) => (
+                {
                     UserId,
                     FormId,
-                    status: userFormTypes.NEW
-                }, { transaction });
+                    status: USER_FORM_TYPES.NEW
+                }
+            ));
 
-                const UserFormId = userForm.id;
-                await UserFormDetail.create({ UserFormId }, { transaction });
-            };
+            const createdUserForms = await UserForm.bulkCreate(userForms, { transaction });
 
+            const userFormIds = createdUserForms.map((createdUserForm) => createdUserForm.id);
+  
+            const userFormDetails = userFormIds.map((UserFormId) => (
+                { 
+                    UserFormId 
+                }
+            ));
+
+            await UserFormDetail.bulkCreate(userFormDetails, { transaction });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
@@ -68,7 +82,7 @@ class FormService {
             });
         }
 
-        return new APIResponse(form, formMessage.FORM_CREATED, httpStatus.CREATED);
+        return new APIResponse(form, FORM_MESSAGES.FORM_CREATED, httpStatus.CREATED);
     }
 
     getFormDetail = async (id) => {
@@ -76,7 +90,7 @@ class FormService {
             where: { id, isDeleted: false },
         });
         if (!form) {
-            throw new APIError({ message: formMessage.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
+            throw new APIError({ message: FORM_MESSAGES.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
         return form;
     }
@@ -88,12 +102,12 @@ class FormService {
     
         const numOfForms = forms.length;
         if (!numOfForms) {
-            throw new APIError({ message: formMessage.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
+            throw new APIError({ message: FORM_MESSAGES.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
     
         const totalPages = parseInt((numOfForms / pageSize) + 1);
         if (pageIndex > totalPages) {
-            throw new APIError({ message: formMessage.INVALID_PAGGING, status: httpStatus.BAD_REQUEST });
+            throw new APIError({ message: FORM_MESSAGES.INVALID_PAGGING, status: httpStatus.BAD_REQUEST });
         }
     
         const start = (pageIndex - 1) * pageSize;
@@ -112,13 +126,15 @@ class FormService {
         const updatedData = { 
             ...data, 
             updateBy: currentUser.id 
-        }
+        };
+
         const form = await Form.update(updatedData, { where: { id, isDeleted: false } });
+        
         if (!form) {
-            throw new APIError({ message: formMessage.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
+            throw new APIError({ message: FORM_MESSAGES.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
         }
     
-        return new APIResponse(form, httpStatus.OK, formMessage.FORM_UPDATED);
+        return new APIResponse(form, httpStatus.OK, FORM_MESSAGES.FORM_UPDATED);
     }
 
     deleteForm = async (id) => {
@@ -139,7 +155,7 @@ class FormService {
             });
         }
         
-        return new APIResponse(form, formMessage.FORM_DELETED, httpStatus.OK);
+        return new APIResponse(form, FORM_MESSAGES.FORM_DELETED, httpStatus.OK);
     }
 }
 

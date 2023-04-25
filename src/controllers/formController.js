@@ -30,8 +30,8 @@ class FormController {
 
     getListForms = async(req, res, next) => {
         try {
-            const pageIndex = parseInt(req.query.pageIndex) || config.default_index_paging;
-            const pageSize = parseInt(req.query.pageSize) || config.default_size_paging;
+            const pageIndex = parseInt(req.query.pageIndex) || config.defaultIndexPaging;
+            const pageSize = parseInt(req.query.pageSize) || config.defaultSizePaging;
             const forms = await formService.getListForms(pageIndex, pageSize);
             return res.status(httpStatus.OK).json(forms);
         } catch (error) {

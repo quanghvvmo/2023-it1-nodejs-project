@@ -1,6 +1,7 @@
-const regularExpressions = require('../_utils/regularExpressions');
+const { REGULAR_EXPRESSIONS } = require('../config/constants');
+const { TOKEN_TYPE, HTTP_METHODS } = require('../config/constants');
 const httpStatus = require('http-status');
-const authMessage = require('../constants/messages/auth');
+const { AUTH_MESSAGES } = require('../constants/messages');
 const config = require('../config/index');
 const sequelize = require("../models/dbconfig");
 const { User, Role, RoleModule } = sequelize.models;
@@ -9,8 +10,8 @@ const jwt = require('jsonwebtoken');
 
 const getToken = (req) => {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.split(regularExpressions.ONE_SPACE_ONLY)[0] === 'Bearer') {
-        return authHeader.split(regularExpressions.ONE_SPACE_ONLY)[1];
+    if (authHeader && authHeader.split(REGULAR_EXPRESSIONS.ONE_SPACE_ONLY)[0] === TOKEN_TYPE.BEARER) {
+        return authHeader.split(REGULAR_EXPRESSIONS.ONE_SPACE_ONLY)[1];
     } else {
         return null;
     }
@@ -19,12 +20,12 @@ const getToken = (req) => {
 const authenticate = async (req, res, next) => {
     const token = getToken(req);
     if(!token) {
-        return res.status(httpStatus.UNAUTHORIZED).json(authMessage.NO_TOKEN);
+        return res.status(httpStatus.UNAUTHORIZED).json(AUTH_MESSAGES.NO_TOKEN);
     }
 
-    jwt.verify(token, config.token_secret, async (error, decoded) => {
+    jwt.verify(token, config.tokenSecret, async (error, decoded) => {
         if(error) {
-            return res.status(httpStatus.UNAUTHORIZED).json(authMessage.FAIL_AUTHENTICATE);
+            return res.status(httpStatus.UNAUTHORIZED).json(AUTH_MESSAGES.FAIL_AUTHENTICATE);
         }
         const userId = decoded.id;
         const user = await User.findOne({
@@ -51,16 +52,16 @@ const authorize = async (req, res, next) => {
 
         if (roleModule) {
             switch (method) {
-              case "GET":
+              case HTTP_METHODS.GET:
                 if (roleModule.canRead) return next();
                 break;
-              case "POST":
+              case HTTP_METHODS.POST:
                 if (roleModule.canWrite) return next();
                 break;
-              case "PUT":
+              case HTTP_METHODS.PUT:
                 if (roleModule.canUpdate) return next();
                 break;
-              case "DELETE":
+              case HTTP_METHODS.DELETE:
                 if (roleModule.canDelete) return next();
                 break;
             }

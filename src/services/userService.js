@@ -1,4 +1,4 @@
-const sequelize = require("../models/dbconfig")
+const sequelize = require("./models/helper/dbconfig.js");
 const APIError = require('../helper/apiError');
 const userMessage = require('../constants/messages/user');
 const httpStatus = require('http-status');
@@ -19,8 +19,8 @@ class UserService {
         }
         const { id } = user;
         const userPayload = { id }
-        const token = jwt.sign(userPayload, config.token_secret, {
-            expiresIn: config.token_expiry
+        const token = jwt.sign(userPayload, config.tokenSecret, {
+            expiresIn: config.tokenExpiry
         })
         return new APIResponse({ token }, httpStatus.OK, userMessage.LOGIN_SUCCEED);
     }
