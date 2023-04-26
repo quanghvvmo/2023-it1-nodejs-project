@@ -25,3 +25,12 @@ export const USER_MESSAGES = {
     USER_UPDATED: "User updated successfully",
     USER_EXISTS: "User already exists in database"
 }
+
+export const USER_FORM_MESSAGE = {
+    USER_FORM_NOT_FOUND: "User not found in database",
+    USER_FORM_CREATED: "User created successfully",
+    USER_FORM_DELETED: "User deleted successfully",
+    INVALID_PAGGING: "Invalid paging index",
+    USER_FORM_UPDATED: "User updated successfully",
+    USER_FORM_EXISTS: "User already exists in database"
+}
