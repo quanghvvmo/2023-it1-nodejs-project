@@ -13,31 +13,28 @@ const configs = {
         port: process.env.HTTP_PORT || 8080,
 
         // Database
-        db_host: process.env.DB_HOST || "localhost",
-        db_port: process.env.DB_PORT || 3306,
-        db_dialect: process.env.DB_DIALECT || "mysql",
-        db_username: process.env.DB_USERNAME || "root",
-        db_password: process.env.DB_PASSWORD,
-        db_database: process.env.DB_DATABASE,
+        dbHost: process.env.DB_HOST || "localhost",
+        dbPort: process.env.DB_PORT || 3306,
+        dbDialect: process.env.DB_DIALECT || "mysql",
+        dbUsername: process.env.DB_USERNAME || "root",
+        dbPassword: process.env.DB_PASSWORD,
+        dbDatabase: process.env.DB_DATABASE,
 
         // Security
-        token_secret: process.env.TOKEN_SECRET,
-        token_expiry: process.env.TOKEN_EXPIRY,
+        tokenSecret: process.env.TOKEN_SECRET,
+        tokenExpiry: process.env.TOKEN_EXPIRY,
 
         // Pagination
         default_index_pagination: process.env.DEFAULT_INDEX_PAGINATION || 1,
         default_size_pagination: process.env.DEFAULT_SIZE_PAGINATION || 10,
-
-        // upload
-        produce_images_url: process.env.PRODUCT_IMAGES_URL,
     },
     development: {
-        morgan_format:
+        morganFormat:
             process.env.MORGAN_LOG_FORMAT ||
             ":method :url :status :response-time ms - :res[content-length]",
     },
     localhost: {
-        morgan_format:
+        morganFormat:
             process.env.MORGAN_LOG_FORMAT ||
             ":method :url :status :response-time ms - :res[content-length]",
     },

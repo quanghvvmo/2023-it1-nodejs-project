@@ -5,7 +5,7 @@ import {
     PHONE_NUMBER_REGEX,
     PASSWORD_REGEX,
 } from "../_utils/regex_validation.js";
-import { ROLES } from "../_utils/constants.js";
+import { ROLES } from "../constants/index.js";
 
 const createUserSchema = Joi.object({
     username: Joi.string().required().pattern(USERNAME_REGEX),

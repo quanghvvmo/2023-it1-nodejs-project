@@ -2,7 +2,13 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { FORM_STATUS, USER_FORM_STATUS, FORM_CATEGORIES } from "../_utils/constants.js";
+import {
+    FORM_STATUS,
+    USER_FORM_STATUS,
+    FORM_CATEGORIES,
+    COMMON_CONSTANTS,
+} from "../constants/index.js";
+import { formMessages } from "../constants/messages.constants.js";
 
 const { Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
 
@@ -24,7 +30,7 @@ const addForm = async (currentUser, payload) => {
 
     if (formsInvalid.length) {
         throw new APIError({
-            message: "Each user only has 1 type of form haven't closed",
+            message: formMessages.SINGLE_OPEN_FORM_LIMITATION,
             status: httpStatus.BAD_REQUEST,
         });
     }
@@ -57,12 +63,12 @@ const addForm = async (currentUser, payload) => {
         await transaction.rollback();
 
         throw new APIError({
-            message: "Transaction got error !",
+            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
             status: httpStatus.INTERNAL_SERVER_ERROR,
         });
     }
 
-    return new ApiDataResponse(httpStatus.CREATED, "create success", newForm);
+    return new ApiDataResponse(httpStatus.CREATED, formMessages.FORM_CREATED, newForm);
 };
 
 const getForm = async (formId) => {
@@ -71,7 +77,7 @@ const getForm = async (formId) => {
     });
 
     if (!form) {
-        throw new APIError({ message: "Form not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: formMessages.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
     return form;
@@ -84,12 +90,15 @@ const getListForms = async (pageIndex, pageSize) => {
 
     const totalCount = forms.length;
     if (!totalCount) {
-        throw new APIError({ message: "Forms not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: formMessages.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
     const totalPages = Math.ceil(totalCount / pageSize);
     if (pageIndex > totalPages) {
-        throw new APIError({ message: "Invalid page index", status: httpStatus.BAD_REQUEST });
+        throw new APIError({
+            message: COMMON_CONSTANTS.INVALID_PAGE,
+            status: httpStatus.BAD_REQUEST,
+        });
     }
 
     const startIndex = (pageIndex - 1) * pageSize;
@@ -110,10 +119,10 @@ const updateForm = async (currentUser, formId, payload) => {
         { where: { id: formId, isDeleted: false } }
     );
     if (!updatedForm) {
-        throw new APIError({ message: "Form not found", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: formMessages.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "update success", updatedForm);
+    return new ApiDataResponse(httpStatus.OK, formMessages.FORM_UPDATED, updatedForm);
 };
 
 const deleteForm = async (formId) => {
@@ -138,12 +147,12 @@ const deleteForm = async (formId) => {
         await transaction.rollback();
 
         throw new APIError({
-            message: "Transaction got error !",
+            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
             status: httpStatus.INTERNAL_SERVER_ERROR,
         });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "delete success", deletedForm);
+    return new ApiDataResponse(httpStatus.OK, formMessages.FORM_DELETED, deletedForm);
 };
 
 export { addForm, getForm, getListForms, updateForm, deleteForm };

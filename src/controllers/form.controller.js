@@ -16,7 +16,9 @@ const addFormController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const createdForm = await addForm(req.user, value);
+        const currentUser = req.user;
+        const createdForm = await addForm(currentUser, value);
+
         return res.status(httpStatus.CREATED).json(createdForm);
     } catch (error) {
         next(error);
@@ -30,7 +32,10 @@ const updateFormController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const updatedFormId = await updateForm(req.user, req.params.id, value);
+        const currentUser = req.user;
+        const formId = req.params.id;
+
+        const updatedFormId = await updateForm(currentUser, formId, value);
         return res.status(httpStatus.OK).json(updatedFormId);
     } catch (error) {
         next(error);
@@ -39,7 +44,9 @@ const updateFormController = async (req, res, next) => {
 
 const getFormController = async (req, res, next) => {
     try {
-        const form = await getForm(req.params.id);
+        const formId = req.params.id;
+
+        const form = await getForm(formId);
         return res.status(httpStatus.OK).json(form);
     } catch (error) {
         next(error);
@@ -64,8 +71,10 @@ const getListFormsController = async (req, res, next) => {
 
 const deleteFormController = async (req, res, next) => {
     try {
-        const formId = await deleteForm(req.params.id);
-        return res.status(httpStatus.OK).json(formId);
+        const formId = req.params.id;
+        
+        const form = await deleteForm(formId);
+        return res.status(httpStatus.OK).json(form);
     } catch (error) {
         next(error);
     }

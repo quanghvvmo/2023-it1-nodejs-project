@@ -5,31 +5,38 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { ROLES } from "../_utils/constants.js";
+import { ROLES, COMMON_CONSTANTS } from "../constants/index.js";
+import { userMessages } from "../constants/messages.constants.js";
 
 const { User, UserRole, Role, UserForm } = sequelize.models;
 
 const login = async (payload) => {
     const user = await User.findOne({ where: { username: payload.username } });
     if (!user) {
-        throw new APIError({ message: "Username doesn't exist !", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: userMessages.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
     const isPasswordValid = await bcrypt.compare(payload.password, user.password);
     if (!isPasswordValid) {
-        throw new APIError({ message: "Incorrect password !", status: httpStatus.UNAUTHORIZED });
+        throw new APIError({
+            message: userMessages.PASSWORDS_NOT_MATCH,
+            status: httpStatus.UNAUTHORIZED,
+        });
     }
 
-    const jwtToken = jwt.sign({ id: user.id }, config.token_secret, {
-        expiresIn: config.token_expiry,
+    const jwtToken = jwt.sign({ id: user.id }, config.tokenSecret, {
+        expiresIn: config.tokenExpiry,
     });
-    return new ApiDataResponse(httpStatus.OK, "login success", { token: jwtToken });
+    return new ApiDataResponse(httpStatus.OK, userMessages.LOGIN_SUCCEED, { token: jwtToken });
 };
 
 const addUser = async (payload) => {
     const existingUser = await User.findOne({ where: { username: payload.username } });
     if (existingUser) {
-        throw new APIError({ message: "User already exist !", status: httpStatus.CONFLICT });
+        throw new APIError({
+            message: userMessages.DUPLICATE_USERNAME,
+            status: httpStatus.CONFLICT,
+        });
     }
 
     // hash password
@@ -49,14 +56,14 @@ const addUser = async (payload) => {
         await transaction.rollback();
 
         throw new APIError({
-            message: "Transaction got error !",
+            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
             status: httpStatus.INTERNAL_SERVER_ERROR,
         });
     }
 
     delete newUser.dataValues.password;
 
-    return new ApiDataResponse(httpStatus.CREATED, "create success", newUser);
+    return new ApiDataResponse(httpStatus.CREATED, userMessages.USER_CREATED, newUser);
 };
 
 const getUserDetail = async (userId) => {
@@ -67,7 +74,7 @@ const getUserDetail = async (userId) => {
     });
 
     if (!user) {
-        throw new APIError({ message: "User not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: userMessages.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
     return user;
@@ -81,12 +88,15 @@ const getListUsers = async (pageIndex, pageSize) => {
 
     const totalCount = users.length;
     if (!totalCount) {
-        throw new APIError({ message: "Users not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: userMessages.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
     const totalPages = Math.ceil(totalCount / pageSize);
     if (pageIndex > totalPages) {
-        throw new APIError({ message: "Invalid page index", status: httpStatus.BAD_REQUEST });
+        throw new APIError({
+            message: COMMON_CONSTANTS.INVALID_PAGE,
+            status: httpStatus.BAD_REQUEST,
+        });
     }
 
     const startIndex = (pageIndex - 1) * pageSize;
@@ -104,10 +114,10 @@ const getListUsers = async (pageIndex, pageSize) => {
 const updateUser = async (userId, payload) => {
     const updatedUser = await User.update(payload, { where: { id: userId, isDeleted: false } });
     if (!updatedUser) {
-        throw new APIError({ message: "User not found", status: httpStatus.NOT_FOUND });
+        throw new APIError({ message: userMessages.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "update success", updatedUser);
+    return new ApiDataResponse(httpStatus.OK, userMessages.USER_UPDATED, updatedUser);
 };
 
 const deleteUser = async (userId) => {
@@ -124,12 +134,12 @@ const deleteUser = async (userId) => {
         await transaction.rollback();
 
         throw new APIError({
-            message: "Transaction got error !",
+            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
             status: httpStatus.INTERNAL_SERVER_ERROR,
         });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "delete success", inactivatedUser);
+    return new ApiDataResponse(httpStatus.OK, userMessages.USER_DELETED, inactivatedUser);
 };
 
 export { login, addUser, getUserDetail, getListUsers, updateUser, deleteUser };

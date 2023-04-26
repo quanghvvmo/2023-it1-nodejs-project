@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(morgan(config.morgan_format));
+app.use(morgan(config.morganFormat));
 
 const initService = () => {
     console.log("Init - Register services.");

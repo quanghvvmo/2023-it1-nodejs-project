@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { ROLES } from "../_utils/constants.js";
+import { ROLES } from "../constants/index.js";
 
 export default (sequelize) => {
     const columns = {

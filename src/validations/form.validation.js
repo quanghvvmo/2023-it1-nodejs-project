@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { FORM_CATEGORIES } from "../_utils/constants.js";
+import { FORM_CATEGORIES } from "../constants/index.js";
 
 const createFormSchema = Joi.object({
     name: Joi.string().required(),

@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { FORM_STATUS } from "../_utils/constants.js";
+import { FORM_STATUS } from "../constants/index.js";
 
 export default (sequelize) => {
     const columns = {

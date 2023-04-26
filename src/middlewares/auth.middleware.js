@@ -3,6 +3,8 @@ import httpStatus from "http-status";
 import config from "../config/index.js";
 import sequelize from "../models/index.js";
 import APIError from "../helper/apiError.js";
+import { HTTP_METHODS } from "../constants/index.js";
+import { authMessages } from "../constants/messages.constants.js";
 
 const { User, Role, RoleModules } = sequelize.models;
 
@@ -16,12 +18,12 @@ const authJWT = async (req, res, next) => {
     const token = getToken(req);
 
     if (!token) {
-        return res.status(httpStatus.UNAUTHORIZED).json("No token provided!");
+        return res.status(httpStatus.UNAUTHORIZED).json(authMessages.NO_TOKEN);
     }
 
-    jwt.verify(token, config.token_secret, async (error, decoded) => {
+    jwt.verify(token, config.tokenSecret, async (error, decoded) => {
         if (error) {
-            return res.status(httpStatus.UNAUTHORIZED).json("Failed to authenticate token!");
+            return res.status(httpStatus.UNAUTHORIZED).json(authMessages.FAIL_AUTHENTICATE);
         }
         const id = decoded.id;
         const user = await User.findOne({
@@ -40,7 +42,7 @@ const authorize = async (req, res, next) => {
     const apiError = new APIError({});
 
     if (!user) {
-        apiError.message = "You must be logged in to perform this operation!";
+        apiError.message = authMessages.NOT_LOGGED_IN;
         apiError.status = httpStatus.UNAUTHORIZED;
         return next(apiError);
     }
@@ -61,16 +63,16 @@ const authorize = async (req, res, next) => {
         if (!roleModule) break;
 
         switch (method) {
-            case "get":
+            case HTTP_METHODS.GET:
                 if (roleModule.isCanRead) isPassPermission = true;
                 break;
-            case "post":
+            case HTTP_METHODS.POST:
                 if (roleModule.isCanWrite) isPassPermission = true;
                 break;
-            case "put":
+            case HTTP_METHODS.PUT:
                 if (roleModule.isCanUpdate) isPassPermission = true;
                 break;
-            case "delete":
+            case HTTP_METHODS.DELETE:
                 if (roleModule.isCanDelete) isPassPermission = true;
                 break;
         }
@@ -78,7 +80,7 @@ const authorize = async (req, res, next) => {
         if (isPassPermission) return next();
     }
 
-    apiError.message = "You are not authorized to perform this operation!";
+    apiError.message = authMessages.AUTHORIZE_FORBIDDEN;
     apiError.status = httpStatus.FORBIDDEN;
     return next(apiError);
 };

@@ -19,7 +19,9 @@ const addUserFormDetailController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const createdForm = await addUserFormDetail(req.params.userFormId, value);
+        const userFormId = req.params.userFormId;
+
+        const createdForm = await addUserFormDetail(userFormId, value);
         return res.status(httpStatus.CREATED).json(createdForm);
     } catch (error) {
         next(error);
@@ -28,7 +30,9 @@ const addUserFormDetailController = async (req, res, next) => {
 
 const getUserFormDetailController = async (req, res, next) => {
     try {
-        const userFormDetail = await getUserFormDetail(req.params.id);
+        const userFormDetailId = req.params.id;
+
+        const userFormDetail = await getUserFormDetail(userFormDetailId);
         return res.status(httpStatus.OK).json(userFormDetail);
     } catch (error) {
         next(error);
@@ -42,7 +46,9 @@ const updateUserFormDetailController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const updatedUserFormDetailId = await updateUserFormDetail(req.params.id, value);
+        const userFormDetailId = req.params.id;
+
+        const updatedUserFormDetailId = await updateUserFormDetail(userFormDetailId, value);
         return res.status(httpStatus.OK).json(updatedUserFormDetailId);
     } catch (error) {
         next(error);
@@ -67,8 +73,10 @@ const getListUserFormDetailsController = async (req, res, next) => {
 
 const deleteUserFormDetailController = async (req, res, next) => {
     try {
-        const userFormDetailId = await deleteUserFormDetail(req.params.id);
-        return res.status(httpStatus.OK).json(userFormDetailId);
+        const userFormDetailId = req.params.id;
+
+        const userFormDetail = await deleteUserFormDetail(userFormDetailId);
+        return res.status(httpStatus.OK).json(userFormDetail);
     } catch (error) {
         next(error);
     }

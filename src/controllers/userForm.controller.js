@@ -10,7 +10,10 @@ import config from "../config/index.js";
 
 const getUserFormController = async (req, res, next) => {
     try {
-        const userForm = await getUserForm(req.user, req.params.id);
+        const currentUser = req.user;
+        const userFormId = req.params.id;
+
+        const userForm = await getUserForm(currentUser, userFormId);
         return res.status(httpStatus.OK).json(userForm);
     } catch (error) {
         next(error);
@@ -24,7 +27,9 @@ const updateUserFormController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const updatedUserFormId = await updateUserForm(req.params.id, value);
+        const userFormId = req.params.id;
+
+        const updatedUserFormId = await updateUserForm(userFormId, value);
         return res.status(httpStatus.OK).json(updatedUserFormId);
     } catch (error) {
         next(error);
@@ -49,8 +54,10 @@ const getListUserFormsController = async (req, res, next) => {
 
 const deleteUserFormController = async (req, res, next) => {
     try {
-        const userFormId = await deleteUserForm(req.params.id);
-        return res.status(httpStatus.OK).json(userFormId);
+        const userFormId = req.params.id;
+
+        const userForm = await deleteUserForm(userFormId);
+        return res.status(httpStatus.OK).json(userForm);
     } catch (error) {
         next(error);
     }

@@ -3,7 +3,8 @@ import APIError from "../helper/apiError.js";
 import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { ROLES, FORM_STATUS, USER_FORM_STATUS, FORM_CATEGORIES } from "../_utils/constants.js";
+import { ROLES, COMMON_CONSTANTS } from "../constants/index.js";
+import { userFormMessages } from "../constants/messages.constants.js";
 
 const { UserForm, UserFormDetail } = sequelize.models;
 
@@ -26,7 +27,10 @@ const getUserForm = async (currentUser, userFormId) => {
     });
 
     if (!userForm) {
-        throw new APIError({ message: "UserForm not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({
+            message: userFormMessages.USER_FORM_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
     }
 
     return userForm;
@@ -51,12 +55,18 @@ const getListUserForms = async (currentUser, pageIndex, pageSize) => {
 
     const totalCount = userForms.length;
     if (!totalCount) {
-        throw new APIError({ message: "UserForms not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({
+            message: userFormMessages.USER_FORM_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
     }
 
     const totalPages = Math.ceil(totalCount / pageSize);
     if (pageIndex > totalPages) {
-        throw new APIError({ message: "Invalid page index", status: httpStatus.BAD_REQUEST });
+        throw new APIError({
+            message: COMMON_CONSTANTS.INVALID_PAGE,
+            status: httpStatus.BAD_REQUEST,
+        });
     }
 
     const startIndex = (pageIndex - 1) * pageSize;
@@ -76,10 +86,13 @@ const updateUserForm = async (userFormId, payload) => {
         where: { id: userFormId, isDeleted: false },
     });
     if (!updatedUserForm) {
-        throw new APIError({ message: "Form not found", status: httpStatus.NOT_FOUND });
+        throw new APIError({
+            message: userFormMessages.USER_FORM_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "update success", updatedUserForm);
+    return new ApiDataResponse(httpStatus.OK, userFormMessages.USER_FORM_UPDATED, updatedUserForm);
 };
 
 const deleteUserForm = async (userFormId) => {
@@ -96,12 +109,12 @@ const deleteUserForm = async (userFormId) => {
         await transaction.rollback();
 
         throw new APIError({
-            message: "Transaction got error !",
+            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
             status: httpStatus.INTERNAL_SERVER_ERROR,
         });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "delete success", deletedUserForm);
+    return new ApiDataResponse(httpStatus.OK, userFormMessages.USER_FORM_DELETED, deletedUserForm);
 };
 
 export { getUserForm, getListUserForms, updateUserForm, deleteUserForm };

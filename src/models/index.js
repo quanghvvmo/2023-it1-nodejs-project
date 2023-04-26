@@ -10,10 +10,10 @@ import formCategoryModel from "./formCategory.model.js";
 import userFormModel from "./userForm.model.js";
 import userFormDetailModel from "./userFormDetail.model.js";
 
-const sequelize = new Sequelize(config.db_database, config.db_username, config.db_password, {
-    host: config.db_host,
-    port: config.db_port,
-    dialect: config.db_dialect,
+const sequelize = new Sequelize(config.dbDatabase, config.dbUsername, config.dbPassword, {
+    host: config.dbHost,
+    port: config.dbPort,
+    dialect: config.dbDialect,
 });
 
 // models

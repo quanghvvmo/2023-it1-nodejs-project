@@ -2,7 +2,8 @@ import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import APIError from "../helper/apiError.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { USER_FORM_STATUS } from "../_utils/constants.js";
+import { USER_FORM_STATUS, COMMON_CONSTANTS } from "../constants/index.js";
+import { userFormDetailMessages, userFormMessages } from "../constants/messages.constants.js";
 
 const { UserForm, UserFormDetail } = sequelize.models;
 
@@ -20,19 +21,26 @@ const addUserFormDetail = async (userFormId, payload) => {
             }
         );
         if (!updatedUserForm) {
-            throw new APIError({ message: "UserForm not found", status: httpStatus.NOT_FOUND });
+            throw new APIError({
+                message: userFormMessages.USER_FORM_NOT_FOUND,
+                status: httpStatus.NOT_FOUND,
+            });
         }
     } catch (error) {
         if (error instanceof APIError) throw error;
         await transaction.rollback();
 
         throw new APIError({
-            message: "Transaction got error !",
+            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
             status: httpStatus.INTERNAL_SERVER_ERROR,
         });
     }
 
-    return new ApiDataResponse(httpStatus.CREATED, "create success", newUserFormDetail);
+    return new ApiDataResponse(
+        httpStatus.CREATED,
+        userFormDetailMessages.USER_FORM_DETAIL_CREATED,
+        newUserFormDetail
+    );
 };
 
 const getUserFormDetail = async (userFormDetailId) => {
@@ -44,7 +52,10 @@ const getUserFormDetail = async (userFormDetailId) => {
     });
 
     if (!userFormDetail) {
-        throw new APIError({ message: "userFormDetail not found !", status: httpStatus.NOT_FOUND });
+        throw new APIError({
+            message: userFormDetailMessages.USER_FORM_DETAIL_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
     }
 
     return userFormDetail;
@@ -56,14 +67,17 @@ const getListUserFormsDetail = async (pageIndex, pageSize) => {
     const totalCount = userFormDetails.length;
     if (!totalCount) {
         throw new APIError({
-            message: "UserFormDetails not found !",
+            message: userFormDetailMessages.USER_FORM_DETAIL_NOT_FOUND,
             status: httpStatus.NOT_FOUND,
         });
     }
 
     const totalPages = Math.ceil(totalCount / pageSize);
     if (pageIndex > totalPages) {
-        throw new APIError({ message: "Invalid page index", status: httpStatus.BAD_REQUEST });
+        throw new APIError({
+            message: COMMON_CONSTANTS.INVALID_PAGE,
+            status: httpStatus.BAD_REQUEST,
+        });
     }
 
     const startIndex = (pageIndex - 1) * pageSize;
@@ -83,10 +97,17 @@ const updateUserFormDetail = async (userFormDetailId, payload) => {
         where: { id: userFormDetailId, isDeleted: false },
     });
     if (!updatedUserFormDetail) {
-        throw new APIError({ message: "UserFormDetail not found", status: httpStatus.NOT_FOUND });
+        throw new APIError({
+            message: userFormDetailMessages.USER_FORM_DETAIL_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "update success", updatedUserFormDetail);
+    return new ApiDataResponse(
+        httpStatus.OK,
+        userFormDetailMessages.USER_FORM_DETAIL_UPDATED,
+        updatedUserFormDetail
+    );
 };
 
 const deleteUserFormDetail = async (userFormDetailId) => {
@@ -95,10 +116,17 @@ const deleteUserFormDetail = async (userFormDetailId) => {
         { where: { id: userFormDetailId } }
     );
     if (!deletedUserFormDetail) {
-        throw new APIError({ message: "UserFormDetail not found", status: httpStatus.NOT_FOUND });
+        throw new APIError({
+            message: userFormDetailMessages.USER_FORM_DETAIL_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
     }
 
-    return new ApiDataResponse(httpStatus.OK, "delete success", deletedUserFormDetail);
+    return new ApiDataResponse(
+        httpStatus.OK,
+        userFormDetailMessages.USER_FORM_DETAIL_DELETED,
+        deletedUserFormDetail
+    );
 };
 
 export {

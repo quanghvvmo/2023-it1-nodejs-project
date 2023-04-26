@@ -45,7 +45,9 @@ const updateUserController = async (req, res, next) => {
             return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
         }
 
-        const updatedUserId = await updateUser(req.params.id, value);
+        const userId = req.params.id;
+        
+        const updatedUserId = await updateUser(userId, value);
         return res.status(httpStatus.OK).json(updatedUserId);
     } catch (error) {
         next(error);
@@ -54,7 +56,9 @@ const updateUserController = async (req, res, next) => {
 
 const getUserDetailController = async (req, res, next) => {
     try {
-        const user = await getUserDetail(req.params.id);
+        const userId = req.params.id;
+
+        const user = await getUserDetail(userId);
         return res.status(httpStatus.OK).json(user);
     } catch (error) {
         next(error);
@@ -79,8 +83,10 @@ const getListUsersController = async (req, res, next) => {
 
 const deleteUserController = async (req, res, next) => {
     try {
-        const userId = await deleteUser(req.params.id);
-        return res.status(httpStatus.OK).json(userId);
+        const userId = req.params.id;
+
+        const user = await deleteUser(userId);
+        return res.status(httpStatus.OK).json(user);
     } catch (error) {
         next(error);
     }
