@@ -53,7 +53,7 @@ export const converter = (err, req, res, next) => {
                 errors: err.fields.map((field) => {
                     return {
                         path: field,
-                        message: "Data does not exist in reference table.", // err.message
+                        message: "Data does not exist in reference table.", 
                     };
                 }),
                 status: httpStatus.UNPROCESSABLE_ENTITY,
@@ -66,23 +66,6 @@ export const converter = (err, req, res, next) => {
                 stack: err.stack,
             });
         }
-    } else if (err instanceof AggregateError) {
-        const errors = {};
-        err.forEach((item) => {
-            item.errors.errors.forEach((e) => {
-                errors[e.path] = e.message;
-            });
-        });
-        convertedError = new APIError({
-            message: "Validation Error",
-            errors: Object.keys(errors).map((item) => {
-                return {
-                    path: item,
-                    message: errors[item],
-                };
-            }),
-            status: httpStatus.UNPROCESSABLE_ENTITY,
-        });
     } else {
         convertedError = new APIError({
             message: err.message,

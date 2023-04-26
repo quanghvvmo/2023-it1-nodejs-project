@@ -16,14 +16,19 @@ const getToken = (req) => {
 
 const authJWT = async (req, res, next) => {
     const token = getToken(req);
+    const apiError = new APIError({});
 
     if (!token) {
-        return res.status(httpStatus.UNAUTHORIZED).json(authMessages.NO_TOKEN);
+        apiError.message = authMessages.NO_TOKEN;
+        apiError.status = httpStatus.UNAUTHORIZED;
+        return res.status(httpStatus.UNAUTHORIZED).json(apiError);
     }
 
     jwt.verify(token, config.tokenSecret, async (error, decoded) => {
         if (error) {
-            return res.status(httpStatus.UNAUTHORIZED).json(authMessages.FAIL_AUTHENTICATE);
+            apiError.message = authMessages.FAIL_AUTHENTICATE;
+            apiError.status = httpStatus.UNAUTHORIZED;
+            return res.status(httpStatus.UNAUTHORIZED).json(apiError);
         }
         const id = decoded.id;
         const user = await User.findOne({

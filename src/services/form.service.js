@@ -61,11 +61,7 @@ const addForm = async (currentUser, payload) => {
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
-
-        throw new APIError({
-            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-        });
+        throw error;
     }
 
     return new ApiDataResponse(httpStatus.CREATED, formMessages.FORM_CREATED, newForm);
@@ -145,11 +141,7 @@ const deleteForm = async (formId) => {
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
-
-        throw new APIError({
-            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-        });
+        throw error;
     }
 
     return new ApiDataResponse(httpStatus.OK, formMessages.FORM_DELETED, deletedForm);

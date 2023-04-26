@@ -12,7 +12,7 @@ const createUserSchema = Joi.object({
     password: Joi.string().required().pattern(PASSWORD_REGEX),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
-    email: Joi.string().email().pattern(EMAIL_REGEX),
+    email: Joi.string().email().required().pattern(EMAIL_REGEX),
     phone: Joi.string().pattern(PHONE_NUMBER_REGEX),
     address: Joi.string(),
     CMND: Joi.string(),

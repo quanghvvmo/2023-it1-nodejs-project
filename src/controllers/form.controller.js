@@ -13,7 +13,12 @@ const addFormController = async (req, res, next) => {
     try {
         const { error, value } = createFormSchema.validate(req.body);
         if (error) {
-            return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+            return res.status(httpStatus.BAD_REQUEST).json(
+                new APIError({
+                    message: error.details[0].message,
+                    status: httpStatus.BAD_REQUEST,
+                })
+            );
         }
 
         const currentUser = req.user;
@@ -29,7 +34,12 @@ const updateFormController = async (req, res, next) => {
     try {
         const { error, value } = updateFormSchema.validate(req.body);
         if (error) {
-            return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+            return res.status(httpStatus.BAD_REQUEST).json(
+                new APIError({
+                    message: error.details[0].message,
+                    status: httpStatus.BAD_REQUEST,
+                })
+            );
         }
 
         const currentUser = req.user;
@@ -72,7 +82,7 @@ const getListFormsController = async (req, res, next) => {
 const deleteFormController = async (req, res, next) => {
     try {
         const formId = req.params.id;
-        
+
         const form = await deleteForm(formId);
         return res.status(httpStatus.OK).json(form);
     } catch (error) {

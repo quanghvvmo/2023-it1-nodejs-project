@@ -24,7 +24,12 @@ const updateUserFormController = async (req, res, next) => {
     try {
         const { error, value } = updateUserFormSchema.validate(req.body);
         if (error) {
-            return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+            return res.status(httpStatus.BAD_REQUEST).json(
+                new APIError({
+                    message: error.details[0].message,
+                    status: httpStatus.BAD_REQUEST,
+                })
+            );
         }
 
         const userFormId = req.params.id;

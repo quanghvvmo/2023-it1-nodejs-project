@@ -14,7 +14,12 @@ const loginController = async (req, res, next) => {
     try {
         const { error, value } = loginSchema.validate(req.body);
         if (error) {
-            return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+            return res.status(httpStatus.BAD_REQUEST).json(
+                new APIError({
+                    message: error.details[0].message,
+                    status: httpStatus.BAD_REQUEST,
+                })
+            );
         }
 
         const token = await login(value);
@@ -28,7 +33,12 @@ const addUserController = async (req, res, next) => {
     try {
         const { error, value } = createUserSchema.validate(req.body);
         if (error) {
-            return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+            return res.status(httpStatus.BAD_REQUEST).json(
+                new APIError({
+                    message: error.details[0].message,
+                    status: httpStatus.BAD_REQUEST,
+                })
+            );
         }
 
         const createdUser = await addUser(value);
@@ -42,11 +52,16 @@ const updateUserController = async (req, res, next) => {
     try {
         const { error, value } = updateUserSchema.validate(req.body);
         if (error) {
-            return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+            return res.status(httpStatus.BAD_REQUEST).json(
+                new APIError({
+                    message: error.details[0].message,
+                    status: httpStatus.BAD_REQUEST,
+                })
+            );
         }
 
         const userId = req.params.id;
-        
+
         const updatedUserId = await updateUser(userId, value);
         return res.status(httpStatus.OK).json(updatedUserId);
     } catch (error) {

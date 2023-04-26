@@ -4,9 +4,8 @@ import { USER_FORM_STATUS } from "../constants/index.js";
 export default (sequelize) => {
     const columns = {
         id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            autoIncrement: true,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
         managerComment: {

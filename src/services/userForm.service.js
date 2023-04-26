@@ -107,11 +107,7 @@ const deleteUserForm = async (userFormId) => {
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
-
-        throw new APIError({
-            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-        });
+        throw error;
     }
 
     return new ApiDataResponse(httpStatus.OK, userFormMessages.USER_FORM_DELETED, deletedUserForm);

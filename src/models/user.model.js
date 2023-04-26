@@ -3,9 +3,8 @@ import { DataTypes } from "sequelize";
 export default (sequelize) => {
     const columns = {
         id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            autoIncrement: true,
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
         username: {
@@ -17,6 +16,11 @@ export default (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        employeeId: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
         firstName: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -27,7 +31,7 @@ export default (sequelize) => {
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
         },
         phone: {
             type: DataTypes.STRING,

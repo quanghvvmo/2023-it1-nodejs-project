@@ -11,7 +11,7 @@ import { userMessages } from "../constants/messages.constants.js";
 const { User, UserRole, Role, UserForm } = sequelize.models;
 
 const login = async (payload) => {
-    const user = await User.findOne({ where: { username: payload.username } });
+    const user = await User.findOne({ where: { username: payload.username, isDeleted: false } });
     if (!user) {
         throw new APIError({ message: userMessages.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }
@@ -27,11 +27,20 @@ const login = async (payload) => {
     const jwtToken = jwt.sign({ id: user.id }, config.tokenSecret, {
         expiresIn: config.tokenExpiry,
     });
-    return new ApiDataResponse(httpStatus.OK, userMessages.LOGIN_SUCCEED, { token: jwtToken });
+
+    delete user.dataValues.password;
+
+    return new ApiDataResponse(httpStatus.OK, userMessages.LOGIN_SUCCEED, {
+        user: user.dataValues,
+        token: jwtToken,
+    });
 };
 
 const addUser = async (payload) => {
-    const existingUser = await User.findOne({ where: { username: payload.username } });
+    // check user exist
+    const existingUser = await User.findOne({
+        where: { username: payload.username, isDeleted: false },
+    });
     if (existingUser) {
         throw new APIError({
             message: userMessages.DUPLICATE_USERNAME,
@@ -42,6 +51,20 @@ const addUser = async (payload) => {
     // hash password
     const salt = await bcrypt.genSalt(10);
     payload.password = await bcrypt.hash(payload.password, salt);
+
+    // gen employeeId
+    const lastUser = await User.findOne({
+        where: { isDeleted: false },
+        order: [["createdAt", "DESC"]],
+    });
+    if (!lastUser) {
+        payload.employeeId = "ID000000";
+    } else {
+        const id = parseInt(lastUser.employeeId.slice(2));
+        const newId = id + 1;
+        const paddedId = newId.toString().padStart(COMMON_CONSTANTS.EMPLOYEE_ID_NUM_LONG, "0");
+        payload.employeeId = `ID${paddedId}`;
+    }
 
     const transaction = await sequelize.transaction();
     let newUser;
@@ -54,11 +77,7 @@ const addUser = async (payload) => {
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
-
-        throw new APIError({
-            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-        });
+        throw error;
     }
 
     delete newUser.dataValues.password;
@@ -132,11 +151,7 @@ const deleteUser = async (userId) => {
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
-
-        throw new APIError({
-            message: COMMON_CONSTANTS.TRANSACTION_ERROR,
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-        });
+        throw error;
     }
 
     return new ApiDataResponse(httpStatus.OK, userMessages.USER_DELETED, inactivatedUser);
