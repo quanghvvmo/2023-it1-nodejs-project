@@ -25,7 +25,7 @@ export default (sequelize) => {
             allowNull: false,
         },
         createBy: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         updateBy: {

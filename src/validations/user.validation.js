@@ -19,6 +19,7 @@ const createUserSchema = Joi.object({
     role: Joi.string()
         .required()
         .valid(...Object.keys(ROLES)),
+    ManagerId: Joi.string(),
 });
 
 const updateUserSchema = Joi.object({
@@ -29,6 +30,7 @@ const updateUserSchema = Joi.object({
     phone: Joi.string().pattern(PHONE_NUMBER_REGEX),
     address: Joi.string(),
     CMND: Joi.string(),
+    ManagerId: Joi.string(),
 });
 
 const loginSchema = Joi.object({

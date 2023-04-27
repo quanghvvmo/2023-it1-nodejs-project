@@ -25,8 +25,13 @@ const configs = {
         tokenExpiry: process.env.TOKEN_EXPIRY,
 
         // Pagination
-        default_index_pagination: process.env.DEFAULT_INDEX_PAGINATION || 1,
-        default_size_pagination: process.env.DEFAULT_SIZE_PAGINATION || 10,
+        defaultIndexPagination: process.env.DEFAULT_INDEX_PAGINATION || 1,
+        defaultSizePagination: process.env.DEFAULT_SIZE_PAGINATION || 10,
+
+        // Mail Sender
+        smtpMail: process.env.SMTP_MAIL,
+        smtpPass: process.env.SMTP_PASS,
+        mailService: process.env.MAIL_SERVICE,
     },
     development: {
         morganFormat:

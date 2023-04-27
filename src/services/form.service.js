@@ -9,8 +9,10 @@ import {
     COMMON_CONSTANTS,
 } from "../constants/index.js";
 import { formMessages } from "../constants/messages.constants.js";
+import mailSender from "../helper/mail-sender.js";
+import { SUBJECT, CONTENT } from "../constants/mailSender.constants.js";
 
-const { Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
+const { User, Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
 
 const addForm = async (currentUser, payload) => {
     // Each user only has 1 type of form haven't closed
@@ -19,6 +21,7 @@ const addForm = async (currentUser, payload) => {
         where: {
             UserId: payload.userIds,
             status: [USER_FORM_STATUS.NEW, USER_FORM_STATUS.SUBMITTED],
+            isDeleted: false,
         },
         include: [
             {
@@ -63,6 +66,18 @@ const addForm = async (currentUser, payload) => {
         await transaction.rollback();
         throw error;
     }
+
+    // send mails
+    const emails = await Promise.all(
+        payload.userIds.map(async (userId) => {
+            const { email } = await User.findOne({
+                attributes: ["email"],
+                where: { id: userId },
+            });
+            return email;
+        })
+    );
+    mailSender(emails, SUBJECT(payload.formCategory), CONTENT);
 
     return new ApiDataResponse(httpStatus.CREATED, formMessages.FORM_CREATED, newForm);
 };

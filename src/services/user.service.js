@@ -7,6 +7,7 @@ import sequelize from "../models/index.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
 import { ROLES, COMMON_CONSTANTS } from "../constants/index.js";
 import { userMessages } from "../constants/messages.constants.js";
+import genEmployeeId from "../helper/genEmployeeId.js";
 
 const { User, UserRole, Role, UserForm } = sequelize.models;
 
@@ -60,10 +61,7 @@ const addUser = async (payload) => {
     if (!lastUser) {
         payload.employeeId = "ID000000";
     } else {
-        const id = parseInt(lastUser.employeeId.slice(2));
-        const newId = id + 1;
-        const paddedId = newId.toString().padStart(COMMON_CONSTANTS.EMPLOYEE_ID_NUM_LONG, "0");
-        payload.employeeId = `ID${paddedId}`;
+        payload.employeeId = genEmployeeId(lastUser.employeeId);
     }
 
     const transaction = await sequelize.transaction();

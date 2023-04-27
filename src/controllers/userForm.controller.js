@@ -46,8 +46,8 @@ const getListUserFormsController = async (req, res, next) => {
         let pageIndex = parseInt(req.query.pageIndex);
         let pageSize = parseInt(req.query.pageSize);
         if (isNaN(pageIndex) || isNaN(pageSize) || pageIndex <= 0 || pageSize <= 0) {
-            pageIndex = config.default_index_pagination;
-            pageSize = config.default_size_pagination;
+            pageIndex = config.defaultIndexPagination;
+            pageSize = config.defaultSizePagination;
         }
 
         const userForms = await getListUserForms(req.user, pageIndex, pageSize);
