@@ -27,10 +27,19 @@ export const USER_MESSAGES = {
 }
 
 export const USER_FORM_MESSAGE = {
-    USER_FORM_NOT_FOUND: "User not found in database",
-    USER_FORM_CREATED: "User created successfully",
-    USER_FORM_DELETED: "User deleted successfully",
+    USER_FORM_NOT_FOUND: "User form not found in database",
+    USER_FORM_CREATED: "User form created successfully",
+    USER_FORM_DELETED: "User form deleted successfully",
     INVALID_PAGGING: "Invalid paging index",
-    USER_FORM_UPDATED: "User updated successfully",
-    USER_FORM_EXISTS: "User already exists in database"
+    USER_FORM_UPDATED: "User form updated successfully",
+    USER_FORM_EXISTS: "User form already exists in database"
+}
+
+export const USER_FORM_DETAIL_MESSAGE = {
+    USER_FORM_DETAIL_NOT_FOUND: "User form detail not found in database",
+    USER_FORM_DETAIL_CREATED: "User form detail created successfully",
+    USER_FORM_DETAIL_DELETED: "User form detail deleted successfully",
+    INVALID_PAGINATION_INDEX: "Invalid pagination index",
+    USER_FORM_DETAIL_UPDATED: "User form detail updated successfully",
+    USER_FORM_DETAIL_ALREADY_EXISTS: "User form detail already exists in database"
 }
