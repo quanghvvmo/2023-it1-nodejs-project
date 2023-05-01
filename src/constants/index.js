@@ -28,13 +28,16 @@ const HTTP_METHODS = {
     GET: "get",
     POST: "post",
     PUT: "put",
+    PATCH: "patch",
     DELETE: "delete",
 };
 
 const COMMON_CONSTANTS = {
     TRANSACTION_ERROR: "Transaction got error !",
     INVALID_PAGE: "Invalid paging index",
-    EMPLOYEE_ID_NUM_LONG: 6,
+    EMP_ID_NUM_LONG: 6,
+    START_EMP_ID: "ID000000",
+    URL_NOT_FOUND: "URL not found !",
 };
 
 export { ROLES, FORM_CATEGORIES, FORM_STATUS, USER_FORM_STATUS, HTTP_METHODS, COMMON_CONSTANTS };

@@ -59,7 +59,7 @@ const addUser = async (payload) => {
         order: [["createdAt", "DESC"]],
     });
     if (!lastUser) {
-        payload.employeeId = "ID000000";
+        payload.employeeId = COMMON_CONSTANTS.START_EMP_ID;
     } else {
         payload.employeeId = genEmployeeId(lastUser.employeeId);
     }

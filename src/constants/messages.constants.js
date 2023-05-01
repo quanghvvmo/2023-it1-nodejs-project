@@ -28,6 +28,8 @@ const userFormMessages = {
     USER_FORM_CREATED: "UserForm created successfully",
     USER_FORM_DELETED: "UserForm deleted successfully",
     USER_FORM_UPDATED: "UserForm updated successfully",
+    USER_FORM_CLOSED: "UserForm closed successfully",
+    USER_FORM_APPROVED: "UserForm approved successfully"
 };
 
 const userFormDetailMessages = {

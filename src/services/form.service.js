@@ -53,11 +53,20 @@ const addForm = async (currentUser, payload) => {
             { transaction }
         );
 
-        const userForms = payload.userIds.map((userId) => ({
-            UserId: userId,
-            FormId: newForm.id,
-            status: USER_FORM_STATUS.NEW,
-        }));
+        const userForms = await Promise.all(
+            payload.userIds.map(async (userId) => {
+                const { managerId } = await User.findOne({
+                    attributes: ["ManagerId"],
+                    where: { id: userId },
+                });
+                return {
+                    UserId: userId,
+                    FormId: newForm.id,
+                    status: USER_FORM_STATUS.NEW,
+                    ManagerId: managerId,
+                };
+            })
+        );
 
         await UserForm.bulkCreate(userForms, { transaction });
 
@@ -129,6 +138,7 @@ const updateForm = async (currentUser, formId, payload) => {
         { ...payload, updateBy: currentUser.id },
         { where: { id: formId, isDeleted: false } }
     );
+
     if (!updatedForm) {
         throw new APIError({ message: formMessages.FORM_NOT_FOUND, status: httpStatus.NOT_FOUND });
     }

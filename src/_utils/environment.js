@@ -6,6 +6,8 @@ const getEnvironmentSetting = async () => {
     switch (process.env.NODE_ENV) {
         case "development":
             break;
+        case "test":
+            break;
         case "production":
             break;
         default:

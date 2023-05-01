@@ -5,6 +5,8 @@ import sequelize from "../models/index.js";
 import APIError from "../helper/apiError.js";
 import { HTTP_METHODS } from "../constants/index.js";
 import { authMessages } from "../constants/messages.constants.js";
+import { COMMON_CONSTANTS } from "../constants/index.js";
+import { UUID_REGEX } from "../_utils/regex_validation.js";
 
 const { User, Role, RoleModules } = sequelize.models;
 
@@ -12,6 +14,20 @@ const getToken = (req) => {
     if (req.headers.authorization && req.headers.authorization.length > 0) {
         return req.headers.authorization.split(/\s+/)[1];
     }
+};
+
+const removePathParams = (path) => {
+    let segments = path.split("/");
+
+    for (let i = 0; i < segments.length; i++) {
+        if (segments[i].startsWith(":") || segments[i].match(UUID_REGEX)) {
+            segments = segments.slice(0, i);
+            break;
+        }
+    }
+
+    const newPath = segments.join("/");
+    return newPath;
 };
 
 const authJWT = async (req, res, next) => {
@@ -55,13 +71,11 @@ const authorize = async (req, res, next) => {
     let isPassPermission = false;
     const { Roles } = req.user;
 
-    let path = req._parsedUrl.path;
-
-    if (path.lastIndexOf("/") !== 0) {
-        path = path.substring(0, path.lastIndexOf("/")); // remove the :id
-    }
+    const path = removePathParams(req.originalUrl);
+    console.log(path);
 
     const method = req.method.toString().toLowerCase();
+    console.log(method);
 
     for (let i = 0; i < Roles.length; i++) {
         const roleModule = await RoleModules.findOne({ where: { api: path, RoleId: Roles[i].id } });
@@ -75,6 +89,9 @@ const authorize = async (req, res, next) => {
                 if (roleModule.isCanWrite) isPassPermission = true;
                 break;
             case HTTP_METHODS.PUT:
+                if (roleModule.isCanUpdate) isPassPermission = true;
+                break;
+            case HTTP_METHODS.PATCH:
                 if (roleModule.isCanUpdate) isPassPermission = true;
                 break;
             case HTTP_METHODS.DELETE:

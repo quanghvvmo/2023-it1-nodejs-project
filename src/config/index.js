@@ -1,6 +1,6 @@
 import { config as _config } from "dotenv";
 
-// Load environment constiables from .env file
+// Load environment constables from .env file
 _config();
 const env = process.env.NODE_ENV || "development";
 
@@ -39,6 +39,11 @@ const configs = {
             ":method :url :status :response-time ms - :res[content-length]",
     },
     localhost: {
+        morganFormat:
+            process.env.MORGAN_LOG_FORMAT ||
+            ":method :url :status :response-time ms - :res[content-length]",
+    },
+    test: {
         morganFormat:
             process.env.MORGAN_LOG_FORMAT ||
             ":method :url :status :response-time ms - :res[content-length]",

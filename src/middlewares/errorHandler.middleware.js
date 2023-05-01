@@ -4,6 +4,7 @@ import * as sequelize from "sequelize";
 
 import APIError from "../helper/apiError.js";
 import config from "../config/index.js";
+import { COMMON_CONSTANTS } from "../constants/index.js";
 
 const SequelizeError = sequelize.Error;
 const { AggregateError, ValidationError, ForeignKeyConstraintError } = sequelize;
@@ -53,7 +54,7 @@ export const converter = (err, req, res, next) => {
                 errors: err.fields.map((field) => {
                     return {
                         path: field,
-                        message: "Data does not exist in reference table.", 
+                        message: "Data does not exist in reference table.",
                     };
                 }),
                 status: httpStatus.UNPROCESSABLE_ENTITY,
@@ -83,7 +84,7 @@ export const converter = (err, req, res, next) => {
  */
 export const notFound = (req, res, next) => {
     const err = new APIError({
-        message: "URL Not found",
+        message: COMMON_CONSTANTS.URL_NOT_FOUND,
         status: httpStatus.NOT_FOUND,
     });
     return handler(err, req, res);

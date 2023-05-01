@@ -10,11 +10,16 @@ import formCategoryModel from "./formCategory.model.js";
 import userFormModel from "./userForm.model.js";
 import userFormDetailModel from "./userFormDetail.model.js";
 
-const sequelize = new Sequelize(config.dbDatabase, config.dbUsername, config.dbPassword, {
-    host: config.dbHost,
-    port: config.dbPort,
-    dialect: config.dbDialect,
-});
+const sequelize = new Sequelize(
+    config.env === "test" ? "test" : config.dbDatabase,
+    config.dbUsername,
+    config.dbPassword,
+    {
+        host: config.dbHost,
+        port: config.dbPort,
+        dialect: config.dbDialect,
+    }
+);
 
 // models
 const models = [
@@ -35,7 +40,7 @@ for (const model of models) {
 applyExtraSetup(sequelize);
 
 // sync
-sequelize.sync({ alert: true }).then(() => {
+sequelize.sync().then(() => {
     console.log("Sync successfully.");
 });
 

@@ -9,7 +9,6 @@ const createFormSchema = Joi.object({
     formCategory: Joi.string()
         .required()
         .valid(...Object.keys(FORM_CATEGORIES)),
-    ManagerId: Joi.string(),
 });
 
 const updateFormSchema = Joi.object({
@@ -17,7 +16,6 @@ const updateFormSchema = Joi.object({
     description: Joi.string(),
     dueDate: Joi.date(),
     formCategory: Joi.string().valid(...Object.keys(FORM_CATEGORIES)),
-    ManagerId: Joi.string(),
 });
 
 export { createFormSchema, updateFormSchema };
