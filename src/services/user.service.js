@@ -55,7 +55,6 @@ const addUser = async (payload) => {
 
     // gen employeeId
     const lastUser = await User.findOne({
-        where: { isDeleted: false },
         order: [["createdAt", "DESC"]],
     });
     if (!lastUser) {
