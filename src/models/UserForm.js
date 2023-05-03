@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const userFormTypes = require("../constants/types/userForm");
+const { USER_FORM_TYPES } = require("../config/constants");
 
 module.exports = (sequelize) => {
     const columns = {
@@ -9,19 +9,16 @@ module.exports = (sequelize) => {
             defaultValue: DataTypes.UUIDV4,
             allowNull: false
         },
-        description: {
-            type: DataTypes.STRING,
-        },
         managerComment: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         userComment: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         status: {
-            type: DataTypes.ENUM(Object.values(userFormTypes)),
+            type: DataTypes.ENUM(Object.values(USER_FORM_TYPES)),
             allowNull: false,
         },
         isDeleted: {

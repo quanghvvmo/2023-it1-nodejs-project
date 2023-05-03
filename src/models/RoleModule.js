@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-export default (sequelize) => {
+module.exports = (sequelize) => {
     const columns = {
         id: {
             type: DataTypes.UUID,

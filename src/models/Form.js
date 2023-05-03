@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const formTypes = require("../constants/types/form");
+const { FORM_TYPES } = require("../config/constants");
 
-export default (sequelize) => {
+module.exports = (sequelize) => {
     const columns = {
         id: {
             type: DataTypes.UUID,
@@ -22,7 +22,7 @@ export default (sequelize) => {
             allowNull: false,
         },
         status: {
-            type: DataTypes.ENUM(Object.values(formTypes)),
+            type: DataTypes.ENUM(Object.values(FORM_TYPES)),
             allowNull: false,
         },
         dueTo: {

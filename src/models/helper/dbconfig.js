@@ -1,18 +1,23 @@
 const { Sequelize } = require("sequelize");
-const config = require("../config/index.js");
+const config = require("../../config/index");
 const { setUpAssociations } = require('./association.js');
 const { setUpHooks } = require('./hooks.js');
 
-const User = require('./User.js');
-const Role = require('./Role.js');
+const User = require('../User.js');
+const Role = require('../Role.js');
+const RoleModule = require('../RoleModule.js');
+const Form = require('../Form.js');
+const FormCategory = require('../FormCategory.js');
+const UserForm = require('../UserForm')
+const UserFormDetail = require('../UserFormDetail');
 
-const sequelize = new Sequelize(config.db_database, config.db_username, config.db_password, {
-    host: config.db_host,
-    port: config.db_port,
-    dialect: config.db_dialect,
+const sequelize = new Sequelize(config.dbDatabase, config.dbUsername, config.dbPassword, {
+    host: config.dbHost,
+    port: config.dbPort,
+    dialect: config.dbDialect || 'mysql',
 });
 
-const models = [User, Role];  
+const models = [User, Role, RoleModule, Form, FormCategory, UserForm, UserFormDetail];  
 
 models.forEach(model => {
     model(sequelize);

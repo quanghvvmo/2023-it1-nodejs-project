@@ -1,27 +1,29 @@
-export const REGULAR_EXPRESSIONS = {
+const REGULAR_EXPRESSIONS = {
     EMAIL: /^\S+@\S+\.\S+$/, // matches email addresses
     USERNAME: /^\S+$/, // matches usernames with no spaces
     PASSWORD: /^\S+$/, // matches passwords with no spaces
     PHONE: /^[0-9+-]*$/, // matches phone numbers with optional + and - characters
-    ONE_SPACE_ONLY: /\s+/ // matches one or more spaces
+    ONE_SPACE_ONLY: /\s+/, // matches one or more spaces
+    NOT_DIGITS: /\D/g,
+    IS_UUID: /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i
 };
 
-export const TOKEN_TYPE = {
+const TOKEN_TYPE = {
     JWT: 'jwt',
     BEARER: 'Bearer'
 }
 
-export const FORM_TYPES = {
+const FORM_TYPES = {
     OPEN: "open",
     CLOSE: "close"
 }
 
-export const FORM_CATEGORY_TYPES = {
+const FORM_CATEGORY_TYPES = {
     PROBATION_REVIEW: "probation review",
     ANNUAL_REVIEW: "annual review"
 }
 
-export const ROLE_TYPES = {
+const ROLE_TYPES = {
     ADMIN: "admin", 
     DIRECTOR: "director", 
     MANAGER: "manager", 
@@ -29,17 +31,19 @@ export const ROLE_TYPES = {
     EMPLOYEE: "employee"
 }
 
-export const USER_FORM_TYPES = {
+const USER_FORM_TYPES = {
     NEW: "new",
-    PENDING_APPROVAL: "pending approval",
-    OPEN: "open",
+    SUBMITTED: "submitted",
     APPROVED: "approved",
-    CLOSE: "close",
+    CLOSED: "closed",
 }
 
-export const HTTP_METHODS = {
-    GET: "get",
-    POST: "post",
-    PUT: "put",
-    DELETE: "delete"
+const HTTP_METHODS = {
+    GET: "GET",
+    POST: "POST",
+    PUT: "PUT",
+    PATCH: "PATCH",
+    DELETE: "DELETE"
 }
+
+module.exports = { REGULAR_EXPRESSIONS, TOKEN_TYPE, FORM_TYPES, FORM_CATEGORY_TYPES, ROLE_TYPES, USER_FORM_TYPES, HTTP_METHODS }

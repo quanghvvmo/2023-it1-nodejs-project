@@ -18,7 +18,7 @@ const configs = {
         // Database
         dbHost: process.env.DB_HOST,
         dbPort: process.env.DB_PORT,
-        dbDialect: process.env.DB_DIALECT,
+        dbDialect: process.env.DB_DIALECT || 'mysql',
         dbUsername: process.env.DB_USERNAME,
         dbPassword: process.env.DB_PASSWORD,
         dbDatabase: process.env.DB_DATABASE,

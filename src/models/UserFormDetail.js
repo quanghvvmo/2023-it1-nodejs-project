@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-export default (sequelize) => {
+module.exports = (sequelize) => {
     const columns = {
         id: {
             type: DataTypes.UUID,
@@ -24,6 +24,7 @@ export default (sequelize) => {
 
     const timestampConfig = {
         timestamps: true,
+        tableName: 'userFormDetails'
     }
 
     return sequelize.define("UserFormDetail", columns, timestampConfig);

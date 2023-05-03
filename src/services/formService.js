@@ -1,7 +1,7 @@
-const sequelize = require("./models/helper/dbconfig.js");
-const { UserForm, Form, UserFormDetail, FormCategory } = sequelize.models;
+const sequelize = require("../models/helper/dbconfig.js");
+const { UserForm, Form, UserFormDetail, FormCategory, User } = sequelize.models;
 const { Op } = require('sequelize');
-const { USER_FORM_TYPES } = require("../config/constants");
+const { USER_FORM_TYPES, FORM_TYPES } = require("../config/constants");
 const APIError = require('../helper/apiError');
 const { APIPagingResponse, APIResponse } = require('../helper/apiResponse');
 const { FORM_MESSAGES } = require('../constants/messages');
@@ -13,9 +13,9 @@ class FormService {
 
         const existingForm = await UserForm.findAll({
             where: { 
-                UserId: [data.UserIds], 
+                UserId: data.UserIds, 
                 status: {
-                    [Op.in]: [USER_FORM_TYPES.NEW, USER_FORM_TYPES.PENDING_APPROVAL]
+                    [Op.in]: [USER_FORM_TYPES.NEW, USER_FORM_TYPES.SUBMITTED]
                 },
                 isDeleted: false
             },
@@ -23,9 +23,8 @@ class FormService {
                 {
                     model: Form,
                     include: [
-                        { 
-                            model: FormCategory,
-                            where: { name } 
+                        {
+                            model: FormCategory, where: { name }
                         }
                     ]
                 }
@@ -39,6 +38,10 @@ class FormService {
             });
         }
 
+        const existingFormCategory = await FormCategory.findOne({
+            where: { name }
+        });
+
         const transaction = await sequelize.transaction();
         let form;   
 
@@ -48,39 +51,40 @@ class FormService {
             form = await Form.create({
                 ...data,
                 creator,
-                status: USER_FORM_TYPES.OPEN,
-                FormCategoryId: name
+                status: FORM_TYPES.OPEN,
+                FormCategoryId: existingFormCategory.id
             }, { transaction });
             
             const FormId = form.id;
 
-            const userForms = data.userIds.map((UserId) => (
-                {
-                    UserId,
-                    FormId,
-                    status: USER_FORM_TYPES.NEW
-                }
-            ));
+            const userForms = await Promise.all(
+                data.UserIds.map(async (UserId) => {
+                    const user = await User.findOne({
+                        where: { id: UserId }
+                    });
 
-            const createdUserForms = await UserForm.bulkCreate(userForms, { transaction });
+                    const { ManagerId } = user;
 
-            const userFormIds = createdUserForms.map((createdUserForm) => createdUserForm.id);
-  
-            const userFormDetails = userFormIds.map((UserFormId) => (
-                { 
-                    UserFormId 
-                }
-            ));
-
-            await UserFormDetail.bulkCreate(userFormDetails, { transaction });
+                    return {
+                        UserId,
+                        FormId,
+                        ManagerId,
+                        status: USER_FORM_TYPES.NEW
+                    };
+                })
+            );
+            await UserForm.bulkCreate(userForms, { transaction });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
+            console.log(error);
             throw new APIError({
                 message: "Transaction failed",
                 status: httpStatus.INTERNAL_SERVER_ERROR,
             });
         }
+
+        //send mail
 
         return new APIResponse(form, FORM_MESSAGES.FORM_CREATED, httpStatus.CREATED);
     }
@@ -123,10 +127,24 @@ class FormService {
     }
 
     updateForm = async (currentUser, id, data) => {
-        const updatedData = { 
+        const existingFormCategory = await FormCategory.findOne({ 
+            where: {
+                name: data.formCategory
+            }
+        });
+
+        if(!existingFormCategory) {
+            throw new APIError({ message: FORM_MESSAGES.FORM_CATEGORY_NOT_FOUND, status: httpStatus.NOT_FOUND });
+        }
+
+        let updatedData = { 
             ...data, 
-            updateBy: currentUser.id 
+            updateBy: currentUser.id,
         };
+
+        if(existingFormCategory) {
+            updatedData.FormCategoryId = existingFormCategory.id;
+        }
 
         const form = await Form.update(updatedData, { where: { id, isDeleted: false } });
         

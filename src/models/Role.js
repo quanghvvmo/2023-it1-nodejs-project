@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const roleTypes = require("../constants/types/role");
+const { ROLE_TYPES } = require("../config/constants");
 
-export default (sequelize) => {
+module.exports = (sequelize) => {
     const columns = {
         id: {
             type: DataTypes.UUID,
@@ -10,7 +10,7 @@ export default (sequelize) => {
             allowNull: false
         },
         name: {
-            type: DataTypes.ENUM(Object.values(roleTypes)),
+            type: DataTypes.ENUM(Object.values(ROLE_TYPES)),
             allowNull: false,
         },
         description: {

@@ -15,7 +15,7 @@ class UserFormDetailService {
             userFormDetail = await UserFormDetail.create({ ...data, UserFormId });
     
             const userForm = await UserForm.update(
-                { status: USER_FORM_TYPES.PENDING_APPROVAL },
+                { status: USER_FORM_TYPES.SUBMITTED },
                 {
                     where: { id: UserFormId, isDeleted: false },
                 }
@@ -30,6 +30,74 @@ class UserFormDetailService {
     
         return new APIResponse(userFormDetail, httpStatus.CREATED, USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_CREATED);
     };
+
+    getUserFormDetail = async (id) => {
+        const userFormDetail = await UserFormDetail.findOne({
+            where: {
+                id,
+                isDeleted: false
+            }
+        });
+
+        if(!userFormDetail) {
+            throw new APIError({ message: USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_NOT_FOUND, status: httpStatus.NOT_FOUND });
+        }
+
+        return userFormDetail;
+    }
+
+    getListUserFormDetails = async (pageIndex, pageSize) => {
+        const userFormDetails = await UserFormDetail.findAll({
+            where: {
+                isDeleted: false
+            }
+        });
+
+        const numOfForms = userFormDetails.length;
+        if (!numOfForms) {
+            throw new APIError({ message: USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_NOT_FOUND, status: httpStatus.NOT_FOUND });
+        }
+    
+        const totalPages = parseInt((numOfForms / pageSize) + 1);
+        if (pageIndex > totalPages) {
+            throw new APIError({ message: USER_FORM_DETAIL_MESSAGE.INVALID_PAGGING, status: httpStatus.BAD_REQUEST });
+        }
+    
+        const start = (pageIndex - 1) * pageSize;
+        const end = start + pageSize;
+    
+        return new APIPagingResponse(
+            userFormDetails.slice(start, end),
+            pageIndex,
+            pageSize,
+            numOfForms,
+            totalPages,
+        );
+    }
+
+    updateUserFormDetail = async (id, data) => {
+        const userFormDetail = await UserFormDetail.update(data, {
+            where: { id, isDeleted: false },
+        });
+
+        if(!userFormDetail) {
+            throw new APIError({ message: USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_NOT_FOUND, status: httpStatus.NOT_FOUND });
+        }
+
+        return new APIResponse(userFormDetail, USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_UPDATED, httpStatus.OK);
+    }
+
+    deleteUserFormDetail = async (id) => {
+        const userFormDetail = await UserFormDetail.update({ isDeleted: true }, {
+            where: { id },
+        });
+
+        if(!userFormDetail) {
+            throw new APIError({ message: USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_NOT_FOUND, status: httpStatus.NOT_FOUND });
+        }
+
+        return new APIResponse(userFormDetail, USER_FORM_DETAIL_MESSAGE.USER_FORM_DETAIL_DELETED, httpStatus.OK);
+    }
 }     
 
 module.exports = new UserFormDetailService();

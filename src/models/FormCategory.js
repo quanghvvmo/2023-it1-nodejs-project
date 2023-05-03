@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const formCategoryTypes = require("../constants/types/formCategory");
+const { FORM_CATEGORY_TYPES } = require("../config/constants");
 
-export default (sequelize) => {
+module.exports = (sequelize) => {
     const columns = {
         id: {
             type: DataTypes.UUID,
@@ -10,7 +10,7 @@ export default (sequelize) => {
             allowNull: false
         },
         name: {
-            type: DataTypes.ENUM(Object.values(formCategoryTypes)),
+            type: DataTypes.ENUM(Object.values(FORM_CATEGORY_TYPES)),
             allowNull: false,
         },
         description: {
@@ -21,6 +21,7 @@ export default (sequelize) => {
 
     const timestampConfig = {
         timestamps: true,
+        tableName: 'formCategories'
     }
 
     return sequelize.define("FormCategory", columns, timestampConfig);

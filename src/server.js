@@ -4,6 +4,8 @@ const config = require("./config/index.js");
 const getEnvironmentSetting = require("./_utils/enviromentSettings.js");
 const sequelize = require("./models/helper/dbconfig.js");
 const routers = require("./routes/index.js");
+const swaggerUi = require('swagger-ui-express');
+const swaggerDoc = require('./config/swagger.js');
 const app = express();
 
 app.use(express.json());
@@ -16,12 +18,13 @@ const initSequelize = async () => {
         // await sequelize.sync({ force: true });
         console.log('Database synchronized successfully');
     } catch (error) {
-        console.log("Failed init Sequelize connection:", err);
+        console.log("Failed init Sequelize connection:", error);
     }
 }
 
 const initServer = () => {
     app.use("/api/v1", routers);
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
     console.log("Init server successfully.");
 }
 
