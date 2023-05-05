@@ -1,0 +1,624 @@
+{
+	"info": {
+		"_postman_id": "b1dfde62-95db-4cc0-8b53-8a03de8b8d28",
+		"name": "Final Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "POST User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"minhmv\",\r\n    \"password\": \"password\",\r\n    \"firstName\": \"Mei\",\r\n    \"lastName\": \"Ming\",\r\n    \"age\": 25,\r\n    \"email\": \"meiming@example.com\",\r\n    \"phone\": \"555-555-7890\",\r\n    \"address\": \"321 Cedar St\",\r\n    \"identificationCard\": \"MNO123457\",\r\n    \"role\": \"employee\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"hr_user\",\r\n    \"password\": \"hr\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users/5c933806-7458-4457-8e99-693847dbbaeb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"5c933806-7458-4457-8e99-693847dbbaeb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"managerId\": \"c98a60e6-e40c-4e7c-9c9f-0e12b6d37023\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users/c920dcad-94a1-4cf6-8dee-a3fb45528355",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"c920dcad-94a1-4cf6-8dee-a3fb45528355"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users/a9941d4d-54e5-4676-aa75-183e9bf89857",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"a9941d4d-54e5-4676-aa75-183e9bf89857"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET User Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users/info",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Form",
+			"item": [
+				{
+					"name": "POST Form",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Task 1\",\r\n    \"description\": \"Complete task 1 by the end of the day\",\r\n    \"dueTo\": \"2023-05-05\",\r\n    \"userIds\": [\"5c933806-7458-4457-8e99-693847dbbaeb\", \"bbf609d0-1458-46ae-bedd-6d7bd67f29e7\"],\r\n    \"formCategory\": \"probation review\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/forms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"forms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Form",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/forms/e4571c08-7a6e-45aa-bab0-bb7ea7ed3d01",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"forms",
+								"e4571c08-7a6e-45aa-bab0-bb7ea7ed3d01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Forms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/forms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"forms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Form",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"formCategory\": \"annual review\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/forms/e4571c08-7a6e-45aa-bab0-bb7ea7ed3d01",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"forms",
+								"e4571c08-7a6e-45aa-bab0-bb7ea7ed3d01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Form",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/forms/bfe7ea0b-6481-4672-94a0-b84fedd2713a",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"forms",
+								"bfe7ea0b-6481-4672-94a0-b84fedd2713a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserForm",
+			"item": [
+				{
+					"name": "GET UserForms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET UserForm",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms/76d5e000-db99-4a7c-ac93-85e731554dbe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms",
+								"76d5e000-db99-4a7c-ac93-85e731554dbe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve UserForm",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"managerComment\": \"LGTM\",\r\n    \"userIds\": [\"76d5e000-db99-4a7c-ac93-85e731554dbe\", \"1527a962-70d8-4354-a71b-c22304d4aab5\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms/approve",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Close UserForm",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userIds\": [\"76d5e000-db99-4a7c-ac93-85e731554dbe\", \"1527a962-70d8-4354-a71b-c22304d4aab5\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms/close",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms",
+								"close"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT UserForm",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userComment\": \"Hey this is resume\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms/5973dc04-4192-4c98-847a-ff44e412db79",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms",
+								"5973dc04-4192-4c98-847a-ff44e412db79"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE UserForm",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms/5973dc04-4192-4c98-847a-ff44e412db79",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms",
+								"5973dc04-4192-4c98-847a-ff44e412db79"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserFormDetail",
+			"item": [
+				{
+					"name": "GET UserFormDetail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms-detail/2de3fe08-c875-4ac6-8fe8-2765a4447966",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms-detail",
+								"2de3fe08-c875-4ac6-8fe8-2765a4447966"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET UserFormDetails",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms-detail",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms-detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST UserFormDetail",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"This is my Desc\",\r\n    \"rating\": \"Great\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user-forms-detail/1527a962-70d8-4354-a71b-c22304d4aab5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user-forms-detail",
+								"1527a962-70d8-4354-a71b-c22304d4aab5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT UserFormDetail",
+					"request": {
+						"method": "PUT",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE UserFormDetail",
+					"request": {
+						"method": "DELETE",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjlhNmFhYzgzLWQ2ZjUtNGQ4Zi1iMzlhLTczZTFjMTU4MDAzYyIsImlhdCI6MTY4MzI2NTQzOSwiZXhwIjoxNjgzNTI0NjM5fQ.ED3m4I0WbBfVFgBhqesGmoyIINUIheq3QFkXFWIt5P8",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
