@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const config = require('../config/index')
 const userFormService = require("../services/userFormService");
-const userFormValidation = require('../validations/userformValidation');
+const userFormValidation = require('../validations/userFormValidation');
 
 class UserFormController {
     getUserFormDetail = async (req, res, next) => {
@@ -21,7 +21,8 @@ class UserFormController {
             const currentUser = req.user;
             const pageIndex = parseInt(req.query.pageIndex) || config.defaultIndexPaging;
             const pageSize = parseInt(req.query.pageSize) || config.defaultSizePaging;
-            const userForms = await userFormService.getListUserForms(currentUser, pageIndex, pageSize);
+            const { status } = req.query;
+            const userForms = await userFormService.getListUserForms(currentUser, pageIndex, pageSize, status);
             return res.status(httpStatus.OK).json(userForms);
         } catch (error) {
             next(error);
@@ -55,8 +56,8 @@ class UserFormController {
 
     approveUserForm = async (req, res, next) => {
         try {
-            const { id } = req.params;    
-            const userForm = await userFormService.approveUserForm(id, req.body);
+            const { error, value } = userFormValidation.approveUserFormSchema.validate(req.body);   
+            const userForm = await userFormService.approveUserForm(value);
             return res.status(httpStatus.OK).json(userForm);
         } catch (error) {
             next(error);
@@ -65,47 +66,14 @@ class UserFormController {
 
     closeUserForm = async (req, res, next) => {
         try {
-            const { id } = req.params;    
-            const userForm = await userFormService.closeUserForm(id);
+            const { error, value } = userFormValidation.closeUserFormSchema.validate(req.body);   
+            const userForm = await userFormService.closeUserForm(value);
             return res.status(httpStatus.OK).json(userForm);
         } catch (error) {
             next(error);
         }
     };
 
-    submitUserForm = async (req, res, next) => {
-        try {
-            const { id } = req.params; 
-            const userForm = await userFormService.submitUserForm(req.user, id);
-            return res.status(httpStatus.OK).json(userForm);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    getListSubmittedUserForms = async (req, res, next) => {
-        try {
-            const pageIndex = parseInt(req.query.pageIndex) || config.defaultIndexPaging;
-            const pageSize = parseInt(req.query.pageSize) || config.defaultSizePaging;
-            const { name } = req.params;
-            const userForms = await userFormService.getListSubmittedUserForms(pageIndex, pageSize, name);
-            return res.status(httpStatus.OK).json(userForms);
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    getListUnsubmittedUserForms = async (req, res, next) => {
-        try {
-            const pageIndex = parseInt(req.query.pageIndex) || config.defaultIndexPaging;
-            const pageSize = parseInt(req.query.pageSize) || config.defaultSizePaging;
-            const { name } = req.params;
-            const userForms = await userFormService.getListUnsubmittedUserForms(pageIndex, pageSize, name);
-            return res.status(httpStatus.OK).json(userForms);
-        } catch (error) {
-            next(error);
-        }
-    };
 }
 
 module.exports = new UserFormController();

@@ -10,8 +10,8 @@ class UserFormDetailController {
             if (error) {
                 return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
             }
-            const { UserFormId } = req.params;
-            const userFormDetail = await userFormDetailService.createUserFormDetail(UserFormId, value);
+            const { userFormId } = req.params;
+            const userFormDetail = await userFormDetailService.createUserFormDetail(userFormId, value);
             return res.status(httpStatus.CREATED).json(userFormDetail);
         } catch (error) {
             next(error);

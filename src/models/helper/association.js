@@ -9,27 +9,27 @@ exports.setUpAssociations = (sequelize) => {
         UserFormDetail 
     } = sequelize.models;
 
-    Role.hasMany(RoleModule);
-    RoleModule.belongsTo(Role);
+    Role.hasMany(RoleModule, { foreignKey: 'roleId' });
+    RoleModule.belongsTo(Role, { foreignKey: 'roleId' });
 
-    Role.belongsToMany(User, { through: "UserRole" });
-    User.belongsToMany(Role, { through: "UserRole" });
+    Role.belongsToMany(User, { through: "UserRole", foreignKey: "roleId" });
+    User.belongsToMany(Role, { through: "UserRole", foreignKey: "userId" });
 
-    FormCategory.hasMany(Form);
-    Form.belongsTo(FormCategory);
+    FormCategory.hasMany(Form, { foreignKey: 'formCategoryId' });
+    Form.belongsTo(FormCategory, { foreignKey: 'formCategoryId' });
 
-    Form.hasMany(UserForm);
-    UserForm.belongsTo(Form);
+    Form.hasMany(UserForm, { foreignKey: 'formId' });
+    UserForm.belongsTo(Form, { foreignKey: 'formId' });
 
-    UserForm.hasMany(UserFormDetail);
-    UserFormDetail.belongsTo(UserForm);
+    UserForm.hasMany(UserFormDetail, { foreignKey: 'userFormId' });
+    UserFormDetail.belongsTo(UserForm, { foreignKey: 'userFormId' });
 
-    User.hasMany(UserForm);
-    UserForm.belongsTo(User);
+    User.hasMany(UserForm, { foreignKey: 'userId' });
+    UserForm.belongsTo(User, { foreignKey: 'userId' });
 
-    User.hasMany(UserForm, { foreignKey: "ManagerId" });
-    UserForm.belongsTo(User, { foreignKey: "ManagerId" });
+    User.hasMany(UserForm, { foreignKey: "managerId" });
+    UserForm.belongsTo(User, { foreignKey: "managerId" });
 
-    User.hasOne(User, { foreignKey: "ManagerId" });
-    User.belongsTo(User, { foreignKey: "ManagerId" });
+    User.hasOne(User, { foreignKey: "managerId" });
+    User.belongsTo(User, { foreignKey: "managerId" });
 }

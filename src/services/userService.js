@@ -37,6 +37,14 @@ class UserService {
     
         return user;
     };
+
+    getUserInfo = async (currentUser) => {
+        if(!currentUser) {
+            throw new APIError({ message: USER_MESSAGES.USER_NOT_FOUND, status: httpStatus.NOT_FOUND });
+        }
+
+        return currentUser;
+    }
     
     getListUsers = async (pageIndex, pageSize) => {
         const users = await User.findAll({
@@ -77,14 +85,14 @@ class UserService {
         const role = await Role.findOne({
             where: { name }
         });
-        const RoleId = role.id;
+        const roleId = role.id;
 
         const transaction = await sequelize.transaction();
         let user;
         try {
             user = await User.create({ ...data, employeeCode }, { transaction });
-            const UserId = user.id;
-            await UserRole.create({ RoleId, UserId }, { transaction });
+            const userId = user.id;
+            await UserRole.create({ roleId, userId }, { transaction });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
@@ -112,7 +120,7 @@ class UserService {
         let user;
         try {
             user = await User.update({ isDeleted: true }, { where: { id } });
-            await UserForm.update({ isDeleted: true }, { where: { UserId: id } });
+            await UserForm.update({ isDeleted: true }, { where: { userId: id } });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();

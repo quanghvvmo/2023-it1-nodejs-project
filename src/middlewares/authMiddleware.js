@@ -46,6 +46,10 @@ const deleteParams = (path) => {
         }
     }
     const newPath = segments.join("/");
+    const queryIndex = newPath.indexOf('?');
+    if (queryIndex !== -1) {
+        return newPath.substring(0, queryIndex);
+    }
     return newPath;
 }
 
@@ -61,9 +65,10 @@ const authorize = async (req, res, next) => {
 
     const { method } = req;
     for (const role of user.Roles) {
-        const RoleId = role.id;
-        const roleModule = await RoleModule.findOne({ where: { api, RoleId } });
+        const roleId = role.id;
+        const roleModule = await RoleModule.findOne({ where: { api, roleId } });
 
+        console.log(api)
         if (!roleModule) break;
 
         switch (method) {

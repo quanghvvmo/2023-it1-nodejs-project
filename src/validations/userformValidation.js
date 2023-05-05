@@ -5,6 +5,13 @@ const userformValidation = {
         description: Joi.string(),
         ManagerId: Joi.string(),
         userComment: Joi.string(),
+    }),
+    approveUserFormSchema: Joi.object({
+        userIds: Joi.array().required(),
+        managerComment: Joi.string(),
+    }),
+    closeUserFormSchema: Joi.object({
+        userIds: Joi.array().required()
     })
 }
 

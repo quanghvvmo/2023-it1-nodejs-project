@@ -5,12 +5,8 @@ const userFormRouter = express.Router();
 userFormRouter.get("/user-forms/:id", userFormController.getUserFormDetail);
 userFormRouter.get("/user-forms", userFormController.getListUserForms);
 
-userFormRouter.get("/user-forms/submitted", userFormController.getListSubmittedUserForms);
-userFormRouter.get("/user-forms/unsubmitted", userFormController.getListUnsubmittedUserForms);
-
-userFormRouter.patch("/user-forms/approve/:id", userFormController.approveUserForm);
-userFormRouter.patch("/user-forms/close/:id", userFormController.closeUserForm);
-userFormRouter.patch("/user-forms/submit/:id", userFormController.submitUserForm);
+userFormRouter.patch("/user-forms/approve", userFormController.approveUserForm);
+userFormRouter.patch("/user-forms/close", userFormController.closeUserForm);
 
 userFormRouter.put("/user-forms/:id", userFormController.updateUserForm);
 

@@ -3,13 +3,13 @@ const config = require("../../config/index");
 const { setUpAssociations } = require('./association.js');
 const { setUpHooks } = require('./hooks.js');
 
-const User = require('../User.js');
-const Role = require('../Role.js');
-const RoleModule = require('../RoleModule.js');
-const Form = require('../Form.js');
-const FormCategory = require('../FormCategory.js');
-const UserForm = require('../UserForm')
-const UserFormDetail = require('../UserFormDetail');
+const User = require('../user');
+const Role = require('../role.js');
+const RoleModule = require('../roleModule.js');
+const Form = require('../form.js');
+const FormCategory = require('../formCategory.js');
+const UserForm = require('../userForm')
+const UserFormDetail = require('../userFormDetail');
 
 const sequelize = new Sequelize(config.dbDatabase, config.dbUsername, config.dbPassword, {
     host: config.dbHost,

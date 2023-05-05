@@ -13,7 +13,7 @@ class FormService {
 
         const existingForm = await UserForm.findAll({
             where: { 
-                UserId: data.UserIds, 
+                userId: data.userIds, 
                 status: {
                     [Op.in]: [USER_FORM_TYPES.NEW, USER_FORM_TYPES.SUBMITTED]
                 },
@@ -52,23 +52,23 @@ class FormService {
                 ...data,
                 creator,
                 status: FORM_TYPES.OPEN,
-                FormCategoryId: existingFormCategory.id
+                formCategoryId: existingFormCategory.id
             }, { transaction });
             
-            const FormId = form.id;
+            const formId = form.id;
 
             const userForms = await Promise.all(
-                data.UserIds.map(async (UserId) => {
+                data.userIds.map(async (userId) => {
                     const user = await User.findOne({
-                        where: { id: UserId }
+                        where: { id: userId }
                     });
 
-                    const { ManagerId } = user;
+                    const { managerId } = user;
 
                     return {
-                        UserId,
-                        FormId,
-                        ManagerId,
+                        userId,
+                        formId,
+                        managerId,
                         status: USER_FORM_TYPES.NEW
                     };
                 })
@@ -143,7 +143,7 @@ class FormService {
         };
 
         if(existingFormCategory) {
-            updatedData.FormCategoryId = existingFormCategory.id;
+            updatedData.formCategoryId = existingFormCategory.id;
         }
 
         const form = await Form.update(updatedData, { where: { id, isDeleted: false } });
@@ -161,9 +161,9 @@ class FormService {
 
         try {
             form = await Form.update({ isDeleted: true }, { where: { id } });
-            const userForm = await UserForm.update({ isDeleted: true }, { where: { FormId: id } });
-            const UserFormId = userForm.id;
-            await UserFormDetail.update({ isDeleted: true }, { where: { UserFormId } });
+            const userForm = await UserForm.update({ isDeleted: true }, { where: { formId: id } });
+            const userFormId = userForm.id;
+            await UserFormDetail.update({ isDeleted: true }, { where: { userFormId } });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();

@@ -7,17 +7,17 @@ const { APIResponse, APIPagingResponse } = require('../helper/apiResponse');
 const { USER_FORM_TYPES } = require("../config/constants");
 
 class UserFormDetailService {
-    createUserFormDetail = async (UserFormId, data) => {
+    createUserFormDetail = async (userFormId, data) => {
         const transaction = await sequelize.transaction();
         let userFormDetail;
     
         try {
-            userFormDetail = await UserFormDetail.create({ ...data, UserFormId });
+            userFormDetail = await UserFormDetail.create({ ...data, userFormId });
     
             const userForm = await UserForm.update(
                 { status: USER_FORM_TYPES.SUBMITTED },
                 {
-                    where: { id: UserFormId, isDeleted: false },
+                    where: { id: userFormId, isDeleted: false },
                 }
             );
             if (!userForm) {

@@ -6,7 +6,7 @@ const userFormDetailRouter = express.Router();
 userFormDetailRouter.get("/user-forms-detail", userFormDetailController.getListUserFormDetails);
 userFormDetailRouter.get("/user-forms-detail/:id", userFormDetailController.getUserFormDetail);
 
-userFormDetailRouter.post("/user-forms-detail/:UserFormId", userFormDetailController.createUserFormDetail);
+userFormDetailRouter.post("/user-forms-detail/:userFormId", userFormDetailController.createUserFormDetail);
 
 userFormDetailRouter.put("/user-forms-detail/:id", userFormDetailController.updateUserFormDetail);
 

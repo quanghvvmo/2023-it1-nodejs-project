@@ -6,7 +6,7 @@ const formValidation = {
         name: Joi.string().required(),
         description: Joi.string().required(),
         dueTo: Joi.date().required(),
-        UserIds: Joi.array().required(),
+        userIds: Joi.array().required(),
         formCategory: Joi.string().required().valid(...Object.values(FORM_CATEGORY_TYPES)),
     }),
 

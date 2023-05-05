@@ -67,6 +67,15 @@ class UserController {
         }
     };
 
+    getUserInfo = async (req, res, next) => {
+        try {
+            const { user } = req;
+            return res.status(httpStatus.OK).json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     deleteUser = async (req, res, next) => {
         try {
             const { id } = req.params;
