@@ -80,7 +80,6 @@ class UserController {
             return res.status(result.status).json(result)
 
         } catch (error) {
-            console.log(error);
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     };
@@ -92,7 +91,6 @@ class UserController {
             const result = await userService.getAllUser(pageIndex, pageSize);
             return res.status(result.status).json(result)
         } catch (error) {
-            console.log(error);
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }

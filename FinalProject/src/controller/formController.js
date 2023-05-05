@@ -5,6 +5,17 @@ import status from "http-status";
 
 class UserController {
 
+    getAllUserForm = async (req, res) => {
+        try {
+            const pageIndex = parseInt(req.query.pageIndex) || config.query_default_page_index;
+            const pageSize = parseInt(req.query.pageSize) || config.query_default_page_size;
+            const result = await formService.getAllUserForm(pageIndex, pageSize);
+            return res.status(result.status).json(result)
+        } catch (error) {
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
+        }
+    }
+
     createForm = async (req, res) => {
         try {
             let result = {};

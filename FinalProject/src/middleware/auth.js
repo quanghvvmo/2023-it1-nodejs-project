@@ -5,7 +5,7 @@ import status from "http-status"
 import { AUTH_MESSAGES } from "../common/authMsg";
 import UserRole from "../_database/models/userRole";
 import Role from "../_database/models/role";
-import { Methods } from "../common/constant";
+import { Methods, Roles } from "../common/constant";
 import RoleModule from "../_database/models/roleModule";
 import { REGEXEXP } from "../_ultis";
 
@@ -68,14 +68,17 @@ const authorizationUser = async (req, res, next) => {
         }
     }
     const api = paths.join("/");
-    console.log(api);
 
     for (let i = 0; i < userRoles.length; i++) {
+        //Check if user is admin then can access to all APis
+        if (userRoles[i].roleData.id === Roles.ADMIN) {
+            isPass = true;
+            break;
+        }
         const roleModule = await RoleModule.findOne({
             where: { api: api, roleId: userRoles[i].roleData.id }
         })
         if (!roleModule) break;
-
         switch (method) {
             case Methods.GET:
                 if (roleModule.isCanRead) isPass = true;
@@ -93,8 +96,8 @@ const authorizationUser = async (req, res, next) => {
                 if (roleModule.isCanEdit) isPass = true;
                 break;
         }
-        if (isPass) return next();
     }
+    if (isPass) return next();
     return res.status(status.UNAUTHORIZED).json(AUTH_MESSAGES.AUTHORIZE_FORBIDDEN);
 }
 

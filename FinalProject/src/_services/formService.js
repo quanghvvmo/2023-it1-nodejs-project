@@ -13,6 +13,21 @@ import sendMail from "../_ultis/mailer";
 
 class formService {
 
+    getAllUserForm = async (pageIndex, pageSize) => {
+        const userForms = await UserForm.findAll({
+            where: { isDeleted: 0 },
+            raw: true
+        })
+        const start = (parseInt(pageIndex) - 1) * pageSize;
+        const end = start + pageSize;
+        return ({
+            data: userForms.slice(start, end),
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_FOUND,
+            status: status.OK
+        })
+    }
+
     createForm = async (data) => {
         const form = await Form.create({
             ...data,

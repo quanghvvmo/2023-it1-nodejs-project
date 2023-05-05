@@ -198,6 +198,7 @@ class UserService {
         const users = await User.findAll({
             attributes: { exclude: ["password"] },
             where: { isDeleted: 0 },
+            raw: true
         })
         const start = (parseInt(pageIndex) - 1) * pageSize;
         const end = start + pageSize;

@@ -6,6 +6,7 @@ import authService from "../middleware/auth";
 const formRouter = express.Router();
 
 formRouter.post("/form/create", authService.authJWT, authService.authorizationUser, FormController.createForm)
+formRouter.post("/form", authService.authJWT, authService.authorizationUser, FormController.getAllUserForm)
 formRouter.get("/form/employee-form", authService.authJWT, authService.authorizationUser, FormController.formForEmployee)
 formRouter.get("/form/manager-form", authService.authJWT, authService.authorizationUser, FormController.formForManager)
 formRouter.post("/form/submit-form/:id", authService.authJWT, authService.authorizationUser, FormController.submitForm)
