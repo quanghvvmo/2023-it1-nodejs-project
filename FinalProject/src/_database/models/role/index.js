@@ -7,13 +7,13 @@ module.exports = class Role extends BaseModel {
     static schema = require("./schema")
     static associate(models) {
         this.hasMany(models.UserRole, {
-            foreignKey: "roleid",
+            foreignKey: "roleId",
             as: "roleData",
             onDelete: Options.CASCADE,
             onUpdate: Options.CASCADE
         }),
             this.hasMany(models.RoleModule, {
-                foreignKey: "roleid",
+                foreignKey: "roleId",
                 as: "roleModule",
                 onDelete: Options.CASCADE,
                 onUpdate: Options.CASCADE

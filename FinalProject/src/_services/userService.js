@@ -12,13 +12,22 @@ var hashUserPassword = (password) => {
     return new Promise(async (resolve, reject) => {
         try {
             const salt = bcrypt.genSaltSync(10);
-            let hashPassword = await bcrypt.hashSync(password, salt);
+            let hashPassword = bcrypt.hashSync(password, salt);
             resolve(hashPassword);
         } catch (e) {
             reject(e);
         }
     });
 }
+
+var generateEmpCode = (number) => {
+    const defaultValue = "ID";
+    number = number + 1;
+    let str = String(number);
+    while (str.length < 4) str = "0" + str;
+    return defaultValue.concat(str);
+}
+
 class UserService {
 
     handleLogin = async (data) => {
@@ -68,9 +77,22 @@ class UserService {
                 status: status.CONFLICT
             })
         }
-        let passwordHahsed = await hashUserPassword(data.password);
+        let newCode = "";
+        const lastUser = await User.findOne({
+            order: [
+                ["createdAt", "DESC"]
+            ]
+        })
+        if (!lastUser) {
+            newCode = "ID0001";
+        } else {
+            const number = parseInt(lastUser.empCode.substring(2));
+            newCode = generateEmpCode(number);
+        }
+        const passwordHahsed = await hashUserPassword(data.password);
         const newUser = await User.create({
             ...data,
+            empCode: newCode,
             password: passwordHahsed,
             avatar: avatar,
         })
@@ -82,52 +104,39 @@ class UserService {
         })
     }
 
-    updateUser = async (data, avatar) => {
-        let emailExist = await User.findOne({
-            where: {
-                email: data.email,
-            },
-            raw: false
-        })
-        if (!emailExist) {
-            let passwordHahsed = await hashUserPassword(data.password)
-            const user = await User.update(
-                {
-                    ...data,
-                    password: passwordHahsed,
-                    avatar: avatar
-                },
-                {
-                    where: {
-                        id: data.id,
-                        isDeleted: 0
-                    }
-                }
-            );
-            if (!user) {
-                return ({
-                    errCode: ERR_CODE.ERROR_FROM_CLIENT,
-                    errMsg: USER_MESSAGE.USER_NOT_FOUND,
-                    status: status.NOT_FOUND
-                })
+    updateUser = async (data, userId, avatar) => {
+        const passwordHahsed = await hashUserPassword(data.password)
+        const user = await User.findOne(
+            {
+                where: { id: userId, isDeleted: 0 },
+                raw: false,
             }
+        );
+        if (user) {
+            user.update({
+                ...data,
+                password: passwordHahsed,
+                avatar: avatar
+            })
+            await user.save();
             return ({
+                data: user,
                 errCode: ERR_CODE.OK,
                 errMsg: USER_MESSAGE.USER_UPDATED,
                 status: status.OK
             })
         }
         return ({
-            errCode: ERR_CODE.ERROR_FROM_SEVER,
-            errMsg: USER_MESSAGE.DUPLICATE_EMAIL,
-            status: status.CONFLICT
+            errCode: ERR_CODE.ERROR_FROM_CLIENT,
+            errMsg: USER_MESSAGE.USER_NOT_FOUND,
+            status: status.NOT_FOUND
         })
     }
 
-    softDelete = async (userid) => {
-        let user = await User.findOne({
+    softDelete = async (userId) => {
+        const user = await User.findOne({
             where: {
-                id: userid,
+                id: userId,
                 isDeleted: 0
             },
             raw: false
@@ -182,6 +191,21 @@ class UserService {
             errCode: ERR_CODE.ERROR_FROM_SEVER,
             errMsg: USER_MESSAGE.USER_NOT_FOUND,
             status: status.NOT_FOUND
+        })
+    }
+
+    getAllUser = async (pageIndex, pageSize) => {
+        const users = await User.findAll({
+            attributes: { exclude: ["password"] },
+            where: { isDeleted: 0 },
+        })
+        const start = (parseInt(pageIndex) - 1) * pageSize;
+        const end = start + pageSize;
+        return ({
+            data: users.slice(start, end),
+            errCode: ERR_CODE.OK,
+            errMsg: USER_MESSAGE.USER_FOUND,
+            status: status.OK
         })
     }
 }

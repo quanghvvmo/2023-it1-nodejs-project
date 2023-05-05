@@ -2,20 +2,20 @@ const Sequelize = require("sequelize");
 import { FormStatus } from "../../../common/constant";
 module.exports = {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.STRING,
         allowNull: false,
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4
     },
-    userid: {
+    userId: {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    formid: {
-        type: Sequelize.INTEGER,
+    formId: {
+        type: Sequelize.STRING,
         allowNull: false,
     },
-    managerid: {
+    managerId: {
         type: Sequelize.STRING,
         allowNull: false,
     },

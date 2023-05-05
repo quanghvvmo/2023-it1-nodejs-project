@@ -7,22 +7,22 @@ module.exports = class userForm extends BaseModel {
     static schema = require("./schema");
     static associate(models) {
         this.belongsTo(models.User, {
-            foreignKey: "userid",
+            foreignKey: "userId",
             targetKey: "id",
             as: "user",
         });
         this.belongsTo(models.User, {
-            foreignKey: "managerid",
+            foreignKey: "managerId",
             targetKey: "id",
             as: "manager",
         });
         this.belongsTo(models.Form, {
-            foreignKey: "formid",
+            foreignKey: "formId",
             targetKey: "id",
             as: "userform",
         });
         this.hasMany(models.FormDetail, {
-            foreignKey: "formid",
+            foreignKey: "formId",
             as: "formdetail",
             onDelete: Options.CASCADE,
             onUpdate: Options.CASCADE,

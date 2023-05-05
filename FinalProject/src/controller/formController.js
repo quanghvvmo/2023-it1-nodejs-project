@@ -13,7 +13,7 @@ class UserController {
             if (error) {
                 return res.status(status.BAD_REQUEST).json(error.details[0].message);
             }
-            if (data.userids && data.userids.length > 0) {
+            if (data.userIds && data.userIds.length > 0) {
                 result = await formService.createUserForm(value);
             } else {
                 result = await formService.createForm(value);
@@ -25,13 +25,26 @@ class UserController {
         }
     }
 
-    myForm = async (req, res) => {
+    formForEmployee = async (req, res) => {
         try {
-            const userid = req.user.id;
-            const result = await formService.myForm(userid);
+            const userId = req.user.id;
+            const pageIndex = parseInt(req.query.pageIndex) || config.query_default_page_index;
+            const pageSize = parseInt(req.query.pageSize) || config.query_default_page_size;
+            const result = await formService.formForEmployee(userId, pageIndex, pageSize);
             return res.status(result.status).json(result);
         } catch (error) {
-            console.log(error);
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
+        }
+    }
+
+    formForManager = async (req, res) => {
+        try {
+            const managerId = req.user.id;
+            const pageIndex = parseInt(req.query.pageIndex) || config.query_default_page_index;
+            const pageSize = parseInt(req.query.pageSize) || config.query_default_page_size;
+            const result = await formService.formForManager(managerId, pageIndex, pageSize);
+            return res.status(result.status).json(result);
+        } catch (error) {
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
@@ -46,7 +59,6 @@ class UserController {
             const result = await formService.updateUserForm(value, req.params.id, req.user);
             return res.status(result.status).json(result);
         } catch (error) {
-            console.log(error);
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
@@ -61,7 +73,6 @@ class UserController {
             const result = await formService.submitUserForm(value, req.params.id, req.user);
             return res.status(result.status).json(result);
         } catch (error) {
-            console.log(error);
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
@@ -76,7 +87,16 @@ class UserController {
             const result = await formService.approvalForm(value, req.params.id, req.user);
             return res.status(result.status).json(result);
         } catch (error) {
-            console.log(error);
+            return res.status(status.INTERNAL_SERVER_ERROR).json(error);
+        }
+    }
+
+    closeUserForm = async (req, res) => {
+        try {
+            const formId = req.params.id;
+            const result = await formService.closeUserForm(formId);
+            return res.status(result.status).json(result);
+        } catch (error) {
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
@@ -88,7 +108,6 @@ class UserController {
             const result = await formService.reportLabour(pageIndex, pageSize);
             return res.status(result.status).json(result)
         } catch (error) {
-            console.log(error);
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
@@ -100,7 +119,6 @@ class UserController {
             const result = await formService.reportPerfomance(pageIndex, pageSize);
             return res.status(result.status).json(result)
         } catch (error) {
-            console.log(error);
             return res.status(status.INTERNAL_SERVER_ERROR).json(error);
         }
     }

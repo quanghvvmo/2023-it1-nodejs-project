@@ -8,7 +8,7 @@ const options = {
     host: config.db_host,
     port: config.db_port,
     dialect: config.db_dialect,
-    logging: config.db_logging,
+    logging: config.db_logging === true ? console.log : false,
     timezone: config.db_timezone,
     pool: {
         max: 5,
@@ -21,7 +21,6 @@ const options = {
         timestamps: false
     }
 }
-
 const sequelize = new Sequelize(options);
 module.exports = {
     sequelize,

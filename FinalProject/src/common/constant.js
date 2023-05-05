@@ -23,4 +23,12 @@ const Options = {
     CASCADE: "CASCADE"
 }
 
-module.exports = { FormStatus, FormCategory, Roles, Options };
+const Methods = {
+    GET: "get",
+    POST: "post",
+    PUT: "put",
+    PATCH: "patch",
+    DELETE: "delete",
+}
+
+module.exports = { FormStatus, FormCategory, Roles, Options, Methods };

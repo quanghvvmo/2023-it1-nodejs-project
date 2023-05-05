@@ -6,7 +6,7 @@ module.exports = class formDetail extends BaseModel {
     static schema = require("./schema");
     static associate(models) {
         this.belongsTo(models.UserForm, {
-            foreignKey: "formid",
+            foreignKey: "formId",
             targetKey: "id",
             as: "userform",
         });

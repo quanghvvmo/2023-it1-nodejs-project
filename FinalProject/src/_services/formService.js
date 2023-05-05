@@ -1,5 +1,5 @@
 import Form from "../_database/models/form"
-import Userform from "../_database/models/userForm"
+import UserForm from "../_database/models/userForm"
 import FormDetail from "../_database/models/formDetail"
 import User from "../_database/models/user"
 import { sequelize } from "../config/database"
@@ -7,14 +7,16 @@ import { FormCategory, FormStatus } from "../common/constant"
 import { Op } from "sequelize";
 import { FORM_MESSAGE } from "../common/formMessage"
 import { ERR_CODE } from "../common/errCode"
+import { MAIL_CONTENT } from "../common/mailContent"
 import status from "http-status";
+import sendMail from "../_ultis/mailer";
 
 class formService {
 
     createForm = async (data) => {
         const form = await Form.create({
             ...data,
-            typeid: FormCategory[data.category],
+            typeId: FormCategory[data.categoryName],
         })
         return ({
             data: form,
@@ -26,14 +28,15 @@ class formService {
 
     createUserForm = async (data) => {
         //Check user only have 1 form status not closing before create
-        const check = await Userform.findAll({
+        const check = await UserForm.findAll({
             where: {
-                userid: {
-                    [Op.in]: data.userids
+                userId: {
+                    [Op.in]: data.userIds
                 },
                 status: {
                     [Op.notLike]: FormStatus.CLOSE
-                }
+                },
+                isDeleted: 0
             }
         })
         if (check && check.length > 0) {
@@ -48,19 +51,36 @@ class formService {
                 let userForms = [];
                 const form = await Form.create({
                     ...data,
-                    typeid: FormCategory[data.category]
+                    typeId: FormCategory[data.categoryName]
                 },
                     { transaction }
                 );
-                for (let i = 0; i < data.userids.length; i++) {
+                for (let i = 0; i < data.userIds.length; i++) {
                     userForms.push({
-                        userid: data.userids[i],
-                        formid: form.id,
-                        managerid: data.managerid,
+                        userId: data.userIds[i],
+                        formId: form.id,
+                        managerId: data.managerId,
                     })
                 }
-                await Userform.bulkCreate(userForms, { transaction })
+                await UserForm.bulkCreate(userForms, { transaction })
                 await transaction.commit();
+
+                //Get list users to take email for email sending
+                const listUsers = await User.findAll({
+                    where: {
+                        id: {
+                            [Op.in]: data.userIds
+                        },
+                        isDeleted: 0
+                    },
+                    raw: true
+                });
+
+                await Promise.all(
+                    listUsers.map(async (user) => {
+                        await sendMail(user.email, data.name, MAIL_CONTENT)
+                    })
+                )
                 return ({
                     data: form,
                     errCode: ERR_CODE.OK,
@@ -78,15 +98,59 @@ class formService {
         }
     }
 
-    myForm = async (userid) => {
-        const myForm = await Userform.findAll({
+    formForEmployee = async (userId, pageIndex, pageSize) => {
+        const myForms = await UserForm.findAll({
             where: {
-                userid: userid,
+                userId: userId,
                 isDeleted: 0,
-            }
+            },
+            include: [
+                {
+                    model: FormDetail,
+                    as: "formdetail"
+                }
+            ],
+            raw: true,
+            nest: true,
         })
+        const start = (parseInt(pageIndex) - 1) * pageSize;
+        const end = start + pageSize;
         return ({
-            data: myForm,
+            data: myForms.slice(start, end),
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            totalCount: myForms.length,
+            totalPage: Math.round(myForms.length / pageSize),
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_FOUND,
+            status: status.OK
+        })
+    }
+
+    formForManager = async (managerId, pageIndex, pageSize) => {
+        const myForms = await UserForm.findAll({
+            where: {
+                managerId: managerId,
+                isDeleted: 0,
+                status: FormStatus.SUBMITTED,
+            },
+            include: [
+                {
+                    model: FormDetail,
+                    as: "formdetail"
+                }
+            ],
+            raw: true,
+            nest: true,
+        })
+        const start = (parseInt(pageIndex) - 1) * pageSize;
+        const end = start + pageSize;
+        return ({
+            data: myForms.slice(start, end),
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            totalCount: myForms.length,
+            totalPage: Math.round(myForms.length / pageSize),
             errCode: ERR_CODE.OK,
             errMsg: FORM_MESSAGE.FORM_FOUND,
             status: status.OK
@@ -94,7 +158,7 @@ class formService {
     }
 
     updateUserForm = async (data, givenId, user) => {
-        const updatedForm = await Userform.update(data, { where: { id: givenId, userid: user.id, } })
+        const updatedForm = await UserForm.update(data, { where: { id: givenId, userId: user.id, isDeleted: 0 } })
         if (!updatedForm) {
             return ({
                 errCode: ERR_CODE.ERROR_FROM_SEVER,
@@ -103,7 +167,6 @@ class formService {
             })
         }
         return ({
-            data: updatedForm,
             errCode: ERR_CODE.OK,
             errMsg: FORM_MESSAGE.FORM_UPDATED,
             status: status.OK
@@ -113,8 +176,8 @@ class formService {
     submitUserForm = async (data, givenId, user) => {
         const transaction = await sequelize.transaction();
         try {
-            const submitForm = await Userform.findOne({
-                where: { id: givenId, userid: user[0].id, status: FormStatus.NEW }
+            const submitForm = await UserForm.findOne({
+                where: { id: givenId, userId: user.id, status: FormStatus.NEW, isDeleted: 0 }
             })
             if (!submitForm) {
                 return ({
@@ -123,13 +186,13 @@ class formService {
                     status: status.NOT_FOUND
                 })
             }
-            submitForm.userComment = data.userComment;
+            submitForm.userCmt = data.userCmt;
             submitForm.status = FormStatus.SUBMITTED;
             await submitForm.save({ transaction })
-
+            //Create new form detail
             await FormDetail.create(
                 {
-                    formid: submitForm.id,
+                    formId: submitForm.id,
                     descTask: data.descTask
                 },
                 { transaction }
@@ -153,8 +216,8 @@ class formService {
     approvalForm = async (data, givenId, user) => {
         const transaction = await sequelize.transaction();
         try {
-            const approvalForm = await Userform.findOne({
-                where: { id: givenId, managerid: user[0].id, status: FormStatus.SUBMITTED }
+            const approvalForm = await UserForm.findOne({
+                where: { id: givenId, managerId: user.id, status: FormStatus.SUBMITTED, isDeleted: 0 }
             })
             if (!approvalForm) {
                 return ({
@@ -166,16 +229,10 @@ class formService {
             approvalForm.managerCmt = data.managerComment;
             approvalForm.status = FormStatus.APPROVAL;
             await approvalForm.save({ transaction })
-            if (!approvalForm) {
-                return ({
-                    errCode: ERR_CODE.ERROR_FROM_SEVER,
-                    errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
-                    status: status.NOT_FOUND
-                })
-            }
+            //Update detail of form
             await FormDetail.update(
                 { result: data.result, point: data.point },
-                { where: { formid: approvalForm.id } },
+                { where: { formId: approvalForm.id } },
                 { transaction }
             )
             await transaction.commit();
@@ -185,7 +242,6 @@ class formService {
                 status: status.OK
             })
         } catch (error) {
-            console.log(error);
             await transaction.rollback();
             return ({
                 errCode: ERR_CODE.ERROR_FROM_SEVER,
@@ -195,13 +251,37 @@ class formService {
         }
     }
 
+    closeUserForm = async (formId) => {
+        const userForm = await UserForm.findOne({
+            where: {
+                id: formId,
+                status: FormStatus.APPROVAL,
+                isDeleted: 0
+            },
+            raw: false
+        })
+        if (!userForm) {
+            return ({
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
+                status: status.NOT_FOUND
+            })
+        }
+        userForm.status = FormStatus.CLOSE;
+        await userForm.save();
+        return ({
+            errCode: ERR_CODE.OK,
+            errMsg: FORM_MESSAGE.FORM_CLOSE,
+            status: status.OK
+        })
+    }
+
     reportLabour = async (pageIndex, pageSize) => {
         const currentTime = new Date();
         let users = [];
-        const offset = (parseInt(pageIndex) - 1) * pageSize;
-        const forms = await Form.findAndCountAll({
+        const forms = await Form.findAll({
             where: {
-                typeid: FormCategory.LABOUR_CONTRACT,
+                typeId: FormCategory.LABOUR_CONTRACT,
                 status: {
                     [Op.notLike]: FormStatus.CLOSE
                 },
@@ -211,13 +291,13 @@ class formService {
             },
             include: [
                 {
-                    model: Userform,
+                    model: UserForm,
                     where: {
                         status: {
                             [Op.notLike]: FormStatus.CLOSE
                         },
                     },
-                    attributes: ["userid", "status"],
+                    attributes: ["userId", "status"],
                     as: "userform",
                     include: [
                         {
@@ -227,16 +307,17 @@ class formService {
                     ]
                 }
             ],
-            limit: pageSize,
-            offset: offset,
             raw: true,
             nest: true
         })
-        for (let i = 0; i < forms.count; i++) {
-            users.push(forms.rows[i].userform.user);
+
+        for (let i = 0; i < forms.length; i++) {
+            users.push(forms[i].userform.user);
         }
+        const start = (parseInt(pageIndex) - 1) * pageSize;
+        const end = start + pageSize;
         return ({
-            data: users,
+            data: users.slice(start, end),
             pageIndex: pageIndex,
             pageSize: pageSize,
             totalCount: users.length,
@@ -250,26 +331,23 @@ class formService {
     reportPerfomance = async (pageIndex, pageSize) => {
         const currentTime = new Date();
         let users = [];
-        const offset = (parseInt(pageIndex) - 1) * pageSize;
-        const forms = await Form.findAndCountAll({
+        const forms = await Form.findAll({
             where: {
-                typeid: FormCategory.PERFORMANCE_REVIEW,
-                status: {
-                    [Op.notLike]: FormStatus.CLOSE
-                },
+                typeId: FormCategory.PERFORMANCE_REVIEW,
+                status: FormStatus.OPEN,
                 expDate: {
                     [Op.lte]: currentTime
                 }
             },
             include: [
                 {
-                    model: Userform,
+                    model: UserForm,
                     where: {
                         status: {
                             [Op.notLike]: FormStatus.CLOSE
                         },
                     },
-                    attributes: ["userid", "status"],
+                    attributes: ["userId", "status"],
                     as: "userform",
                     include: [
                         {
@@ -279,16 +357,16 @@ class formService {
                     ]
                 }
             ],
-            limit: pageSize,
-            offset: offset,
             raw: true,
             nest: true
         })
-        for (let i = 0; i < forms.count; i++) {
-            users.push(forms.rows[i].userform.user);
+        for (let i = 0; i < forms.length; i++) {
+            users.push(forms[i].userform.user);
         }
+        const start = (parseInt(pageIndex) - 1) * pageSize;
+        const end = start + pageSize;
         return ({
-            data: users,
+            data: users.slice(start, end),
             pageIndex: pageIndex,
             pageSize: pageSize,
             totalCount: users.length,

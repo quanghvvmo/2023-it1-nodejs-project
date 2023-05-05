@@ -7,7 +7,7 @@ module.exports = class formCategory extends BaseModel {
     static schema = require("./schema")
     static associate(models) {
         this.hasMany(models.Form, {
-            foreignKey: "typeid",
+            foreignKey: "typeId",
             as: "form",
             onDelete: Options.CASCADE,
             onUpdate: Options.CASCADE

@@ -4,7 +4,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
         primaryKey: true,
-        defaultValue: Sequelize.UUIDV1
+        defaultValue: Sequelize.UUIDV4
     },
     empCode: {
         type: Sequelize.STRING,
@@ -14,11 +14,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    firstname: {
+    firstName: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    lastname: {
+    lastName: {
         type: Sequelize.STRING,
         allowNull: false
     },

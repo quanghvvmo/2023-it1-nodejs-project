@@ -6,7 +6,7 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
     },
-    roleid: {
+    roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
@@ -16,18 +16,14 @@ module.exports = {
     },
     isCanRead: {
         type: Sequelize.BOOLEAN,
-        allowNull: false
     },
     isCanAdd: {
         type: Sequelize.BOOLEAN,
-        allowNull: false
     },
     isCanEdit: {
         type: Sequelize.BOOLEAN,
-        allowNull: false
     },
     isCanDelete: {
         type: Sequelize.BOOLEAN,
-        allowNull: false
     },
 }

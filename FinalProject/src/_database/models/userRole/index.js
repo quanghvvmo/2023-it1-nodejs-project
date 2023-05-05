@@ -7,12 +7,12 @@ module.exports = class userRole extends BaseModel {
     static schema = require("./schema");
     static associate(models) {
         this.belongsTo(models.User, {
-            foreignKey: "userid",
+            foreignKey: "userId",
             targetKey: "id",
             as: "userRole",
         });
         this.belongsTo(models.Role, {
-            foreignKey: "roleid",
+            foreignKey: "roleId",
             targetKey: "id",
             as: "roleData",
         });

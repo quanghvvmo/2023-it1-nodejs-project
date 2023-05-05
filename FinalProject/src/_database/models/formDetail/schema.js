@@ -1,13 +1,13 @@
 const Sequelize = require("sequelize");
 module.exports = {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
+        type: Sequelize.STRING,
         allowNull: false,
         primaryKey: true,
+        defaultValue: Sequelize.UUIDV4
     },
-    formid: {
-        type: Sequelize.INTEGER,
+    formId: {
+        type: Sequelize.STRING,
         allowNull: false,
     },
     result: {

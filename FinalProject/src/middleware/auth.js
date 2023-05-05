@@ -1,8 +1,14 @@
 import jwt from "jsonwebtoken"
 require("dotenv").config();
 import User from "../_database/models/user"
-import UserRole from "../_database/models/userRole"
-import Role from "../_database/models/role"
+import status from "http-status"
+import { AUTH_MESSAGES } from "../common/authMsg";
+import UserRole from "../_database/models/userRole";
+import Role from "../_database/models/role";
+import { Methods } from "../common/constant";
+import RoleModule from "../_database/models/roleModule";
+import { REGEXEXP } from "../_ultis";
+
 
 const getToken = (req) => {
     if (req.headers.authorization && req.headers.authorization.length > 0) {
@@ -13,33 +19,18 @@ const getToken = (req) => {
 const authJWT = async (req, res, next) => {
     const token = getToken(req);
     if (!token) {
-        return res.status(403).json("No token provided!")
+        return res.status(status.UNAUTHORIZED).json(AUTH_MESSAGES.NO_TOKEN)
     }
     jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
         if (err) {
-            return res.status(403).json("Failed to authenticate token!")
+            return res.status(status.UNAUTHORIZED).json(AUTH_MESSAGES.FAIL_AUTHENTICATE)
         } else {
             const userId = decoded.userId;
-            const user = await User.findAll({
+            const user = await User.findOne({
                 where: {
                     id: userId
                 },
-                include: [
-                    {
-                        model: UserRole,
-                        include: [
-                            {
-                                model: Role,
-                                as: "roleData",
-                                attributes: ["name"],
-                            },
-                        ],
-                        attributes: ["userid", "roleid"],
-                        as: "userRole"
-                    },
-                ],
-                raw: true,
-                nest: true
+                raw: true
             })
             req.user = user;
             return next();
@@ -47,4 +38,67 @@ const authJWT = async (req, res, next) => {
     })
 }
 
-module.exports = { authJWT: authJWT }
+const authorizationUser = async (req, res, next) => {
+    const { user } = req;
+    if (!user) {
+        return res.status(status.UNAUTHORIZED).json(AUTH_MESSAGES.NOT_LOGGED_IN)
+    }
+
+    const userRoles = await UserRole.findAll({
+        where: { userid: user.id },
+        include: [
+            {
+                model: Role,
+                as: "roleData",
+                attributes: ["id"],
+            },
+        ],
+        raw: true,
+        nest: true
+    })
+
+    const method = req.method.toString().toLowerCase();
+    let isPass = false;
+
+    let paths = req.originalUrl.split("/");
+    for (let i = 0; i < paths.length; i++) {
+        if (REGEXEXP.test(paths[i])) {
+            paths = paths.slice(0, i);
+            break;
+        }
+    }
+    const api = paths.join("/");
+    console.log(api);
+
+    for (let i = 0; i < userRoles.length; i++) {
+        const roleModule = await RoleModule.findOne({
+            where: { api: api, roleId: userRoles[i].roleData.id }
+        })
+        if (!roleModule) break;
+
+        switch (method) {
+            case Methods.GET:
+                if (roleModule.isCanRead) isPass = true;
+                break;
+            case Methods.POST:
+                if (roleModule.isCanAdd) isPass = true;
+                break;
+            case Methods.PUT:
+                if (roleModule.isCanEdit) isPass = true;
+                break;
+            case Methods.PATCH:
+                if (roleModule.isCanEdit) isPass = true;
+                break;
+            case Methods.DELETE:
+                if (roleModule.isCanEdit) isPass = true;
+                break;
+        }
+        if (isPass) return next();
+    }
+    return res.status(status.UNAUTHORIZED).json(AUTH_MESSAGES.AUTHORIZE_FORBIDDEN);
+}
+
+module.exports = {
+    authJWT: authJWT,
+    authorizationUser: authorizationUser
+}

@@ -7,4 +7,5 @@ export const FORM_MESSAGE = {
     FORM_SUBMITTED: "Form submitted successfully",
     FORM_APPROVALED: "Form approvaled successfully",
     FORM_FOUND: "Success",
+    FORM_CLOSE: "Form closed successfully",
 }

@@ -23,6 +23,13 @@ const configs = {
         //Paging
         query_default_page_size: process.env.QUERY_DEFAULT_PAGE_SIZE || 5,
         query_default_page_index: process.env.QUERY_DEFAULT_PAGE_INDEX || 1,
+
+        //Mail
+        mail_host: process.env.MAIL_HOST,
+        mail_port: process.env.MAIL_PORT,
+        mail_username: process.env.MAIL_USERNAME,
+        mail_password: process.env.MAIL_PASSWORD,
+        mail_from_address: process.env.MAIL_FROM_ADDRESS,
     }
 }
 const config = Object.assign(configs.base, configs[env]);

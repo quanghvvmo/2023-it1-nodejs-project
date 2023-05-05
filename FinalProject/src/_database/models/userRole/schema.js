@@ -6,11 +6,11 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
     },
-    userid: {
+    userId: {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    roleid: {
+    roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
     }
