@@ -2,6 +2,12 @@
 import express from "express";
 import config from "./config/index.js";
 import db from "./database/index.js";
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpecs = require("../src/config/swagger.js");
+const yaml = require("yamljs");
+
+const swaggerDocument = yaml.load("./src/config/swagger.yaml");
+
 // Create an express app
 const app = express();
 app.use(express.json());
@@ -30,6 +36,7 @@ const initSequelize = () => {
 };
 const startServer = async () => {
   app.listen(config.port, config.host);
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   //db.seedData();
   initSequelize();
   initService();
