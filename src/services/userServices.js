@@ -6,29 +6,31 @@ const { Op } = require("sequelize");
 const { sequelize } = require("../config/database");
 const bcrypt = require("bcrypt");
 
-import Role from "../database/models/role";
+const Role = require("../database/models/role");
 import APIError from "../utils/errorHandler";
-import { response, paginatedResponse } from "../utils/responseHandler";
+import {
+  createUserResponse,
+  response,
+  paginatedResponse,
+} from "../utils/responseHandler";
 import jwt from "jsonwebtoken";
 
 const login = async (payload) => {
-  const user = await User.findOne(
-    {
-      include: [
-        {
-          model: UserRole,
-          include: [
-            {
-              model: Role,
-            },
-          ],
-        },
-      ],
+  const user = await User.findOne({
+    where: {
+      [Op.and]: [{ username: payload.username }, { password: payload.password }],
     },
-
-    { where: { username: payload.username } }
-  );
-
+    include: [
+      {
+        model: UserRole,
+        include: [
+          {
+            model: Role,
+          },
+        ],
+      },
+    ],
+  });
   if (!user) {
     throw new APIError({
       message: "Wrong username or password",
@@ -37,23 +39,19 @@ const login = async (payload) => {
   }
   const roleArr = user.userRoles.map((user) => user.Role.id);
   const dataForAccessToken = {
+    userId: user.id,
     username: user.username,
     roles: roleArr,
   };
-  if (user.password !== payload.password) {
-    throw new APIError({
-      message: "Wrong username or password",
-      status: httpStatus.UNAUTHORIZED,
-    });
-  }
   const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
   return new response(httpStatus.OK, "Login successful", token);
 };
 const createUser = async (payload) => {
-  const t = await sequelize.transaction();
+  let t;
   try {
+    t = await sequelize.transaction();
     const [newUser, created] = await User.findOrCreate(
       {
         where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
@@ -62,7 +60,14 @@ const createUser = async (payload) => {
       }
       //{ transaction: t }
     );
-
+    const assignRole = await UserRole.create(
+      {
+        createdBy: "ADMIN",
+        RoleId: payload.RoleId,
+        userId: newUser.id,
+      },
+      { transaction: t }
+    );
     if (!created) {
       throw new APIError({
         message: "User already exists",
@@ -70,7 +75,12 @@ const createUser = async (payload) => {
       });
     }
     await t.commit();
-    return new response(httpStatus.OK, "created successful", newUser);
+    return new createUserResponse(
+      httpStatus.OK,
+      "created successful",
+      newUser,
+      assignRole
+    );
   } catch (err) {
     console.error(err);
     await t.rollback();
@@ -81,7 +91,9 @@ const createUser = async (payload) => {
   }
 };
 const getUser = async (userID) => {
-  const result = await User.findByPk(userID, { include: [{ model: UserRole, include: [{ model: Rolee }] }] });
+  const result = await User.findByPk(userID, {
+    include: [{ model: UserRole, include: [{ model: Rolee }] }],
+  });
   if (!result) {
     throw new APIError({
       message: "User not found",
@@ -91,7 +103,10 @@ const getUser = async (userID) => {
   return new response(httpStatus.OK, "User found", result);
 };
 const getUsers = async (Page, Size) => {
-  const users = await User.findAll({ attributes: { exclude: ["password"] }, where: { isActive: true } });
+  const users = await User.findAll({
+    attributes: { exclude: ["password"] },
+    where: { isActive: true },
+  });
   const totalUsers = users.length;
   const totalPages = Math.ceil(totalUsers / Size);
   if (Page > totalPages) {
@@ -105,12 +120,22 @@ const getUsers = async (Page, Size) => {
       status: httpStatus.NOT_FOUND,
     });
   }
-  return new paginatedResponse(Page, Size, totalUsers, totalPages, users.slice(startIndex, endIndex));
+  return new paginatedResponse(
+    Page,
+    Size,
+    totalUsers,
+    totalPages,
+    users.slice(startIndex, endIndex)
+  );
 };
 const updateUser = async (userId, payload) => {
   try {
     const t = await sequelize.transaction();
-    const user = await User.update(payload, { where: { [Op.and]: [{ id: userId }, { isActive: true }] } }, { transaction: t });
+    const user = await User.update(
+      payload,
+      { where: { [Op.and]: [{ id: userId }, { isActive: true }] } },
+      { transaction: t }
+    );
     await t.commit();
     if (user == 0) {
       throw new APIError({
@@ -130,7 +155,11 @@ const updateUser = async (userId, payload) => {
 const disableUser = async (userID) => {
   try {
     const t = await sequelize.transaction();
-    const user = await User.update({ isActive: false }, { where: { id: userID } }, { transaction: t });
+    const user = await User.update(
+      { isActive: false },
+      { where: { id: userID } },
+      { transaction: t }
+    );
     await t.commit();
     if (!user) {
       throw new APIError({

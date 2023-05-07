@@ -29,7 +29,7 @@ module.exports = class BaseModel extends Sequelize.Model {
         },
         updatedBy: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         updatedAt: {
           type: Sequelize.DATE,

@@ -1,4 +1,11 @@
-import { login, createUser, getUser, getUsers, disableUser, updateUser } from "../services/userServices";
+import {
+  login,
+  createUser,
+  getUser,
+  getUsers,
+  disableUser,
+  updateUser,
+} from "../services/userServices";
 import httpStatus from "http-status";
 import { Loginschema, UserSchema, UserUpdateSchema } from "../validate/userValidate";
 const User = require("../database/models/user");
@@ -9,7 +16,7 @@ const loginController = async (req, res, next) => {
     if (error) {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
-
+    console.log("this is value " + value.username);
     const token = await login(value);
     return res.status(httpStatus.OK).json({ token });
   } catch (error) {
@@ -69,4 +76,11 @@ const editUser = async (req, res, next) => {
     next(err);
   }
 };
-export { loginController, createUserController, getUserByID, getListUser, deleteUser, editUser };
+export {
+  loginController,
+  createUserController,
+  getUserByID,
+  getListUser,
+  deleteUser,
+  editUser,
+};

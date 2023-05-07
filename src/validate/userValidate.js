@@ -1,4 +1,12 @@
-import { EMAIL_REGEX, PASSWORD_REGEX, USERNAME_REGEX, NAME_REGEX, TIME_REGEX, TIME_WITH_SECOND_REGEX, PHONE_NUMBER_REGEX } from "../utils/regex";
+import {
+  EMAIL_REGEX,
+  PASSWORD_REGEX,
+  USERNAME_REGEX,
+  NAME_REGEX,
+  TIME_REGEX,
+  TIME_WITH_SECOND_REGEX,
+  PHONE_NUMBER_REGEX,
+} from "../utils/regex";
 import Joi from "joi";
 const Loginschema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required().pattern(USERNAME_REGEX),
@@ -19,6 +27,7 @@ const UserSchema = Joi.object({
   phone: Joi.string().min(10).max(11),
   avatar: Joi.string(),
   address: Joi.string().max(100),
+  RoleId: Joi.number().required(),
   createdBy: Joi.string().min(3).max(30).required(),
   updatedBy: Joi.string().min(3).max(30).required(),
 });

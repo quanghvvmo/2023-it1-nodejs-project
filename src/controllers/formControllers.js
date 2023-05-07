@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { createForm, updateForm, closeForm, getListForm } from "../services/formServices";
+import { createForm, updateForm, closeForm, getListform } from "../services/formServices";
 import { createFormSchema, editFormSchema } from "../validate/formValidate";
 const createNewForm = async (req, res, next) => {
   try {
@@ -7,7 +7,9 @@ const createNewForm = async (req, res, next) => {
     if (error) {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
-    const form = await createForm(value);
+    const currentUser = req.user.username;
+    const currentUserId = req.user.userId;
+    const form = await createForm(value, currentUser, currentUserId);
     res.status(httpStatus.CREATED).json(form);
   } catch (err) {
     next(err);
@@ -16,7 +18,7 @@ const createNewForm = async (req, res, next) => {
 const getForms = async (req, res, next) => {
   try {
     const { page, size } = req.query;
-    const users = await getListForm(page, size);
+    const users = await getListform(page, size);
     res.status(httpStatus.FOUND).json(users);
   } catch (err) {
     next(err);
@@ -37,7 +39,8 @@ const editForm = async (req, res, next) => {
 };
 const close = async (req, res, next) => {
   try {
-    const form = await closeForm(req.params.id);
+    const { id } = req.params;
+    const form = await closeForm(id);
     res.status(httpStatus.OK).json(form);
   } catch (err) {
     next(err);

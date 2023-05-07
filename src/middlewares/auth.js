@@ -34,15 +34,12 @@ const authorize = async (req, res, next) => {
   } else {
     api = path.substring(0, path.lastIndexOf("?"));
   }
+  console.log("this is API: " + api);
   const { method } = req;
   let isPass = false;
   for (let i = 0; i < user.roles.length; i++) {
     let RoleId = user.roles[i];
     const permission = await permissions.findOne({ where: { api, RoleId } });
-    console.log("this is path: " + path);
-    console.log("this is api: " + api);
-    console.log("this is permission: " + permission);
-    console.log(path.lastIndexOf("/"));
     if (permission) {
       switch (method) {
         case "GET":
@@ -58,9 +55,10 @@ const authorize = async (req, res, next) => {
           if (permission.delete) isPass = true;
           break;
         case "PATCH":
-          if (permission.update) isPass = true;
+          if (permission.approve) isPass = true;
           break;
       }
+
       if (isPass) return next();
     }
   }
