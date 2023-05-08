@@ -87,7 +87,8 @@ const getListUserFormsController = async (req, res, next) => {
             pageSize = config.defaultSizePagination;
         }
 
-        const userForms = await getListUserForms(req.user, pageIndex, pageSize);
+        const { isManager } = req.query;
+        const userForms = await getListUserForms(req.user, pageIndex, pageSize, isManager);
         return res.status(httpStatus.OK).json(userForms);
     } catch (error) {
         next(error);

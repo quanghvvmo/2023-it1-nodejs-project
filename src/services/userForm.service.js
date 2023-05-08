@@ -10,7 +10,8 @@ const { UserForm, UserFormDetail, Form } = sequelize.models;
 
 const getUserForm = async (currentUser, userFormId) => {
     const isHrOrAdmin = currentUser.Roles.some(
-        (role) => role.id === ROLES["HR"] || role.id === ROLES["ADMIN"]
+        (role) =>
+            role.id === ROLES["HR"] || role.id === ROLES["ADMIN"] || role.id === ROLES["DIRECTOR"]
     );
 
     const userForm = await UserForm.findOne({
@@ -36,18 +37,29 @@ const getUserForm = async (currentUser, userFormId) => {
     return userForm;
 };
 
-const getListUserForms = async (currentUser, pageIndex, pageSize) => {
+const getListUserForms = async (currentUser, pageIndex, pageSize, isManager) => {
     const isHrOrAdmin = currentUser.Roles.some(
-        (role) => role.id === ROLES["HR"] || role.id === ROLES["ADMIN"]
+        (role) =>
+            role.id === ROLES["HR"] || role.id === ROLES["ADMIN"] || role.id === ROLES["DIRECTOR"]
     );
+
+    if (isManager !== "true") {
+        isManager = false;
+    }
 
     const userForms = await UserForm.findAll({
         include: [UserFormDetail],
         where: {
             isDeleted: false,
             [Op.or]: [
-                { UserId: currentUser.id },
-                { ManagerId: currentUser.id },
+                isManager
+                    ? {
+                          [Op.and]: [
+                              { ManagerId: currentUser.id },
+                              { status: USER_FORM_STATUS.SUBMITTED },
+                          ],
+                      }
+                    : { UserId: currentUser.id },
                 isHrOrAdmin && { isDeleted: false },
             ],
         },

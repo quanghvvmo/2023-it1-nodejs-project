@@ -5,8 +5,9 @@ import chaiHttp from "chai-http";
 import jwt from "jsonwebtoken";
 import server from "../src/server.js";
 import config from "../src/config/index.js";
+import { userMessages } from "../src/constants/messages.constants.js";
 
-const should = chai.should();
+chai.should();
 
 chai.use(chaiHttp);
 
@@ -25,11 +26,11 @@ before(async function () {
 describe("User API", () => {
     describe("POST /api/v1/users", () => {
         const newUser = {
-            username: "username4123in",
+            username: "useradfdfasn",
             password: "12345678",
             firstName: "first",
             lastName: "last",
-            email: "emafsade2@gmail.com",
+            email: "emafadasfse2@gmail.com",
             role: "ADMIN",
         };
 
@@ -59,6 +60,10 @@ describe("User API", () => {
                 .send(newUser)
                 .end((err, res) => {
                     res.should.have.status(409);
+                    res.body.data?.should.be.an("object");
+                    res.body.data?.should.have
+                        .property("message")
+                        .that.equals(userMessages.DUPLICATE_USERNAME);
                     done();
                 });
         });
@@ -71,30 +76,63 @@ describe("User API", () => {
                 .set("Authorization", `Bearer ${jwtToken}`)
                 .end((err, res) => {
                     res.should.have.status(200);
+                    res.body.should.be.an("object");
+                    res.body.should.have.property("pageIndex");
+                    res.body.should.have.property("pageSize");
+                    res.body.should.have.property("totalCount");
+                    res.body.should.have.property("totalPages");
+                    res.body.should.have.property("data");
+
+                    done();
+                });
+        });
+    });
+
+    describe("/PUT /api/v1/users/:id", () => {
+        it("it should UPDATE the user first name and return message success", (done) => {
+            chai.request(server)
+                .put(`/api/v1/users/${userIdCreated}`)
+                .set("Authorization", `Bearer ${jwtToken}`)
+                .send({ firstName: "new first name" })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.an("object");
+                    res.body.should.have.property("message").that.equals(userMessages.USER_UPDATED);
+
                     done();
                 });
         });
     });
 
     describe("/GET /api/v1/users/:id", () => {
-        it("it should GET user detail with customer property", (done) => {
+        it("it should GET the correct user detail after UPDATE", (done) => {
             chai.request(server)
                 .get(`/api/v1/users/${userIdCreated}`)
                 .set("Authorization", `Bearer ${jwtToken}`)
                 .end((err, res) => {
                     res.should.have.status(200);
+                    res.body.data?.should.be.an("object");
+                    res.body.data?.should.have.property("id").that.equals(userIdCreated);
+                    res.body.data?.should.have.property("username").that.equals(newUser.username);
+                    res.body.data?.should.have.property("firstName").that.equals("new first name");
+                    res.body.data?.should.have.property("lastName").that.equals(newUser.lastName);
+                    res.body.data?.should.have.property("email").that.equals(newUser.email);
+
                     done();
                 });
         });
     });
 
     describe("/DELETE /api/v1/users/:id", () => {
-        it("it should DELETE user and return userId which is deleted", (done) => {
+        it("it should DELETE user and return message success", (done) => {
             chai.request(server)
                 .delete(`/api/v1/users/${userIdCreated}`)
                 .set("Authorization", `Bearer ${jwtToken}`)
                 .end((err, res) => {
                     res.should.have.status(200);
+                    res.body.should.be.an("object");
+                    res.body.should.have.property("message").that.equals(userMessages.USER_DELETED);
+
                     done();
                 });
         });

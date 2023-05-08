@@ -63,6 +63,7 @@ const addUser = async (payload) => {
         payload.employeeId = genEmployeeId(lastUser.employeeId);
     }
 
+    // create user
     const transaction = await sequelize.transaction();
     let newUser;
 

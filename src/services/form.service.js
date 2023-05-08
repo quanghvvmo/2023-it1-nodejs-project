@@ -55,15 +55,16 @@ const addForm = async (currentUser, payload) => {
 
         const userForms = await Promise.all(
             payload.userIds.map(async (userId) => {
-                const { managerId } = await User.findOne({
+                const { ManagerId } = await User.findOne({
                     attributes: ["ManagerId"],
                     where: { id: userId },
                 });
+
                 return {
                     UserId: userId,
                     FormId: newForm.id,
                     status: USER_FORM_STATUS.NEW,
-                    ManagerId: managerId,
+                    ManagerId,
                 };
             })
         );
@@ -153,15 +154,7 @@ const deleteForm = async (formId) => {
     try {
         deletedForm = await Form.update({ isDeleted: true }, { where: { id: formId } });
 
-        const userFormDeleted = await UserForm.update(
-            { isDeleted: true },
-            { where: { FormId: formId }, returning: true, plain: true }
-        );
-
-        await UserFormDetail.update(
-            { isDeleted: true },
-            { where: { UserFormId: userFormDeleted.id } }
-        );
+        await UserForm.update({ isDeleted: true }, { where: { FormId: formId } });
 
         await transaction.commit();
     } catch (error) {

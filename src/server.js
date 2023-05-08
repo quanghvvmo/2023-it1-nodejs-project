@@ -19,22 +19,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan(config.morganFormat));
 
 const initService = () => {
-    console.log("Init - Register services.");
+
     app.use("/api/v1", routers);
 
     // Init api documents
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    console.log(`Init - Register services successfully.`);
 };
 
 const initSequelize = () => {
     sequelize
         .authenticate()
         .then(() => {
-            console.log("Init - Establish connection successfully.");
+
         })
         .catch((err) => {
-            console.log("Init - Establish connection fail:", err);
+
         });
 };
 
@@ -48,7 +47,7 @@ const handleError = () => {
 
 const startServer = async () => {
     app.listen(config.port, config.host);
-    console.log(`Listening on host ${config.host} on port ${config.port} `);
+  
 };
 
 getEnvironmentSetting()
@@ -57,7 +56,7 @@ getEnvironmentSetting()
     .then(handleError.bind(this))
     .then(startServer.bind(this))
     .catch((error) => {
-        console.error("Startup Error: ", error);
+    
     });
 
 export default app;

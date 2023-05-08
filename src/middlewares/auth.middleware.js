@@ -17,16 +17,17 @@ const getToken = (req) => {
 };
 
 const removePathParams = (path) => {
-    let segments = path.split("/");
+    let newPath = path.split("?")[0]; // remove query parameters
+    let segments = newPath.split("/");
 
     for (let i = 0; i < segments.length; i++) {
-        if (segments[i].startsWith(":") || segments[i].match(UUID_REGEX)) {
+        if (segments[i].match(UUID_REGEX)) {
             segments = segments.slice(0, i);
             break;
         }
     }
 
-    const newPath = segments.join("/");
+    newPath = segments.join("/");
     return newPath;
 };
 
@@ -71,11 +72,10 @@ const authorize = async (req, res, next) => {
     let isPassPermission = false;
     const { Roles } = req.user;
 
+    console.log(req.originalUrl);
     const path = removePathParams(req.originalUrl);
-    console.log(path);
 
     const method = req.method.toString().toLowerCase();
-    console.log(method);
 
     for (let i = 0; i < Roles.length; i++) {
         const roleModule = await RoleModules.findOne({ where: { api: path, RoleId: Roles[i].id } });

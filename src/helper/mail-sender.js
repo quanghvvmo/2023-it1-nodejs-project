@@ -20,7 +20,7 @@ function mailSender(toArr, subject, html) {
             },
             (err) => {
                 if (err) {
-                    console.log("Fail to send !");
+   
                 }
             }
         );

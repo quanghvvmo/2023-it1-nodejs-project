@@ -16,7 +16,7 @@ const userMessages = {
 };
 
 const formMessages = {
-    FORM_NOT_FOUND: "User not found in database",
+    FORM_NOT_FOUND: "Form not found in database",
     FORM_CREATED: "Form created successfully",
     FORM_DELETED: "Form deleted successfully",
     FORM_UPDATED: "Form updated successfully",
