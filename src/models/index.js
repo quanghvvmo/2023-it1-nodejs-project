@@ -11,7 +11,7 @@ import userFormModel from "./userForm.model.js";
 import userFormDetailModel from "./userFormDetail.model.js";
 
 const sequelize = new Sequelize(
-    config.env === "test" ? "test" : config.dbDatabase,
+    config.env === "test" ? config.dbDatabaseTest : config.dbDatabase,
     config.dbUsername,
     config.dbPassword,
     {

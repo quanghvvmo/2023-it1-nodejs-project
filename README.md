@@ -50,6 +50,8 @@ MAIL_SERVICE=
 
 ## To test
 
+Create database test and change DB_DATABASE_TEST in .env then run seeder .sql file 
+
 ```shell
 > npm test
 ```

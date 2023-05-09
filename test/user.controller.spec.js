@@ -26,11 +26,11 @@ before(async function () {
 describe("User API", () => {
     describe("POST /api/v1/users", () => {
         const newUser = {
-            username: "useradfdfasn",
+            username: "useadfdfasn",
             password: "12345678",
             firstName: "first",
             lastName: "last",
-            email: "emafadasfse2@gmail.com",
+            email: "emafadasfse@gmail.com",
             role: "ADMIN",
         };
 

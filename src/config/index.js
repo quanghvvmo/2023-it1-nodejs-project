@@ -20,6 +20,8 @@ const configs = {
         dbPassword: process.env.DB_PASSWORD,
         dbDatabase: process.env.DB_DATABASE,
 
+        dbDatabaseTest: process.env.DB_DATABASE_TEST,
+
         // Security
         tokenSecret: process.env.TOKEN_SECRET,
         tokenExpiry: process.env.TOKEN_EXPIRY,
