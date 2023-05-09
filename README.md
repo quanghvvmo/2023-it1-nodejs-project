@@ -1,10 +1,15 @@
-# SMALL PROJECT
+# HR PROJECT
 
 ## Intro
 
+The application is designed to automate various HR processes such as managing employees' personal information, recording and tracking their performance evaluations, and managing the onboarding process for new hires. The system includes modules for managing users, roles, and permissions, as well as notifications and reporting features.
+
+Note: 
 Swagger UI: http://localhost:8080/api-docs
 
-And "API Collection.postman_collection.json" in root folder for import in Postman
+"API Collection.postman_collection.json" in root folder for import in Postman
+
+"hr_management.sql" for database seeder. Run it first before run application.
 
 ## Techs
 
