@@ -6,11 +6,11 @@ export class response {
   }
 }
 export class createUserResponse {
-  constructor(status, message, data, data2) {
+  constructor(status, message, user, userRole) {
     this.status = status;
     this.message = message;
-    this.data = data;
-    this.data2 = data2;
+    this.user = user;
+    this.userRole = userRole;
   }
 }
 export class errorResponse {

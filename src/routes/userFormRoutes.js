@@ -5,6 +5,7 @@ import {
   getListIncompletedForm,
   getListForm,
   createFormDetails,
+  EditUserFormDetail,
   getListCompletedForm,
 } from "../controllers/userFormControllers";
 import express from "express";
@@ -25,7 +26,13 @@ userFormRouter.post(
   authorize,
   createFormDetails
 );
-userFormRouter.get("/getListForm/", verifyToken, authorize, getListForm);
+userFormRouter.put(
+  "/userform/UpdateUserformDetail/:id",
+  verifyToken,
+  authorize,
+  EditUserFormDetail
+);
+userFormRouter.get("/userform/getListForm", verifyToken, authorize, getListForm);
 userFormRouter.put("/userform/:id", verifyToken, authorize, EditUserForm);
 userFormRouter.patch("/userform/:id", verifyToken, authorize, approvedForm);
 

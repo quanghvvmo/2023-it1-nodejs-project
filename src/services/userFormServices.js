@@ -15,6 +15,7 @@ const Form = require("../database/models/form");
 const UserRole = require("../database/models/userRole");
 const User = require("../database/models/user");
 const formDetail = require("../database/models/formDetail");
+const Role = require("../database/models/role");
 const getUserForms = async (uId, Page, Size) => {
   try {
     const userForms = await UserForm.findAll(
@@ -55,16 +56,19 @@ const createFormDetail = async (payload, currentUser) => {
   let t;
   try {
     t = await sequelize.transaction();
-    const existUserForm = await UserForm.findOne({ where: { id: payload.userFormId } });
-    if (existUserForm) {
+    const existUserForm = await UserForm.findOne({ where: { id: payload.userformId } });
+    if (existUserForm.userId == currentUser) {
       const result = await formDetail.create(
         { ...payload, createdBy: currentUser },
         { transaction: t }
       );
       t.commit();
-      return new response(httpStatus.OK, "created successfully", result);
+      return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, result);
     } else {
-      return new errorResponse(httpStatus.NOT_FOUND, "create fail");
+      return new errorResponse(
+        httpStatus.NOT_FOUND,
+        USER_FORM_STATUS.USER_FORM_UPDATE_FAILED
+      );
     }
   } catch (err) {
     await t.rollback();
@@ -74,22 +78,27 @@ const createFormDetail = async (payload, currentUser) => {
     });
   }
 };
-const updateFormDetail = async (payload, userId) => {
+const updateFormDetail = async (payload, userId, FormDetailId) => {
   let t;
   try {
-    const FormDetail = await formDetail.findOne({ where: { userId: userId } });
-    if (FormDetail.userId == userId) {
-      t = await sequelize.transaction();
-      const result = await formDetail.update(
-        { where: { userId: userId } },
-        { ...payload }
+    t = await sequelize.transaction();
+    const [affectedRows, affectedRowsData] = await formDetail.update(
+      { ...payload },
+      { where: { id: FormDetailId } }
+    );
+    t.commit();
+    console.log(affectedRows);
+    console.log(FormDetailId);
+    if (affectedRows > 0) {
+      return new response(
+        httpStatus.OK,
+        USER_FORM_STATUS.USER_FORM_UPDATE,
+        affectedRowsData
       );
-      t.commit();
-      return new response(httpStatus.OK, "created successfully", result);
     }
     return new errorResponse({
       status: httpStatus.NOT_MODIFIED,
-      message: FORM_MESSAGE.ROLLBACK_FAILED,
+      message: USER_FORM_STATUS.UPDATE_OTHER_FORM_ERROR,
     });
   } catch (err) {
     await t.rollback();
@@ -101,12 +110,14 @@ const updateFormDetail = async (payload, userId) => {
 };
 const updateUserForm = async (payload, formId, uId, currentUser) => {
   let t;
+
   try {
     t = await sequelize.transaction();
     const userForm = await UserForm.findOne(
-      { include: [{ model: Form }] },
-      { where: { id: formId } }
+      { where: { id: formId }, include: [{ model: Form }] }
+      // { include: [{ model: Form }] }
     );
+
     const date = new Date();
     const currentDate = date.toISOString().slice(0, 19).replace("T", " ");
     const deadline = userForm.form.dueDate.toISOString().slice(0, 19).replace("T", " ");
@@ -122,15 +133,15 @@ const updateUserForm = async (payload, formId, uId, currentUser) => {
           { transaction: t }
         );
         t.commit();
-        return new response(httpStatus.OK, "updated successfully", userForm);
+        return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
       } else {
         return new errorResponse(
           httpStatus.BAD_REQUEST,
-          "You cannot update other userform"
+          USER_FORM_STATUS.UPDATE_OTHER_FORM_ERROR
         );
       }
     } else {
-      return new errorResponse(httpStatus.BAD_REQUEST, "date is over due");
+      return new errorResponse(httpStatus.BAD_REQUEST, USER_FORM_STATUS.OVER_DUEDATE);
     }
   } catch (err) {
     await t.rollback();
@@ -140,7 +151,7 @@ const updateUserForm = async (payload, formId, uId, currentUser) => {
     });
   }
 };
-const approveForm = async (payload, currentUser, formId, role) => {
+const approveForm = async (payload, currentUser, formId, roleId) => {
   let t;
   try {
     let formStatus;
@@ -149,6 +160,7 @@ const approveForm = async (payload, currentUser, formId, role) => {
       { include: [{ model: Form }] },
       { where: { id: formId } }
     );
+    const role = await Role.findOne({ where: { id: roleId } });
     const date = new Date();
     const currentDate = date.toISOString().slice(0, 19).replace("T", " ");
     const deadline = userForm.form.dueDate.toISOString().slice(0, 19).replace("T", " ");
@@ -156,10 +168,10 @@ const approveForm = async (payload, currentUser, formId, role) => {
     const dueDate = new Date(deadline);
     if (role != 2) {
       //EMPLOYEE
-      if (role == 3) {
+      if (role.name == "MANAGER") {
         //MANAGER
         formStatus = USER_FORM_STATUS.APPROVED;
-      } else if (role == 5) {
+      } else if (role.name == "HR") {
         //HR
         formStatus = USER_FORM_STATUS.CLOSED;
       }
@@ -172,15 +184,12 @@ const approveForm = async (payload, currentUser, formId, role) => {
           { transaction: t }
         );
         t.commit();
-        return new response(httpStatus.OK, "updated successfully", userForm);
+        return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
       } else {
-        return new errorResponse(httpStatus.BAD_REQUEST, "date is over due");
+        return new errorResponse(httpStatus.BAD_REQUEST, USER_FORM_STATUS.OVER_DUEDATE);
       }
     } else {
-      return new errorResponse(
-        httpStatus.FORBIDDEN,
-        "You do not have permission to access this!"
-      );
+      return new errorResponse(httpStatus.FORBIDDEN, USER_STATUS.PERMISSION);
     }
   } catch (err) {
     await t.rollback();
@@ -192,14 +201,14 @@ const approveForm = async (payload, currentUser, formId, role) => {
 };
 const getAllForms = async (currentUser, Page, Size) => {
   try {
-    const user = await UserRole.findOne({ where: { userId: currentUser } });
-    console.log("this is Role ID: " + user.roleId);
-
     const userForms = await UserForm.findAll({ include: [{ model: formDetail }] });
     const totalForms = userForms.length;
     const totalPages = Math.ceil(totalForms / Size);
     if (Page > totalPages) {
-      throw new APIError({ message: "Invalid index", status: httpStatus.BAD_REQUEST });
+      throw new APIError({
+        message: FORM_MESSAGE.INVALID_INDEX,
+        status: httpStatus.BAD_REQUEST,
+      });
     }
     const startIndex = (Page - 1) * Size;
     const endIndex = startIndex + Size;
@@ -229,7 +238,7 @@ const getUsersIncompletedForm = async () => {
       include: [{ model: UserForm, attributes: ["id"], where: { userComment: null } }],
       attributes: ["id", "username", "email"],
     });
-    return new response(httpStatus.OK, "FOUND", result);
+    return new response(httpStatus.OK, FORM_MESSAGE.FOUND, result);
   } catch (err) {
     throw new APIError({
       message: FORM_MESSAGE.NOT_FOUND,
@@ -249,7 +258,7 @@ const getUsersCompletedForm = async () => {
       ],
       attributes: ["id", "username", "email"],
     });
-    return new response(httpStatus.OK, "FOUND", result);
+    return new response(httpStatus.OK, FORM_MESSAGE.FOUND, result);
   } catch (err) {
     throw new APIError({
       message: FORM_MESSAGE.NOT_FOUND,
@@ -266,4 +275,5 @@ export {
   getAllForms,
   createFormDetail,
   getUsersCompletedForm,
+  updateFormDetail,
 };

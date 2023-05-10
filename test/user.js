@@ -4,6 +4,7 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import jwt from "jsonwebtoken";
 import app from "../src/server.js";
+import { login } from "../src/services/userServices.js";
 
 const should = chai.should();
 
@@ -12,21 +13,133 @@ const expect = chai.expect;
 let jwtToken;
 let existIdUser;
 let userIdCreated;
-before(async function () {
-  existIdUser = "d9beeab0-dcb1-4d4d-b407-445206e3ae8c";
-
-  jwtToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzNDA3MjU1LCJleHAiOjE2ODM0OTM2NTV9.lbMyFZhWllP1czfeYqq6QdGb4ld109YbkXHxaq6a5Sg";
+function makeid() {
+  let result = "";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let counter = 0;
+  while (counter < 10) {
+    result += characters.charAt(Math.floor(Math.random() * 10));
+    counter += 1;
+  }
+  return result;
+}
+before(async () => {
+  const credentials = {
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD,
+  };
+  const user = await login(credentials);
+  jwtToken = user.data;
 });
-describe("/GET /api/user/:id", () => {
-  it("it should GET all usernames", (done) => {
-    chai
-      .request(app)
-      .get("/api/user/2")
-      .set("Authorization", `Bearer ${jwtToken}`)
-      .end((err, res) => {
-        res.should.have.status(302);
-        done();
-      });
+describe("User API", () => {
+  describe("POST /api/user", () => {
+    const newUser = {
+      username: makeid(),
+      password: "123123",
+      email: makeid() + "@gmail.com",
+      RoleId: "2",
+    };
+    it("it should create a new user ", (done) => {
+      chai
+        .request(app)
+        .post("/api/user/createuser")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .send(newUser)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.data?.should.be.an("object");
+          userIdCreated = res.body.data?.id;
+          done();
+        });
+    });
+    it("it should return an error if the username already exists", (done) => {
+      chai
+        .request(app)
+        .post("/api/user/createuser")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .send(newUser)
+        .end((err, res) => {
+          res.should.have.status(409);
+          res.body.data?.should.be.an("object");
+          done();
+        });
+    });
+  });
+  describe("/GET /api/user", () => {
+    it("it should GET all users", (done) => {
+      chai
+        .request(app)
+        .get("/api/user/")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.an("object");
+
+          done();
+        });
+    });
+  });
+  describe("/GET /api/user/:id", () => {
+    it("it should GET single user", (done) => {
+      chai
+        .request(app)
+        .get("/api/user/2")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.an("object");
+          done();
+        });
+    });
+  });
+  describe("/DELETE /api/user/:id", () => {
+    it("it should delete single user", (done) => {
+      chai
+        .request(app)
+        .delete(`/api/user/${userIdCreated}`)
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.an("object");
+          done();
+        });
+    });
+  });
+  describe("/UPDATE /api/user/:id", () => {
+    it("it should update single user", (done) => {
+      chai
+        .request(app)
+        .put(`/api/user/5`)
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.an("object");
+          done();
+        });
+    });
+  });
+});
+describe("FORM API", () => {
+  describe("POST /api/form/createform", () => {
+    const newForm = {
+      name: "sssssssss1min",
+      dueDate: "2042-11-12 17:00:00",
+      description: "okokok",
+      formCategoryId: 2,
+      createdBy: "ADMIN",
+      updatedBy: "ADMIN",
+    };
+    it("it should return error because some users haven't finish their form yet ", (done) => {
+      chai
+        .request(app)
+        .post("/api/form/createform")
+        .set("Authorization", `Bearer ${jwtToken}`)
+        .send(newForm)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.data?.should.be.an("object");
+          done();
+        });
+    });
   });
 });

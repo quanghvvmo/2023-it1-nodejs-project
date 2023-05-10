@@ -11,7 +11,7 @@ import Joi from "joi";
 const editUserFormSchema = Joi.object({
   userComment: Joi.string().min(10).max(50).required(),
   //managerComment: Joi.string().required(),
-  createdBy: Joi.string().alphanum().required().pattern(NAME_REGEX),
+  //createdBy: Joi.string().alphanum().required().pattern(NAME_REGEX),
   //updatedBy: Joi.string().alphanum().required().pattern(NAME_REGEX),
 });
 const ApproveFormSchema = Joi.object({
@@ -24,6 +24,11 @@ const userFormDetail = Joi.object({
   task: Joi.string().min(5).max(50).required(),
   rate: Joi.string().min(1).max(10).required(),
   result: Joi.string().min(5).max(50).required(),
-  userFormId: Joi.string().min(5).max(50).required(),
+  userformId: Joi.string().min(1).required(),
 });
-export { ApproveFormSchema, editUserFormSchema, userFormDetail };
+const userFormDetailUpdate = Joi.object({
+  task: Joi.string().min(5).max(50).required(),
+  rate: Joi.string().min(1).max(10).required(),
+  result: Joi.string().min(5).max(50).required(),
+});
+export { ApproveFormSchema, editUserFormSchema, userFormDetail, userFormDetailUpdate };

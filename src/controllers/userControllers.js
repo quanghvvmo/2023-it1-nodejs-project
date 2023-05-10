@@ -9,14 +9,13 @@ import {
 import httpStatus from "http-status";
 import { Loginschema, UserSchema, UserUpdateSchema } from "../validate/userValidate";
 const User = require("../database/models/user");
-
+let status;
 const loginController = async (req, res, next) => {
   try {
     const { error, value } = Loginschema.validate(req.body);
     if (error) {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
-    console.log("this is value " + value.username);
     const token = await login(value);
     return res.status(httpStatus.OK).json({ token });
   } catch (error) {
@@ -30,8 +29,10 @@ const createUserController = async (req, res, next) => {
     if (error) {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
-    const user = await createUser(value);
-    res.status(httpStatus.CREATED).json(user);
+    const currentUser = req.user.username;
+    const user = await createUser(value, currentUser);
+    status = user.status.status;
+    res.status(status || httpStatus.CREATED).json(user);
   } catch (err) {
     next(err);
   }
@@ -40,7 +41,7 @@ const getUserByID = async (req, res, next) => {
   try {
     const id = req.params.id || 0;
     const user = await getUser(id);
-    res.status(httpStatus.FOUND).json(user);
+    res.json(user);
   } catch (err) {
     next(err);
   }
@@ -49,7 +50,7 @@ const getListUser = async (req, res, next) => {
   try {
     const { page, size } = req.query;
     const users = await getUsers(page, size);
-    res.status(httpStatus.FOUND).json(users);
+    res.status(httpStatus.OK).json(users);
   } catch (err) {
     next(err);
   }

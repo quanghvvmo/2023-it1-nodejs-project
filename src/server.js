@@ -4,6 +4,7 @@ import config from "./config/index.js";
 import db from "./database/index.js";
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpecs = require("../src/config/swagger.js");
+const cors = require("cors");
 const yaml = require("yamljs");
 
 const swaggerDocument = yaml.load("./src/config/swagger.yaml");
@@ -36,6 +37,7 @@ const initSequelize = () => {
 };
 const startServer = async () => {
   app.listen(config.port, config.host);
+  app.use(cors());
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   //db.seedData();
   initSequelize();

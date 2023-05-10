@@ -12,8 +12,16 @@ import {
   createUserResponse,
   response,
   paginatedResponse,
+  errorResponse,
 } from "../utils/responseHandler";
+import {
+  FORM_STATUS,
+  USER_FORM_STATUS,
+  FORM_MESSAGE,
+  USER_STATUS,
+} from "../utils/constant";
 import jwt from "jsonwebtoken";
+import { include } from "../database/models/base";
 
 const login = async (payload) => {
   const user = await User.findOne({
@@ -33,7 +41,7 @@ const login = async (payload) => {
   });
   if (!user) {
     throw new APIError({
-      message: "Wrong username or password",
+      message: USER_STATUS.AUTHENTICATION_FAIL,
       status: httpStatus.NOT_FOUND,
     });
   }
@@ -46,41 +54,45 @@ const login = async (payload) => {
   const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  return new response(httpStatus.OK, "Login successful", token);
+  return new response(httpStatus.OK, USER_STATUS.AUTHENTICATION, token);
 };
-const createUser = async (payload) => {
+const createUser = async (payload, currentUser) => {
   let t;
   try {
     t = await sequelize.transaction();
-    const [newUser, created] = await User.findOrCreate(
-      {
-        where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
-        defaults: { ...payload },
-        transaction: t,
-      }
-      //{ transaction: t }
-    );
+
+    const [newUser, created] = await User.findOrCreate({
+      where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
+      defaults: { ...payload, createdBy: currentUser },
+      transaction: t,
+    });
     const assignRole = await UserRole.create(
       {
-        createdBy: "ADMIN",
+        createdBy: currentUser,
         RoleId: payload.RoleId,
         userId: newUser.id,
       },
       { transaction: t }
     );
+    await t.commit();
     if (!created) {
-      throw new APIError({
-        message: "User already exists",
+      return new errorResponse({
+        message: USER_STATUS.USER_EXIST,
         status: httpStatus.CONFLICT,
       });
     }
-    await t.commit();
-    return new createUserResponse(
-      httpStatus.OK,
-      "created successful",
-      newUser,
-      assignRole
-    );
+
+    const userCreated = await User.findOne({
+      where: { username: payload.username },
+      include: [
+        {
+          model: UserRole,
+          attributes: ["RoleId"],
+          include: [{ model: Role, attributes: ["name"] }],
+        },
+      ],
+    });
+    return new response(httpStatus.CREATED, USER_STATUS.USER_CREATED, userCreated);
   } catch (err) {
     console.error(err);
     await t.rollback();
@@ -96,11 +108,11 @@ const getUser = async (userID) => {
   });
   if (!result) {
     throw new APIError({
-      message: "User not found",
+      message: USER_STATUS.USER_NOTFOUND,
       status: httpStatus.NOT_FOUND,
     });
   }
-  return new response(httpStatus.OK, "User found", result);
+  return new response(httpStatus.OK, USER_STATUS.USER_FOUND, result);
 };
 const getUsers = async (Page, Size) => {
   const users = await User.findAll({
@@ -110,13 +122,16 @@ const getUsers = async (Page, Size) => {
   const totalUsers = users.length;
   const totalPages = Math.ceil(totalUsers / Size);
   if (Page > totalPages) {
-    throw new APIError({ message: "Invalid index", status: httpStatus.BAD_REQUEST });
+    throw new APIError({
+      message: FORM_MESSAGE.INVALID_INDEX,
+      status: httpStatus.BAD_REQUEST,
+    });
   }
   const startIndex = (Page - 1) * Size;
   const endIndex = startIndex + Size;
   if (!users) {
     throw new APIError({
-      message: "Users not found",
+      message: USER_STATUS.USER_NOTFOUND,
       status: httpStatus.NOT_FOUND,
     });
   }
@@ -129,25 +144,29 @@ const getUsers = async (Page, Size) => {
   );
 };
 const updateUser = async (userId, payload) => {
+  let t;
   try {
-    const t = await sequelize.transaction();
-    const user = await User.update(
-      payload,
-      { where: { [Op.and]: [{ id: userId }, { isActive: true }] } },
-      { transaction: t }
-    );
-    await t.commit();
-    if (user == 0) {
-      throw new APIError({
-        message: "Users not found",
-        status: httpStatus.NOT_FOUND,
-      });
+    t = await sequelize.transaction();
+    const user = await User.findOne({
+      where: { [Op.and]: [{ id: userId }, { isActive: true }] },
+    });
+    if (user) {
+      user.update(
+        payload,
+        { where: { [Op.and]: [{ id: userId }, { isActive: true }] } },
+        { transaction: t }
+      );
+      await t.commit();
+      return new response(httpStatus.OK, USER_STATUS.USER_UPDATE, user);
     }
-    return new response(httpStatus.OK, "updated successfully", user);
+    return new errorResponse({
+      message: USER_STATUS.USER_NOTFOUND,
+      status: httpStatus.NOT_FOUND,
+    });
   } catch (err) {
     await t.rollback();
     throw new APIError({
-      message: "Update failed",
+      message: USER_STATUS.USER_UPDATE_FAILED,
       status: httpStatus.NOT_FOUND,
     });
   }
@@ -163,15 +182,15 @@ const disableUser = async (userID) => {
     await t.commit();
     if (!user) {
       throw new APIError({
-        message: "User not found",
+        message: USER_STATUS.USER_NOTFOUND,
         status: httpStatus.NOT_FOUND,
       });
     }
-    return new response(httpStatus.OK, "deleted successful", user);
+    return new response(httpStatus.OK, USER_STATUS.USER_DELETE, user);
   } catch (err) {
     await t.rollback();
     throw new APIError({
-      message: "Delete failed",
+      message: USER_STATUS.USER_DELETE_FAILED,
       status: httpStatus.NOT_FOUND,
     });
   }

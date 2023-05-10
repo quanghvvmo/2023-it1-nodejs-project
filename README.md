@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Swagger UI: http://localhost:8080/api-docs
+Swagger UI: http://localhost:3000/api-docs/
 
 And "API Collection.postman_collection.json" in root folder for import in Postman
 

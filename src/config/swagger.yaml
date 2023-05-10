@@ -3,25 +3,51 @@ info:
   description: "APIs"
   version: "1.0.0"
   title: "APIs"
-host: "localhost:8080"
-basePath: "/api/v1"
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header
+host: "localhost:3000"
+basePath: "/api"
 schemes:
   - "http"
 consumes:
   - "application/json"
 produces:
   - "application/json"
+
 paths:
-  /users:
+  /user/login:
+    post:
+      summary: Login to the system
+      description: Log in and get an access token.
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema: {}
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /user:
     get:
       summary: "Get list of users"
       parameters:
-        - name: "limit"
+        - name: "page"
           in: "query"
           type: "integer"
           required: false
           description: "Limit number of results"
-        - name: "offset"
+        - name: "size"
           in: "query"
           type: "integer"
           required: false
@@ -29,7 +55,7 @@ paths:
       responses:
         "200":
           description: "List of users retrieved successfully"
-  /users/{id}:
+  /user/{id}:
     get:
       summary: "Get user by ID"
       parameters:
@@ -48,7 +74,7 @@ paths:
           in: "path"
           type: "integer"
           required: true
-          description: "ID of user to update"
+          description: "ID of user"
         - name: "body"
           in: "body"
           required: true
@@ -71,39 +97,5 @@ paths:
           description: "User deleted successfully"
         "404":
           description: "User not found"
-  /users/{id}/active:
-    patch:
-      summary: "Activate user by ID"
-      parameters:
-        - name: "id"
-          in: "path"
-          type: "integer"
-          required: true
-          description: "ID of user to activate"
-        - name: "body"
-          in: "body"
-          required: true
-          schema: {}
-      responses:
-        "200":
-          description: "User activated successfully"
-        "404":
-          description: "User not found"
-  /users/{id}/inactive:
-    patch:
-      summary: "Inactivate user by ID"
-      parameters:
-        - name: "id"
-          in: "path"
-          type: "integer"
-          required: true
-          description: "ID of user to inactive"
-        - name: "body"
-          in: "body"
-          required: true
-          schema: {}
-      responses:
-        "200":
-          description: "User inactivated "
-        "404":
-          description: "User not found"
+security:
+  - jwt: []

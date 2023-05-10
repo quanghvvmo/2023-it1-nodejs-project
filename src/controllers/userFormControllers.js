@@ -5,6 +5,7 @@ import {
   getAllForms,
   getUsersIncompletedForm,
   createFormDetail,
+  updateFormDetail,
   getUsersCompletedForm,
 } from "../services/userFormServices";
 import httpStatus from "http-status";
@@ -12,6 +13,7 @@ import {
   editUserFormSchema,
   ApproveFormSchema,
   userFormDetail,
+  userFormDetailUpdate,
 } from "../validate/userFormValidate";
 const GetListUserForm = async (req, res, next) => {
   try {
@@ -40,11 +42,26 @@ const createFormDetails = async (req, res, next) => {
     if (error) {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
-    const currentUser = req.user.username;
+    const currentUser = req.user.id;
     const result = await createFormDetail(value, currentUser);
     res.status(httpStatus.CREATED).json(result);
   } catch (err) {
     next(err);
+  }
+};
+const EditUserFormDetail = async (req, res, next) => {
+  try {
+    const { error, value } = userFormDetailUpdate.validate(req.body);
+    if (error) {
+      return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
+    }
+    const currentUser = req.user.id;
+    const FormDetailId = req.params.id;
+    const result = await updateFormDetail(value, currentUser, FormDetailId);
+    console.log(FormDetailId);
+    res.status(result.status.status || httpStatus.CREATED).json(result);
+  } catch (error) {
+    next(error);
   }
 };
 const EditUserForm = async (req, res, next) => {
@@ -57,7 +74,7 @@ const EditUserForm = async (req, res, next) => {
     const userId = req.user.userId;
     const currentUser = req.user.username;
     const result = await updateUserForm(value, id, userId, currentUser);
-    res.status(httpStatus.CREATED).json(result);
+    res.status(result.status || httpStatus.CREATED).json(result);
   } catch (error) {
     next(error);
   }
@@ -100,5 +117,6 @@ export {
   getListIncompletedForm,
   getListForm,
   createFormDetails,
+  EditUserFormDetail,
   getListCompletedForm,
 };

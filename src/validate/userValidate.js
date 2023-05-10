@@ -28,8 +28,6 @@ const UserSchema = Joi.object({
   avatar: Joi.string(),
   address: Joi.string().max(100),
   RoleId: Joi.number().required(),
-  createdBy: Joi.string().min(3).max(30).required(),
-  updatedBy: Joi.string().min(3).max(30).required(),
 });
 const UserUpdateSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).pattern(USERNAME_REGEX),
@@ -40,7 +38,5 @@ const UserUpdateSchema = Joi.object({
   phone: Joi.string().min(10).max(11),
   avatar: Joi.string(),
   address: Joi.string().max(100),
-  createdBy: Joi.string().min(3).max(30),
-  updatedBy: Joi.string().min(3).max(30).required(),
 });
 export { Loginschema, UserSchema, UserUpdateSchema };
