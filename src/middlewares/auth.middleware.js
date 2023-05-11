@@ -5,7 +5,6 @@ import sequelize from "../models/index.js";
 import APIError from "../helper/apiError.js";
 import { HTTP_METHODS } from "../constants/index.js";
 import { authMessages } from "../constants/messages.constants.js";
-import { COMMON_CONSTANTS } from "../constants/index.js";
 import { UUID_REGEX } from "../_utils/regex_validation.js";
 
 const { User, Role, RoleModules } = sequelize.models;
@@ -72,9 +71,7 @@ const authorize = async (req, res, next) => {
     let isPassPermission = false;
     const { Roles } = req.user;
 
-    console.log(req.originalUrl);
     const path = removePathParams(req.originalUrl);
-
     const method = req.method.toString().toLowerCase();
 
     for (let i = 0; i < Roles.length; i++) {

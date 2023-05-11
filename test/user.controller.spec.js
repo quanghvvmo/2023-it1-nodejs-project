@@ -16,7 +16,7 @@ let existIdUser;
 let userIdCreated;
 
 before(async function () {
-    existIdUser = "d9beeab0-dcb1-4d4d-b407-445206e3ae8c";
+    existIdUser = "1bc39c0f-0261-49bc-b2f5-842982856e88";
 
     jwtToken = jwt.sign({ id: existIdUser }, config.tokenSecret, {
         expiresIn: config.tokenExpiry,
@@ -26,11 +26,11 @@ before(async function () {
 describe("User API", () => {
     describe("POST /api/v1/users", () => {
         const newUser = {
-            username: "useadfdfasn",
+            username: "username",
             password: "12345678",
             firstName: "first",
             lastName: "last",
-            email: "emafadasfse@gmail.com",
+            email: "email@gmail.com",
             role: "ADMIN",
         };
 

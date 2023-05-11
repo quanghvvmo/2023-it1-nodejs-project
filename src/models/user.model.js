@@ -38,6 +38,10 @@ export default (sequelize) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        avatar: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         address: {
             type: DataTypes.STRING,
             allowNull: true,

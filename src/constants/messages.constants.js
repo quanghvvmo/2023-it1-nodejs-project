@@ -29,7 +29,7 @@ const userFormMessages = {
     USER_FORM_DELETED: "UserForm deleted successfully",
     USER_FORM_UPDATED: "UserForm updated successfully",
     USER_FORM_CLOSED: "UserForm closed successfully",
-    USER_FORM_APPROVED: "UserForm approved successfully"
+    USER_FORM_APPROVED: "UserForm approved successfully",
 };
 
 const userFormDetailMessages = {
@@ -37,6 +37,7 @@ const userFormDetailMessages = {
     USER_FORM_DETAIL_CREATED: "UserFormDetail created successfully",
     USER_FORM_DETAIL_DELETED: "UserFormDetail deleted successfully",
     USER_FORM_DETAIL_UPDATED: "UserFormDetail updated successfully",
+    SUBMIT_DENY: "Can't submit because form is closed",
 };
 
 export { authMessages, userMessages, formMessages, userFormMessages, userFormDetailMessages };

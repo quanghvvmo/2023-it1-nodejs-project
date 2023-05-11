@@ -1,10 +1,11 @@
-# HR PROJECT
+# HR MANAGEMENT PROJECT
 
 ## Intro
 
 The application is designed to automate various HR processes such as managing employees' personal information, recording and tracking their performance evaluations, and managing the onboarding process for new hires. The system includes modules for managing users, roles, and permissions, as well as notifications and reporting features.
 
-Note: 
+Note:
+
 Swagger UI: http://localhost:8080/api-docs
 
 "API Collection.postman_collection.json" in root folder for import in Postman
@@ -30,6 +31,8 @@ DB_HOST=
 DB_PORT=
 DB_DIALECT=
 
+DB_DATABASE_TEST=
+
 TOKEN_SECRET=
 TOKEN_EXPIRY=
 
@@ -50,7 +53,7 @@ MAIL_SERVICE=
 
 ## To test
 
-Create database test and change DB_DATABASE_TEST in .env then run seeder .sql file 
+Create separate database for test and change DB_DATABASE_TEST in .env then run seeder .sql file.
 
 ```shell
 > npm test

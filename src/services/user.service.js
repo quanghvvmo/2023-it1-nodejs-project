@@ -101,6 +101,7 @@ const getListUsers = async (pageIndex, pageSize) => {
     const users = await User.findAll({
         attributes: { exclude: ["password"] },
         where: { isDeleted: false },
+        include: [Role],
     });
 
     const totalCount = users.length;

@@ -53,7 +53,7 @@ CREATE TABLE `Forms` (
   `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
-  `status` enum('open','close') NOT NULL,
+  `status` enum('open','closed') NOT NULL,
   `dueDate` datetime NOT NULL,
   `createBy` varchar(255) NOT NULL,
   `updateBy` int DEFAULT NULL,
@@ -73,7 +73,6 @@ CREATE TABLE `Forms` (
 
 LOCK TABLES `Forms` WRITE;
 /*!40000 ALTER TABLE `Forms` DISABLE KEYS */;
-INSERT INTO `Forms` VALUES ('1876e89c-43ce-4f29-ae36-76400aa3b677','name','description','open','2023-04-17 05:34:56','1bc39c0f-0261-49bc-b2f5-842982856e88',NULL,0,'2023-05-07 16:16:38','2023-05-07 16:16:38',1),('2da79d5b-cb39-4c17-bb97-41fa2264b8b4','name','description','open','2023-04-17 05:34:56','1bc39c0f-0261-49bc-b2f5-842982856e88',NULL,0,'2023-05-07 16:19:51','2023-05-07 16:19:51',1),('73c88a51-8961-4e77-abfa-86f201b61f32','name','description','open','2023-04-17 05:34:56','1bc39c0f-0261-49bc-b2f5-842982856e88',NULL,0,'2023-05-07 16:18:27','2023-05-07 16:18:27',1);
 /*!40000 ALTER TABLE `Forms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,10 +92,9 @@ CREATE TABLE `RoleModules` (
   `isCanDelete` tinyint(1) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
-  `RoleId` int DEFAULT NULL,
+  `RoleId` int NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `RoleId` (`RoleId`),
-  CONSTRAINT `rolemodules_ibfk_1` FOREIGN KEY (`RoleId`) REFERENCES `Roles` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  KEY `RoleId` (`RoleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -106,7 +104,7 @@ CREATE TABLE `RoleModules` (
 
 LOCK TABLES `RoleModules` WRITE;
 /*!40000 ALTER TABLE `RoleModules` DISABLE KEYS */;
-INSERT INTO `RoleModules` VALUES ('1','/api/v1/forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('10','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('11','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('12','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',2),('13','/api/v1/forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('14','/user-forms/report-submitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('15','/user-forms/report-submitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('16','/user-forms/report-unsubmitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('17','/user-forms/report-unsubmitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('18','/api/v1/user-forms',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('19','/api/v1/user-forms-detail',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('2','/api/v1/user-forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('20','/api/v1/user-forms/close',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('21','/user-forms/report-submitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('22','/user-forms/report-unsubmitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('23','/api/v1/forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('24','/api/v1/user-forms/approve',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('25','/api/v1/user-forms/close',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('26','/api/v1/user-forms',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('27','/api/v1/user-forms-detail',0,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',5),('28','/api/v1/user-forms',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',5),('29','/api/v1/user-forms-detail',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',2),('3','/api/v1/user-forms-detail',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('4','/api/v1/users',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('5','/api/v1/user-forms/approve',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('6','/api/v1/user-forms/close',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('7','/api/v1/user-forms/approve',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('9','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',5);
+INSERT INTO `RoleModules` VALUES ('1','/api/v1/forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('10','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('11','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('12','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',2),('13','/api/v1/forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('14','/api/v1/user-forms/report-submitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('15','/api/v1/user-forms/report-submitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('16','/api/v1/user-forms/report-unsubmitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('17','/api/v1/user-forms/report-unsubmitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('18','/api/v1/user-forms',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('19','/api/v1/user-forms-detail',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('2','/api/v1/user-forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('20','/api/v1/user-forms/close',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('21','/api/v1/user-forms/report-submitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('22','/api/v1/user-forms/report-unsubmitted',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('23','/api/v1/forms',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('24','/api/v1/user-forms/approve',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('25','/api/v1/user-forms/close',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('26','/api/v1/user-forms',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('27','/api/v1/user-forms-detail',0,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',5),('28','/api/v1/user-forms',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',5),('29','/api/v1/user-forms-detail',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',2),('3','/api/v1/user-forms-detail',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('30','/api/v1/users/current',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',5),('31','/api/v1/users/current',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('32','/api/v1/users/current',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('33','/api/v1/users/current',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',2),('34','/api/v1/users/current',1,0,0,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('4','/api/v1/users',1,1,1,1,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('5','/api/v1/user-forms/approve',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',1),('6','/api/v1/user-forms/close',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',3),('7','/api/v1/user-forms/approve',0,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',4),('9','/api/v1/users',1,0,1,0,'2023-04-14 13:22:37','2023-04-14 13:22:37',5);
 /*!40000 ALTER TABLE `RoleModules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -167,7 +165,6 @@ CREATE TABLE `UserFormDetails` (
 
 LOCK TABLES `UserFormDetails` WRITE;
 /*!40000 ALTER TABLE `UserFormDetails` DISABLE KEYS */;
-INSERT INTO `UserFormDetails` VALUES ('01c0027b-f5ff-4e4c-af68-9e03775f68c1',NULL,NULL,NULL,NULL,'nice',0,'2023-05-07 17:57:41','2023-05-07 17:57:41','1e5c0c2a-1306-4d21-825b-333052e07fda');
 /*!40000 ALTER TABLE `UserFormDetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -205,7 +202,6 @@ CREATE TABLE `UserForms` (
 
 LOCK TABLES `UserForms` WRITE;
 /*!40000 ALTER TABLE `UserForms` DISABLE KEYS */;
-INSERT INTO `UserForms` VALUES ('1e5c0c2a-1306-4d21-825b-333052e07fda','good one',NULL,'approved',0,'2023-05-07 16:19:51','2023-05-07 17:59:41','2da79d5b-cb39-4c17-bb97-41fa2264b8b4',NULL,'1bc39c0f-0261-49bc-b2f5-842982856e88'),('7501757e-4b32-48df-8ced-320161a3686b',NULL,NULL,'new',0,'2023-05-07 16:19:51','2023-05-07 16:19:51','2da79d5b-cb39-4c17-bb97-41fa2264b8b4','b61f4637-80f9-4801-aca7-a7dee2ce6b47','1bc39c0f-0261-49bc-b2f5-842982856e88');
 /*!40000 ALTER TABLE `UserForms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,7 +230,7 @@ CREATE TABLE `UserRole` (
 
 LOCK TABLES `UserRole` WRITE;
 /*!40000 ALTER TABLE `UserRole` DISABLE KEYS */;
-INSERT INTO `UserRole` VALUES ('2023-04-26 11:08:42','2023-04-26 11:08:42',4,'1bc39c0f-0261-49bc-b2f5-842982856e88'),('2023-04-26 14:12:19','2023-04-26 14:12:19',5,'b61f4637-80f9-4801-aca7-a7dee2ce6b47');
+INSERT INTO `UserRole` VALUES ('2023-04-26 11:08:42','2023-04-26 11:08:42',1,'1bc39c0f-0261-49bc-b2f5-842982856e88'),('2023-04-26 14:12:19','2023-04-26 14:12:19',2,'b61f4637-80f9-4801-aca7-a7dee2ce6b47'),('2023-05-11 08:57:07','2023-05-11 08:57:07',3,'a9f9a941-3b6a-4e96-9151-da10cfe9d8df'),('2023-05-11 08:58:39','2023-05-11 08:58:39',4,'846cb8d6-7b24-45fa-8611-978c2267603d'),('2023-05-11 08:58:54','2023-05-11 08:58:54',5,'45ed343b-3a71-498f-918c-8bf9333f3328');
 /*!40000 ALTER TABLE `UserRole` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,6 +256,7 @@ CREATE TABLE `Users` (
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   `ManagerId` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `employeeId` (`employeeId`),
@@ -275,7 +272,7 @@ CREATE TABLE `Users` (
 
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES ('1bc39c0f-0261-49bc-b2f5-842982856e88','username','$2b$10$k5QJK9vI/wfbjMv0QrdIk.Zux3Uyqp0gpfMehH2wwCHcGwWzEk2K2','ID000000','first','last','nguyenvanminhvu@gmail.com',NULL,NULL,NULL,0,'2023-04-26 11:08:42','2023-04-26 11:08:42',NULL),('b61f4637-80f9-4801-aca7-a7dee2ce6b47','username1','$2b$10$2xKa/RZpgTtAySTMyvciWOQtUGigCRBffZhdkjsbzwAFILyMEsU8a','ID000001','first','last','langlecanteam@gmail.com',NULL,NULL,NULL,0,'2023-04-26 14:12:19','2023-04-26 14:15:45','1bc39c0f-0261-49bc-b2f5-842982856e88');
+INSERT INTO `Users` VALUES ('1bc39c0f-0261-49bc-b2f5-842982856e88','imadmin','$2b$10$k5QJK9vI/wfbjMv0QrdIk.Zux3Uyqp0gpfMehH2wwCHcGwWzEk2K2','ID000000','first','last','nguyenvanminhvu@gmail.com',NULL,NULL,NULL,0,'2023-04-26 11:08:42','2023-04-26 11:08:42',NULL,NULL),('45ed343b-3a71-498f-918c-8bf9333f3328','imemployee','$2b$10$OD2xjYxvTCQXIRVdD2I24um/F8RUAx5fWxiHdhs4EFLBkb1CUYA8W','ID000004','first','last','employee@gmail.com',NULL,NULL,NULL,0,'2023-05-11 08:58:54','2023-05-11 08:58:54','846cb8d6-7b24-45fa-8611-978c2267603d',NULL),('846cb8d6-7b24-45fa-8611-978c2267603d','immanager','$2b$10$L1A983wGwpe9QCbmmesBrOwVCMt.a5ZLQqt4V.b.NrU5nZ8ZDjMuK','ID000003','first','last','manager@gmail.com',NULL,NULL,NULL,0,'2023-05-11 08:58:39','2023-05-11 08:58:39','b61f4637-80f9-4801-aca7-a7dee2ce6b47',NULL),('a9f9a941-3b6a-4e96-9151-da10cfe9d8df','imhr','$2b$10$I8wWQCG/wJ0oWrDLbvoA.eUGd6Psqm.c2loJYc2Ib4YbMRHUhb0Sm','ID000002','first','last','hr@gmail.com',NULL,NULL,NULL,0,'2023-05-11 08:57:07','2023-05-11 08:57:07','b61f4637-80f9-4801-aca7-a7dee2ce6b47',NULL),('b61f4637-80f9-4801-aca7-a7dee2ce6b47','imdirector','$2b$10$2xKa/RZpgTtAySTMyvciWOQtUGigCRBffZhdkjsbzwAFILyMEsU8a','ID000001','new first namefad','new lastname','langlecanteam@gmail.com',NULL,NULL,NULL,0,'2023-04-26 14:12:19','2023-05-10 14:32:49','1bc39c0f-0261-49bc-b2f5-842982856e88',NULL);
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -288,4 +285,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-08 21:33:46
+-- Dump completed on 2023-05-11 18:32:32

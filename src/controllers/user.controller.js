@@ -80,6 +80,17 @@ const getUserDetailController = async (req, res, next) => {
     }
 };
 
+const getCurrentUserDetailController = async (req, res, next) => {
+    try {
+        const currentUser = req.user;
+        delete currentUser.dataValues.password;
+
+        return res.status(httpStatus.OK).json(currentUser);
+    } catch (error) {
+        next(error);
+    }
+};
+
 const getListUsersController = async (req, res, next) => {
     try {
         let pageIndex = parseInt(req.query.pageIndex);
@@ -114,4 +125,5 @@ export {
     getListUsersController,
     updateUserController,
     deleteUserController,
+    getCurrentUserDetailController,
 };

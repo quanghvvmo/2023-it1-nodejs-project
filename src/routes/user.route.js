@@ -6,12 +6,15 @@ import {
     getListUsersController,
     updateUserController,
     deleteUserController,
+    getCurrentUserDetailController,
 } from "../controllers/user.controller.js";
 import { authJWT, authorize } from "../middlewares/auth.middleware.js";
 
 const userRouter = express.Router();
 
 userRouter.get("/users", authJWT, authorize, getListUsersController);
+userRouter.get("/users/current", authJWT, authorize, getCurrentUserDetailController);
+
 userRouter.get("/users/:id", authJWT, authorize, getUserDetailController);
 
 userRouter.post("/users/login", loginController);

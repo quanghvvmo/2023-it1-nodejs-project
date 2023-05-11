@@ -88,7 +88,15 @@ const getListUserFormsController = async (req, res, next) => {
         }
 
         const { isManager } = req.query;
-        const userForms = await getListUserForms(req.user, pageIndex, pageSize, isManager);
+        delete req.query.isManager;
+
+        const userForms = await getListUserForms(
+            req.user,
+            pageIndex,
+            pageSize,
+            isManager,
+            req.query
+        );
         return res.status(httpStatus.OK).json(userForms);
     } catch (error) {
         next(error);

@@ -12,7 +12,7 @@ import { formMessages } from "../constants/messages.constants.js";
 import mailSender from "../helper/mail-sender.js";
 import { SUBJECT, CONTENT } from "../constants/mailSender.constants.js";
 
-const { User, Form, UserForm, UserFormDetail, FormCategory } = sequelize.models;
+const { User, Form, UserForm, FormCategory } = sequelize.models;
 
 const addForm = async (currentUser, payload) => {
     // Each user only has 1 type of form haven't closed
@@ -95,6 +95,7 @@ const addForm = async (currentUser, payload) => {
 const getForm = async (formId) => {
     const form = await Form.findOne({
         where: { id: formId, isDeleted: false },
+        include: [FormCategory, UserForm],
     });
 
     if (!form) {
@@ -107,6 +108,7 @@ const getForm = async (formId) => {
 const getListForms = async (pageIndex, pageSize) => {
     const forms = await Form.findAll({
         where: { isDeleted: false },
+        include: [FormCategory],
     });
 
     const totalCount = forms.length;

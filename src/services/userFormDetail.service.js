@@ -2,14 +2,36 @@ import httpStatus from "http-status";
 import sequelize from "../models/index.js";
 import APIError from "../helper/apiError.js";
 import { ApiDataResponse, ApiPaginatedResponse } from "../helper/apiResponse.js";
-import { USER_FORM_STATUS, COMMON_CONSTANTS } from "../constants/index.js";
+import { USER_FORM_STATUS, COMMON_CONSTANTS, FORM_STATUS } from "../constants/index.js";
 import { userFormDetailMessages, userFormMessages } from "../constants/messages.constants.js";
 
-const { UserForm, UserFormDetail } = sequelize.models;
+const { Form, UserForm, UserFormDetail } = sequelize.models;
 
 const addUserFormDetail = async (userFormId, payload) => {
     const transaction = await sequelize.transaction();
     let newUserFormDetail;
+
+    // can't submit userForm if form closed
+    const form = await Form.findOne({
+        attributes: ["status"],
+        include: [{ model: UserForm, where: { id: userFormId } }],
+    });
+    if (!form) {
+        throw new APIError({
+            message: userFormMessages.USER_FORM_NOT_FOUND,
+            status: httpStatus.NOT_FOUND,
+        });
+    }
+
+    if (
+        form.status === FORM_STATUS.CLOSE ||
+        form.UserForms[0].dataValues.status === USER_FORM_STATUS.CLOSED
+    ) {
+        throw new APIError({
+            message: userFormDetailMessages.SUBMIT_DENY,
+            status: httpStatus.BAD_REQUEST,
+        });
+    }
 
     try {
         newUserFormDetail = await UserFormDetail.create({ ...payload, UserFormId: userFormId });
@@ -44,6 +66,7 @@ const getUserFormDetail = async (userFormDetailId) => {
             id: userFormDetailId,
             isDeleted: false,
         },
+        include: [UserForm],
     });
 
     if (!userFormDetail) {
@@ -57,7 +80,10 @@ const getUserFormDetail = async (userFormDetailId) => {
 };
 
 const getListUserFormsDetail = async (pageIndex, pageSize) => {
-    const userFormDetails = await UserFormDetail.findAll({ where: { isDeleted: false } });
+    const userFormDetails = await UserFormDetail.findAll({
+        where: { isDeleted: false },
+        include: [UserForm],
+    });
 
     const totalCount = userFormDetails.length;
     if (!totalCount) {

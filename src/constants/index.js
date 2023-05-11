@@ -13,7 +13,7 @@ const FORM_CATEGORIES = {
 };
 
 const FORM_STATUS = {
-    CLOSE: "close",
+    CLOSE: "closed",
     OPEN: "open",
 };
 

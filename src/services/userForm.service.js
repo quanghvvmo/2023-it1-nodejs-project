@@ -15,7 +15,7 @@ const getUserForm = async (currentUser, userFormId) => {
     );
 
     const userForm = await UserForm.findOne({
-        include: [UserFormDetail],
+        include: [UserFormDetail, Form],
         where: {
             id: userFormId,
             isDeleted: false,
@@ -37,7 +37,7 @@ const getUserForm = async (currentUser, userFormId) => {
     return userForm;
 };
 
-const getListUserForms = async (currentUser, pageIndex, pageSize, isManager) => {
+const getListUserForms = async (currentUser, pageIndex, pageSize, isManager, filter) => {
     const isHrOrAdmin = currentUser.Roles.some(
         (role) =>
             role.id === ROLES["HR"] || role.id === ROLES["ADMIN"] || role.id === ROLES["DIRECTOR"]
@@ -48,9 +48,10 @@ const getListUserForms = async (currentUser, pageIndex, pageSize, isManager) => 
     }
 
     const userForms = await UserForm.findAll({
-        include: [UserFormDetail],
+        include: [UserFormDetail, Form],
         where: {
             isDeleted: false,
+            ...filter,
             [Op.or]: [
                 isManager
                     ? {

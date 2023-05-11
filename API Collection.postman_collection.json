@@ -30,7 +30,7 @@
 							"urlencoded": [
 								{
 									"key": "username",
-									"value": "username3",
+									"value": "imemployee1",
 									"type": "text"
 								},
 								{
@@ -50,19 +50,18 @@
 								},
 								{
 									"key": "role",
-									"value": "ADMIN",
+									"value": "EMPLOYEE",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "email@gmail.com",
+									"value": "employee1@gmail.com",
 									"type": "text"
 								},
 								{
-									"key": "",
-									"value": "",
-									"type": "text",
-									"disabled": true
+									"key": "ManagerId",
+									"value": "846cb8d6-7b24-45fa-8611-978c2267603d",
+									"type": "text"
 								}
 							]
 						},
@@ -98,7 +97,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/v1/users/69b867c6-c796-48a5-8c61-b938712633a5",
+							"raw": "http://localhost:8080/api/v1/users/1bc39c0f-0261-49bc-b2f5-842982856e88",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -108,7 +107,7 @@
 								"api",
 								"v1",
 								"users",
-								"69b867c6-c796-48a5-8c61-b938712633a5"
+								"1bc39c0f-0261-49bc-b2f5-842982856e88"
 							]
 						}
 					},
@@ -161,7 +160,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/v1/users/69b867c6-c796-48a5-8c61-b938712633a5",
+							"raw": "http://localhost:8080/api/v1/users/ad9676d2-9f36-4116-9fc5-6c6ba6459931",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -171,7 +170,7 @@
 								"api",
 								"v1",
 								"users",
-								"69b867c6-c796-48a5-8c61-b938712633a5"
+								"ad9676d2-9f36-4116-9fc5-6c6ba6459931"
 							]
 						}
 					},
@@ -208,7 +207,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/v1/users/69b867c6-c796-48a5-8c61-b938712633a5",
+							"raw": "http://localhost:8080/api/v1/users/b61f4637-80f9-4801-aca7-a7dee2ce6b47",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -218,7 +217,7 @@
 								"api",
 								"v1",
 								"users",
-								"69b867c6-c796-48a5-8c61-b938712633a5"
+								"b61f4637-80f9-4801-aca7-a7dee2ce6b47"
 							]
 						}
 					},
@@ -234,7 +233,7 @@
 							"urlencoded": [
 								{
 									"key": "username",
-									"value": "username",
+									"value": "imhr",
 									"type": "text"
 								},
 								{
@@ -256,6 +255,38 @@
 								"v1",
 								"users",
 								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get currentUser",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/users/current",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"current"
 							]
 						}
 					},
@@ -283,7 +314,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"name\",\n    \"description\": \"description\",\n    \"dueDate\": \"2023-04-17 12:34:56\",\n    \"userIds\": [\n        \"69b867c6-c796-48a5-8c61-b938712633a5\",\n        \"b61f4637-80f9-4801-aca7-a7dee2ce6b47\"\n    ],\n    \"formCategory\": \"PROBATIONARY\"\n}",
+							"raw": "{\n    \"name\": \"name\",\n    \"description\": \"description\",\n    \"dueDate\": \"2023-04-17 12:34:56\",\n    \"userIds\": [\n        \"45ed343b-3a71-498f-918c-8bf9333f3328\",\n        \"b93217ee-28d0-46f4-a629-353feeb06077\"\n    ],\n    \"formCategory\": \"PROBATIONARY\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -322,7 +353,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/v1/forms/2",
+							"raw": "http://localhost:8080/api/v1/forms/40fa02c2-d4b7-4ac9-ac11-3050e6a94ce5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -332,7 +363,7 @@
 								"api",
 								"v1",
 								"forms",
-								"2"
+								"40fa02c2-d4b7-4ac9-ac11-3050e6a94ce5"
 							]
 						}
 					},
@@ -471,7 +502,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/v1/user-forms/3",
+							"raw": "http://localhost:8080/api/v1/user-forms?isManager=true",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -480,8 +511,13 @@
 							"path": [
 								"api",
 								"v1",
-								"user-forms",
-								"3"
+								"user-forms"
+							],
+							"query": [
+								{
+									"key": "isManager",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -510,7 +546,7 @@
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/v1/user-forms?isManager=true",
+							"raw": "http://localhost:8080/api/v1/user-forms",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -520,12 +556,6 @@
 								"api",
 								"v1",
 								"user-forms"
-							],
-							"query": [
-								{
-									"key": "isManager",
-									"value": "true"
-								}
 							]
 						}
 					},
@@ -707,7 +737,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/v1/user-forms/approve/1e5c0c2a-1306-4d21-825b-333052e07fda",
+							"raw": "http://localhost:8080/api/v1/user-forms/approve/aa937330-bbc7-4ec4-b899-4812f1178031",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -718,7 +748,7 @@
 								"v1",
 								"user-forms",
 								"approve",
-								"1e5c0c2a-1306-4d21-825b-333052e07fda"
+								"aa937330-bbc7-4ec4-b899-4812f1178031"
 							]
 						}
 					},
@@ -798,7 +828,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/v1/user-forms-detail/1e5c0c2a-1306-4d21-825b-333052e07fda",
+							"raw": "http://localhost:8080/api/v1/user-forms-detail/611e795d-8619-47a5-bf85-b90cf522d6d5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -808,7 +838,7 @@
 								"api",
 								"v1",
 								"user-forms-detail",
-								"1e5c0c2a-1306-4d21-825b-333052e07fda"
+								"611e795d-8619-47a5-bf85-b90cf522d6d5"
 							]
 						}
 					},
