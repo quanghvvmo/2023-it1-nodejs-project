@@ -45,7 +45,7 @@ const createForm = async (payload, currentUser, currentUserId) => {
       },
       transaction: t,
     });
-    await t.commit();
+
     if (!created) {
       return new errorResponse({
         message: FORM_MESSAGE.EXIST,
@@ -71,8 +71,8 @@ const createForm = async (payload, currentUser, currentUserId) => {
       };
     });
     console.log(userFoms);
-    await UserForm.bulkCreate(userFoms);
-    
+    await UserForm.bulkCreate(userFoms, { t });
+    await t.commit();
     return new response(httpStatus.OK, FORM_MESSAGE.CREATED, newForm);
   } catch (err) {
     await t.rollback();
