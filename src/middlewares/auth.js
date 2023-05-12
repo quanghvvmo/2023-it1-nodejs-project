@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) => {
   }
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      res.status(403).json(USER_STATUS.AUTHENTICATION_FAIL);
+      return res.status(403).json(USER_STATUS.AUTHENTICATION_FAIL);
     }
     req.user = user;
     next();
@@ -61,15 +61,12 @@ const authorize = async (req, res, next) => {
           if (permission.approve) isPass = true;
           break;
       }
-
       if (isPass) return next();
     }
   }
-  return next(
-    new APIError({
-      message: USER_STATUS.PERMISSION,
-      status: httpStatus.FORBIDDEN,
-    })
-  );
+  const apiErr = new APIError();
+  apiErr.message = USER_STATUS.PERMISSION;
+  apiErr.status = httpStatus.FORBIDDEN;
+  return next(apiErr);
 };
 export { verifyToken, authorize };

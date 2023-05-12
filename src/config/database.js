@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const config = require("./");
 
 const options = {
-  //logging: false,
+  logging: false,
   username: config.db_username,
   password: config.db_password,
   database: config.db_database,

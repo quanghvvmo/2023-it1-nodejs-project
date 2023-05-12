@@ -5,6 +5,7 @@ import {
   getUsers,
   disableUser,
   updateUser,
+  getCurrentUser,
 } from "../services/userServices";
 import httpStatus from "http-status";
 import { Loginschema, UserSchema, UserUpdateSchema } from "../validate/userValidate";
@@ -18,8 +19,8 @@ const loginController = async (req, res, next) => {
     }
     const token = await login(value);
     return res.status(httpStatus.OK).json({ token });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -33,6 +34,7 @@ const createUserController = async (req, res, next) => {
     const user = await createUser(value, currentUser);
     status = user.status.status;
     res.status(status || httpStatus.CREATED).json(user);
+    console.log("a");
   } catch (err) {
     next(err);
   }
@@ -77,6 +79,15 @@ const editUser = async (req, res, next) => {
     next(err);
   }
 };
+const getCurrentUserDetails = async (req, res, next) => {
+  try {
+    const userID = req.user.userId;
+    const user = await getCurrentUser(userID);
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+};
 export {
   loginController,
   createUserController,
@@ -84,4 +95,5 @@ export {
   getListUser,
   deleteUser,
   editUser,
+  getCurrentUserDetails,
 };

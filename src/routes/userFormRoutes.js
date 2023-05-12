@@ -12,28 +12,17 @@ import express from "express";
 import { verifyToken, authorize } from "../middlewares/auth.js";
 const userFormRouter = express.Router();
 
-userFormRouter.get("/userform/", verifyToken, authorize, GetListUserForm);
+userFormRouter.get("/userforms/", verifyToken, authorize, GetListUserForm);
 userFormRouter.get(
-  "/userform/incompleted",
+  "/userforms/incompleted",
   verifyToken,
   authorize,
   getListIncompletedForm
 );
-userFormRouter.get("/userform/completed", verifyToken, authorize, getListCompletedForm);
-userFormRouter.post(
-  "/userform/createFormDetails",
-  verifyToken,
-  authorize,
-  createFormDetails
-);
-userFormRouter.put(
-  "/userform/UpdateUserformDetail/:id",
-  verifyToken,
-  authorize,
-  EditUserFormDetail
-);
-userFormRouter.get("/userform/getListForm", verifyToken, authorize, getListForm);
-userFormRouter.put("/userform/:id", verifyToken, authorize, EditUserForm);
-userFormRouter.patch("/userform/:id", verifyToken, authorize, approvedForm);
+userFormRouter.get("/userforms/completed", verifyToken, authorize, getListCompletedForm);
+userFormRouter.post("/userforms/details", verifyToken, authorize, createFormDetails);
+userFormRouter.put("/userforms/details/:id", verifyToken, authorize, EditUserFormDetail);
+userFormRouter.put("/userforms/:id", verifyToken, authorize, EditUserForm);
+userFormRouter.patch("/userforms/:id", verifyToken, authorize, approvedForm);
 
 export default userFormRouter;

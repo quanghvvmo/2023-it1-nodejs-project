@@ -8,20 +8,9 @@ const bcrypt = require("bcrypt");
 
 const Role = require("../database/models/role");
 import APIError from "../utils/errorHandler";
-import {
-  createUserResponse,
-  response,
-  paginatedResponse,
-  errorResponse,
-} from "../utils/responseHandler";
-import {
-  FORM_STATUS,
-  USER_FORM_STATUS,
-  FORM_MESSAGE,
-  USER_STATUS,
-} from "../utils/constant";
+import { response, paginatedResponse, errorResponse } from "../utils/responseHandler";
+import { FORM_MESSAGE, USER_STATUS } from "../utils/constant";
 import jwt from "jsonwebtoken";
-import { include } from "../database/models/base";
 
 const login = async (payload) => {
   const user = await User.findOne({
@@ -52,7 +41,7 @@ const login = async (payload) => {
     roles: roleArr,
   };
   const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: process.env.TOKEN_EXPIRATION,
   });
   return new response(httpStatus.OK, USER_STATUS.AUTHENTICATION, token);
 };
@@ -74,9 +63,9 @@ const createUser = async (payload, currentUser) => {
       },
       { transaction: t }
     );
-    await t.commit();
+
     if (!created) {
-      return new errorResponse({
+      throw new APIError({
         message: USER_STATUS.USER_EXIST,
         status: httpStatus.CONFLICT,
       });
@@ -92,6 +81,7 @@ const createUser = async (payload, currentUser) => {
         },
       ],
     });
+    await t.commit();
     return new response(httpStatus.CREATED, USER_STATUS.USER_CREATED, userCreated);
   } catch (err) {
     console.error(err);
@@ -107,7 +97,7 @@ const getUser = async (userID) => {
     include: [{ model: UserRole, include: [{ model: Rolee }] }],
   });
   if (!result) {
-    throw new APIError({
+    return new errorResponse({
       message: USER_STATUS.USER_NOTFOUND,
       status: httpStatus.NOT_FOUND,
     });
@@ -143,6 +133,7 @@ const getUsers = async (Page, Size) => {
     users.slice(startIndex, endIndex)
   );
 };
+
 const updateUser = async (userId, payload) => {
   let t;
   try {
