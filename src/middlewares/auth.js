@@ -64,9 +64,8 @@ const authorize = async (req, res, next) => {
       if (isPass) return next();
     }
   }
-  const apiErr = new APIError();
-  apiErr.message = USER_STATUS.PERMISSION;
-  apiErr.status = httpStatus.FORBIDDEN;
-  return next(apiErr);
+  return next(
+    new APIError({ message: USER_STATUS.PERMISSION, status: httpStatus.FORBIDDEN })
+  );
 };
 export { verifyToken, authorize };

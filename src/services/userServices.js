@@ -52,9 +52,11 @@ const createUser = async (payload, currentUser) => {
 
     const [newUser, created] = await User.findOrCreate({
       where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
+
       defaults: { ...payload, createdBy: currentUser },
       transaction: t,
     });
+
     const assignRole = await UserRole.create(
       {
         createdBy: currentUser,
@@ -70,23 +72,13 @@ const createUser = async (payload, currentUser) => {
         status: httpStatus.CONFLICT,
       });
     }
-
-    const userCreated = await User.findOne({
-      where: { username: payload.username },
-      include: [
-        {
-          model: UserRole,
-          attributes: ["RoleId"],
-          include: [{ model: Role, attributes: ["name"] }],
-        },
-      ],
-    });
+    newUser.setDataValue("password", undefined);
     await t.commit();
-    return new response(httpStatus.CREATED, USER_STATUS.USER_CREATED, userCreated);
+    return new response(httpStatus.CREATED, USER_STATUS.USER_CREATED, newUser);
   } catch (err) {
     console.error(err);
     await t.rollback();
-    throw new APIError({
+    throw new errorResponse({
       message: err,
       status: httpStatus.CONFLICT,
     });
@@ -133,7 +125,16 @@ const getUsers = async (Page, Size) => {
     users.slice(startIndex, endIndex)
   );
 };
-
+const getCurrentUser = async (id) => {
+  const user = await User.findOne({ where: { id: id } });
+  if (!user) {
+    throw new errorResponse({
+      message: USER_STATUS.USER_NOTFOUND,
+      status: httpStatus.BAD_REQUEST,
+    });
+  }
+  return new response(httpStatus.OK, USER_STATUS.USER_FOUND, user);
+};
 const updateUser = async (userId, payload) => {
   let t;
   try {
@@ -186,4 +187,4 @@ const disableUser = async (userID) => {
     });
   }
 };
-export { login, createUser, getUser, getUsers, disableUser, updateUser };
+export { login, createUser, getUser, getUsers, disableUser, updateUser, getCurrentUser };

@@ -41,6 +41,8 @@ const createUserController = async (req, res, next) => {
 };
 const getUserByID = async (req, res, next) => {
   try {
+    const userID = req.user.userId;
+    console.log(req.user.userId);
     const id = req.params.id || 0;
     const user = await getUser(id);
     res.json(user);
@@ -82,7 +84,7 @@ const editUser = async (req, res, next) => {
 const getCurrentUserDetails = async (req, res, next) => {
   try {
     const userID = req.user.userId;
-    const user = await getCurrentUser(userID);
+    const user = await getCurrentUser(req.user.userId);
     res.status(200).json(user);
   } catch (err) {
     next(err);

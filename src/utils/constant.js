@@ -7,6 +7,7 @@ const USER_FORM_STATUS = {
   NEW: "new",
   SUBMITTED: "submitted",
   APPROVED: "approved",
+  APPROVED_FAILED: "Can not approve form with status is not new",
   CLOSED: "closed",
   OVER_DUEDATE: "date is over due",
   USER_FORM_UPDATE: "updated successfully",

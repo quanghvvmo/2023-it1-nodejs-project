@@ -166,30 +166,19 @@ const approveForm = async (payload, currentUser, formId, roleId) => {
     const deadline = userForm.form.dueDate.toISOString().slice(0, 19).replace("T", " ");
     const now = new Date(currentDate);
     const dueDate = new Date(deadline);
-    if (role != 2) {
-      //EMPLOYEE
-      if (role.name == "MANAGER") {
-        //MANAGER
-        formStatus = USER_FORM_STATUS.APPROVED;
-      } else if (role.name == "HR") {
-        //HR
-        formStatus = USER_FORM_STATUS.CLOSED;
-      }
-      if (now <= dueDate) {
-        userForm.update(
-          { ...payload, updatedBy: currentUser, status: formStatus },
-          {
-            where: { id: formId },
-          },
-          { transaction: t }
-        );
-        t.commit();
-        return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
-      } else {
-        return new errorResponse(httpStatus.BAD_REQUEST, USER_FORM_STATUS.OVER_DUEDATE);
-      }
+    if (now <= dueDate) {
+      formStatus = USER_FORM_STATUS.APPROVED;
+      userForm.update(
+        { ...payload, updatedBy: currentUser, status: formStatus },
+        {
+          where: { id: formId },
+        },
+        { transaction: t }
+      );
+      t.commit();
+      return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
     } else {
-      return new errorResponse(httpStatus.FORBIDDEN, USER_STATUS.PERMISSION);
+      return new errorResponse(httpStatus.BAD_REQUEST, USER_FORM_STATUS.OVER_DUEDATE);
     }
   } catch (err) {
     await t.rollback();

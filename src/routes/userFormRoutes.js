@@ -23,6 +23,6 @@ userFormRouter.get("/userforms/completed", verifyToken, authorize, getListComple
 userFormRouter.post("/userforms/details", verifyToken, authorize, createFormDetails);
 userFormRouter.put("/userforms/details/:id", verifyToken, authorize, EditUserFormDetail);
 userFormRouter.put("/userforms/:id", verifyToken, authorize, EditUserForm);
-userFormRouter.patch("/userforms/:id", verifyToken, authorize, approvedForm);
+userFormRouter.patch("/userforms/approve/:id", verifyToken, authorize, approvedForm);
 
 export default userFormRouter;

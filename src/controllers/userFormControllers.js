@@ -89,7 +89,7 @@ const approvedForm = async (req, res, next) => {
     const currentUser = req.user.username;
     const role = req.user.roles;
     const result = await approveForm(value, currentUser, formId, role);
-    res.status(httpStatus.CREATED).json(result);
+    res.status(httpStatus.OK).json(result);
   } catch (err) {
     next(err);
   }
