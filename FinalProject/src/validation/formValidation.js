@@ -1,10 +1,10 @@
 import Joi from "joi";
-import { FormCategory } from "../common/constant"
+import { FORM_CATEGORY } from "../common/constant"
 
 
 const formValidation = {
     validateForm: Joi.object({
-        categoryName: Joi.string().required().valid(...Object.keys(FormCategory)),
+        categoryName: Joi.string().required().valid(...Object.keys(FORM_CATEGORY)),
         name: Joi.string().required(),
         expDate: Joi.date().required(),
         userIds: Joi.array(),

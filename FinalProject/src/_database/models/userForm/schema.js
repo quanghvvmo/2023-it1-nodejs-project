@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-import { FormStatus } from "../../../common/constant";
+import { FORM_STATUS } from "../../../common/constant";
 module.exports = {
     id: {
         type: Sequelize.STRING,
@@ -27,7 +27,7 @@ module.exports = {
     },
     status: {
         type: Sequelize.STRING,
-        defaultValue: FormStatus.NEW
+        defaultValue: FORM_STATUS.NEW
     },
     description: {
         type: Sequelize.STRING,

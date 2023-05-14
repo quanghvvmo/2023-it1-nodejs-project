@@ -8,7 +8,7 @@ module.exports = class formDetail extends BaseModel {
         this.belongsTo(models.UserForm, {
             foreignKey: "formId",
             targetKey: "id",
-            as: "userform",
+            as: "userFormDetailData",
         });
     }
 };

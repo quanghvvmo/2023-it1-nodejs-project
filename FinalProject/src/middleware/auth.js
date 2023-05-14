@@ -5,7 +5,7 @@ import status from "http-status"
 import { AUTH_MESSAGES } from "../common/authMsg";
 import UserRole from "../_database/models/userRole";
 import Role from "../_database/models/role";
-import { Methods, Roles } from "../common/constant";
+import { METHODS, ROLES } from "../common/constant";
 import RoleModule from "../_database/models/roleModule";
 import { REGEXEXP } from "../_ultis";
 
@@ -71,7 +71,7 @@ const authorizationUser = async (req, res, next) => {
 
     for (let i = 0; i < userRoles.length; i++) {
         //Check if user is admin then can access to all APis
-        if (userRoles[i].roleData.id === Roles.ADMIN) {
+        if (userRoles[i].roleData.id === ROLES.ADMIN) {
             isPass = true;
             break;
         }
@@ -80,19 +80,19 @@ const authorizationUser = async (req, res, next) => {
         })
         if (!roleModule) break;
         switch (method) {
-            case Methods.GET:
+            case METHODS.GET:
                 if (roleModule.isCanRead) isPass = true;
                 break;
-            case Methods.POST:
+            case METHODS.POST:
                 if (roleModule.isCanAdd) isPass = true;
                 break;
-            case Methods.PUT:
+            case METHODS.PUT:
                 if (roleModule.isCanEdit) isPass = true;
                 break;
-            case Methods.PATCH:
+            case METHODS.PATCH:
                 if (roleModule.isCanEdit) isPass = true;
                 break;
-            case Methods.DELETE:
+            case METHODS.DELETE:
                 if (roleModule.isCanEdit) isPass = true;
                 break;
         }

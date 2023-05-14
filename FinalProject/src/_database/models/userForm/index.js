@@ -1,5 +1,5 @@
 const BaseModel = require("../base");
-import { Options } from "../../../common/constant"
+import { OPTION_DB_RELATIONSHIP } from "../../../common/constant"
 
 module.exports = class userForm extends BaseModel {
     static tableName = "userForm";
@@ -19,13 +19,13 @@ module.exports = class userForm extends BaseModel {
         this.belongsTo(models.Form, {
             foreignKey: "formId",
             targetKey: "id",
-            as: "userform",
+            as: "formUserData",
         });
         this.hasMany(models.FormDetail, {
             foreignKey: "formId",
-            as: "formdetail",
-            onDelete: Options.CASCADE,
-            onUpdate: Options.CASCADE,
+            as: "formDetailData",
+            onDelete: OPTION_DB_RELATIONSHIP.CASCADE,
+            onUpdate: OPTION_DB_RELATIONSHIP.CASCADE,
         })
     }
 };

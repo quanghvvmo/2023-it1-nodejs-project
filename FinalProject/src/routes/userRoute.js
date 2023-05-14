@@ -9,7 +9,7 @@ userRouter.get("/user/:id", authService.authJWT, authService.authorizationUser, 
 userRouter.get("/user", authService.authJWT, authService.authorizationUser, UserController.getAllUser)
 userRouter.post("/user/create", authService.authJWT, authService.authorizationUser, uploadFile.upload.single("avatar"), UserController.createUser)
 userRouter.put("/user/update/:id", authService.authJWT, authService.authorizationUser, uploadFile.upload.single("avatar"), UserController.updateUser)
-userRouter.patch("/user/delete/:id", authService.authJWT, authService.authorizationUser, UserController.softDelete)
+userRouter.delete("/user/delete/:id", authService.authJWT, authService.authorizationUser, UserController.softDelete)
 
 
 

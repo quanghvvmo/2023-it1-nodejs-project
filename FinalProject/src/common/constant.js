@@ -1,4 +1,4 @@
-const FormStatus = {
+const FORM_STATUS = {
     OPEN: "OPEN",
     CLOSE: "CLOSED",
     NEW: "NEW",
@@ -6,12 +6,12 @@ const FormStatus = {
     APPROVAL: "APPROVAL",
 }
 
-const FormCategory = {
+const FORM_CATEGORY = {
     LABOUR_CONTRACT: 1,
     PERFORMANCE_REVIEW: 2,
 }
 
-const Roles = {
+const ROLES = {
     ADMIN: 1,
     DIRECTOR: 2,
     HR: 3,
@@ -19,11 +19,11 @@ const Roles = {
     EMPLOYEE: 5,
 }
 
-const Options = {
+const OPTION_DB_RELATIONSHIP = {
     CASCADE: "CASCADE"
 }
 
-const Methods = {
+const METHODS = {
     GET: "get",
     POST: "post",
     PUT: "put",
@@ -31,4 +31,9 @@ const Methods = {
     DELETE: "delete",
 }
 
-module.exports = { FormStatus, FormCategory, Roles, Options, Methods };
+const DEFAULT_VALUE = {
+    FIRST_EMP_STRING: "ID",
+    FIRST_EMP_CODE: "ID0001",
+}
+
+module.exports = { FORM_CATEGORY, FORM_STATUS, ROLES, OPTION_DB_RELATIONSHIP, METHODS, DEFAULT_VALUE };

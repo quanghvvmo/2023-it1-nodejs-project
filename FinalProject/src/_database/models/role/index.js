@@ -1,5 +1,5 @@
 const BaseModel = require("../base");
-import { Options } from "../../../common/constant"
+import { OPTION_DB_RELATIONSHIP } from "../../../common/constant"
 
 module.exports = class Role extends BaseModel {
     static tableName = "Role";
@@ -9,14 +9,14 @@ module.exports = class Role extends BaseModel {
         this.hasMany(models.UserRole, {
             foreignKey: "roleId",
             as: "roleData",
-            onDelete: Options.CASCADE,
-            onUpdate: Options.CASCADE
+            onDelete: OPTION_DB_RELATIONSHIP.CASCADE,
+            onUpdate: OPTION_DB_RELATIONSHIP.CASCADE
         }),
             this.hasMany(models.RoleModule, {
                 foreignKey: "roleId",
                 as: "roleModule",
-                onDelete: Options.CASCADE,
-                onUpdate: Options.CASCADE
+                onDelete: OPTION_DB_RELATIONSHIP.CASCADE,
+                onUpdate: OPTION_DB_RELATIONSHIP.CASCADE
             })
     }
 
