@@ -1,7 +1,7 @@
 import userService from "../_services/userService"
 import userValidation from "../validation/userValidation"
 import http_status from "http-status";
-import config from "../config";
+import { getPaginInfor } from "../_ultis/getPage"
 
 class UserController {
 
@@ -15,7 +15,6 @@ class UserController {
             const result = await userService.handleLogin(value);
             return res.status(result.status).json(result);
         } catch (error) {
-            console.log(error);
             return res.status(http_status.INTERNAL_SERVER_ERROR).json(error)
         }
     }
@@ -89,6 +88,7 @@ class UserController {
             const result = await userService.getAllUser(pageIndex, pageSize);
             return res.status(result.status).json(result)
         } catch (error) {
+            console.log(error);
             return res.status(http_status.INTERNAL_SERVER_ERROR).json(error);
         }
     }

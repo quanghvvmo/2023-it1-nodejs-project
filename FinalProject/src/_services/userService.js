@@ -49,7 +49,7 @@ class UserService {
                 )
                 return ({
                     data: user,
-                    toke: token,
+                    token: token,
                     errCode: ERR_CODE.OK,
                     errMsg: USER_MESSAGE.LOGIN_SUCCEED,
                     status: status.OK

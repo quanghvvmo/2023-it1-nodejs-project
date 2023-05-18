@@ -17,17 +17,18 @@ formRouter.get("/user-form/:id", authService.authJWT, authService.authorizationU
 formRouter.delete("/user-form/:id", authService.authJWT, authService.authorizationUser, FormController.deleteUserForm)
 
 //Employee
-formRouter.get("/form/employee-form", authService.authJWT, authService.authorizationUser, FormController.formForEmployee)
+formRouter.get("/employee-form", authService.authJWT, authService.authorizationUser, FormController.formForEmployee)
 formRouter.post("/form/submit-form/:id", authService.authJWT, authService.authorizationUser, FormController.submitForm)
 formRouter.put("/form/user-update-form/:id", authService.authJWT, authService.authorizationUser, FormController.updateUserForm)
 
 //Manager
-formRouter.get("/form/manager-form", authService.authJWT, authService.authorizationUser, FormController.formForManager)
+formRouter.get("/manager-form", authService.authJWT, authService.authorizationUser, FormController.formForManager)
 formRouter.post("/form/approval-form/:id", authService.authJWT, authService.authorizationUser, FormController.approvalForm)
 
 //HR
 formRouter.patch("/form/close-user-form/:id", authService.authJWT, authService.authorizationUser, FormController.closeUserForm)
-formRouter.get("/form/report-labour", authService.authJWT, authService.authorizationUser, FormController.reportLabour)
-formRouter.get("/form/report-performance", authService.authJWT, authService.authorizationUser, FormController.reportPerfomance)
+formRouter.patch("/form/close-form/:id", authService.authJWT, authService.authorizationUser, FormController.closeForm)
+formRouter.get("/report-labour", authService.authJWT, authService.authorizationUser, FormController.reportLabour)
+formRouter.get("/report-performance", authService.authJWT, authService.authorizationUser, FormController.reportPerfomance)
 
 module.exports = formRouter

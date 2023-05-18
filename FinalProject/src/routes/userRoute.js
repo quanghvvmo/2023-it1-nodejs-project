@@ -5,6 +5,7 @@ import authService from "../middleware/auth";
 
 const userRouter = express.Router();
 userRouter.post("/user/login", UserController.handleLogin)
+userRouter.get("/user/my-infor", authService.authJWT, UserController.getUserInfor)
 userRouter.get("/user/:id", authService.authJWT, authService.authorizationUser, UserController.getUserById)
 userRouter.get("/user", authService.authJWT, authService.authorizationUser, UserController.getAllUser)
 userRouter.post("/user/create", authService.authJWT, authService.authorizationUser, uploadFile.upload.single("avatar"), UserController.createUser)

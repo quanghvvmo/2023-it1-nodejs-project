@@ -2,10 +2,10 @@ import formService from "../_services/formService"
 import formValidation from "../validation/formValidation"
 import http_status from "http-status"
 import { getPaginInfor } from "../_ultis/getPage"
-import { FORM_MESSAGE } from "../common/formMessage"
 
 
-class UserController {
+
+class FormController {
 
     getAllForms = async (req, res) => {
         try {
@@ -92,7 +92,6 @@ class UserController {
             return res.status(result.status).json(result)
 
         } catch (error) {
-            console.log(error);
             return res.status(http_status.INTERNAL_SERVER_ERROR).json(error);
         }
     }
@@ -161,6 +160,16 @@ class UserController {
         }
     }
 
+    closeForm = async (req, res) => {
+        try {
+            const formId = req.params.id;
+            const result = await formService.closeForm(formId);
+            return res.status(result.status).json(result);
+        } catch (error) {
+            return res.status(http_status.INTERNAL_SERVER_ERROR).json(error);
+        }
+    }
+
     closeUserForm = async (req, res) => {
         try {
             const formId = req.params.id;
@@ -192,4 +201,4 @@ class UserController {
     }
 }
 
-module.exports = new UserController();
+module.exports = new FormController();

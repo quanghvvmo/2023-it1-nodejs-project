@@ -388,7 +388,7 @@ class formService {
         if (!updatedForm) {
             return ({
                 errCode: ERR_CODE.ERROR_FROM_SEVER,
-                errMsg: FORM_MESSAGE.FORM_FOUND,
+                errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
                 status: status.NOT_FOUND
             })
         }
@@ -502,14 +502,54 @@ class formService {
         })
     }
 
+    closeForm = async (formId) => {
+        const transaction = await sequelize.transaction();
+        try {
+            const form = await Form.findOne({
+                where: {
+                    id: formId,
+                    status: FORM_STATUS.OPEN,
+                    isDeleted: 0
+                },
+                raw: false
+            })
+            if (!form) {
+                return ({
+                    errCode: ERR_CODE.ERROR_FROM_SEVER,
+                    errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
+                    status: status.NOT_FOUND
+                })
+            }
+
+            form.status = FORM_STATUS.CLOSE;
+            await form.save({ transaction });
+            await UserForm.update(
+                { status: FORM_STATUS.CLOSE },
+                { where: { formId: formId } },
+                { transaction }
+            )
+            await transaction.commit();
+            return ({
+                errCode: ERR_CODE.OK,
+                errMsg: FORM_MESSAGE.FORM_CLOSE,
+                status: status.OK
+            })
+        } catch (error) {
+            await transaction.rollback();
+            return ({
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.TRANSACTION_ERROR,
+                status: status.INTERNAL_SERVER_ERROR
+            })
+        }
+    }
+
     reportLabour = async (pageIndex, pageSize) => {
         const currentTime = new Date();
         const forms = await Form.findAll({
             where: {
                 typeId: FORM_CATEGORY.LABOUR_CONTRACT,
-                status: {
-                    [Op.notLike]: FORM_STATUS.CLOSE
-                },
+                status: FORM_STATUS.OPEN,
                 expDate: {
                     [Op.lte]: currentTime
                 }
