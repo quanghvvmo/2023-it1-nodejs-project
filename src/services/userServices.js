@@ -4,9 +4,8 @@ const Rolee = require("../database/models/role");
 const httpStatus = require("http-status");
 const { Op } = require("sequelize");
 const { sequelize } = require("../config/database");
-const bcrypt = require("bcrypt");
-
 const Role = require("../database/models/role");
+import bcrypt from "bcrypt";
 import APIError from "../utils/errorHandler";
 import { response, paginatedResponse, errorResponse } from "../utils/responseHandler";
 import { FORM_MESSAGE, USER_STATUS } from "../utils/constant";
@@ -15,7 +14,7 @@ import jwt from "jsonwebtoken";
 const login = async (payload) => {
   const user = await User.findOne({
     where: {
-      [Op.and]: [{ username: payload.username }, { password: payload.password }],
+       username: payload.username ,
     },
     include: [
       {
@@ -34,29 +33,33 @@ const login = async (payload) => {
       status: httpStatus.NOT_FOUND,
     });
   }
-  const roleArr = user.userRoles.map((user) => user.Role.id);
-  const dataForAccessToken = {
-    userId: user.id,
-    username: user.username,
-    roles: roleArr,
-  };
-  const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
-    expiresIn: process.env.TOKEN_EXPIRATION,
-  });
-  return new response(httpStatus.OK, USER_STATUS.AUTHENTICATION, token);
+  if(bcrypt.compareSync(payload.password, user.password)  ){
+
+    const roleArr = user.userRoles.map((user) => user.Role.id);
+    const dataForAccessToken = {
+      userId: user.id,
+      username: user.username,
+      roles: roleArr,
+    };
+    const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
+      expiresIn: process.env.TOKEN_EXPIRATION,
+    });
+    return new response(httpStatus.OK, USER_STATUS.AUTHENTICATION, token);
+  }
 };
+
 const createUser = async (payload, currentUser) => {
   let t;
   try {
     t = await sequelize.transaction();
-
+    const salt = bcrypt.genSaltSync(Number(process.env.SALTROUNDS));
+    const hash = bcrypt.hashSync(payload.password, salt);
     const [newUser, created] = await User.findOrCreate({
       where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
-
-      defaults: { ...payload, createdBy: currentUser },
+      defaults: { ...payload,password:hash, createdBy: currentUser },
       transaction: t,
     });
-
+    
     const assignRole = await UserRole.create(
       {
         createdBy: currentUser,
