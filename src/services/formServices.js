@@ -1,6 +1,11 @@
 import APIError from "../utils/errorHandler";
 import { response, paginatedResponse, errorResponse } from "../utils/responseHandler";
-import { FORM_STATUS, USER_FORM_STATUS, FORM_MESSAGE } from "../utils/constant";
+import {
+  FORM_CATEGORY,
+  FORM_STATUS,
+  USER_FORM_STATUS,
+  FORM_MESSAGE,
+} from "../utils/constant";
 
 const { sequelize } = require("../config/database");
 import sendEmail from "./mailServices";
@@ -40,6 +45,7 @@ const createForm = async (payload, currentUser, currentUserId) => {
       defaults: {
         ...payload,
         status: FORM_STATUS.OPEN,
+        formCategoryId: FORM_CATEGORY[payload.formCategoryId],
         createdBy: currentUser,
         updatedBy: currentUser,
       },
@@ -65,6 +71,7 @@ const createForm = async (payload, currentUser, currentUserId) => {
         //id: user.dataValues.id,
         userId: user.dataValues.id,
         formId: newForm.id,
+        managerId: user.dataValues.managerId,
         createdBy: currentUser,
         updatedBy: currentUser,
         status: USER_FORM_STATUS.NEW,
@@ -111,35 +118,75 @@ const getListForm = async (Page, Size) => {
     forms.slice(startIndex, endIndex)
   );
 };
+const getFormsByStatus = async (status, Page, Size) => {
+  const { count, rows } = await Form.findAndCountAll({ where: { status: status } });
+  if (count <= 0) {
+    throw new APIError({
+      message: FORM_MESSAGE.NOT_FOUND,
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+  const totalForms = rows.length;
+  const totalPages = Math.ceil(totalForms / Size);
+  if (Page > totalPages) {
+    throw new APIError({
+      message: FORM_MESSAGE.INVALID_INDEX,
+      status: httpStatus.BAD_REQUEST,
+    });
+  }
+  const startIndex = (Page - 1) * Size;
+  const endIndex = startIndex + Size;
+
+  return new paginatedResponse(
+    Page,
+    Size,
+    totalForms,
+    totalPages,
+    rows.slice(startIndex, endIndex)
+  );
+};
 const updateForm = async (payload, formID) => {
-  const form = await Form.update(payload, { where: { id: formID } });
-  if (form == 0) {
+  let t;
+  try {
+    t = await sequelize.transaction();
+    const form = await Form.findOne({ where: { id: formID } });
+    if (form) {
+      await form.update(payload, { where: { id: formID } }, { transaction: t });
+      return new response(httpStatus.OK, FORM_MESSAGE.FORM_UPDATED, form);
+    }
     throw new APIError({
       message: FORM_MESSAGE.FORM_UPDATED_FAIL,
       status: httpStatus.NOT_MODIFIED,
     });
+  } catch (e) {
+    await t.rollback();
+    throw new APIError({
+      message: FORM_MESSAGE.FORM_UPDATED_FAIL,
+      status: httpStatus.BAD_REQUEST,
+    });
   }
-  return new response(httpStatus.OK, FORM_MESSAGE.FORM_UPDATED, form);
 };
 const closeForm = async (formID) => {
   try {
     const t = await sequelize.transaction();
-    const form = await Form.update(
-      { status: FORM_STATUS.CLOSE },
-      { where: { id: formID } },
-      { transaction: t }
-    );
-    if (form == 0) {
-      throw new APIError({
-        message: FORM_MESSAGE.FORM_CLOSED_FAIL,
-        status: httpStatus.NOT_MODIFIED,
-      });
+    const form = await Form.findOne({ where: { id: formID } });
+    if (form) {
+      await form.update(
+        { status: FORM_STATUS.CLOSE },
+        { where: { id: formID } },
+        { transaction: t }
+      );
+      t.commit();
+      return new response(httpStatus.OK, FORM_MESSAGE.FORM_CLOSED, form);
     }
-    t.commit();
-    return new response(httpStatus.OK, FORM_MESSAGE.FORM_CLOSED, form);
+
+    throw new APIError({
+      message: FORM_MESSAGE.FORM_CLOSED_FAIL,
+      status: httpStatus.NOT_MODIFIED,
+    });
   } catch (err) {
     await t.rollback();
   }
 };
 
-export { createForm, updateForm, closeForm, getListForm };
+export { createForm, updateForm, closeForm, getListForm, getFormsByStatus };

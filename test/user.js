@@ -31,18 +31,19 @@ before(async () => {
   const user = await login(credentials);
   jwtToken = user.data;
 });
+const newUser = {
+  username: makeid(),
+  password: "123123",
+  email: makeid() + "@gmail.com",
+  RoleId: "2",
+  managerId: "1",
+};
 describe("User API", () => {
-  describe("POST /api/user", () => {
-    const newUser = {
-      username: makeid(),
-      password: "123123",
-      email: makeid() + "@gmail.com",
-      RoleId: "2",
-    };
+  describe("POST /api/users", () => {
     it("it should create a new user ", (done) => {
       chai
         .request(app)
-        .post("/api/user/createuser")
+        .post("/api/users/")
         .set("Authorization", `Bearer ${jwtToken}`)
         .send(newUser)
         .end((err, res) => {
@@ -55,7 +56,7 @@ describe("User API", () => {
     it("it should return an error if the username already exists", (done) => {
       chai
         .request(app)
-        .post("/api/user/createuser")
+        .post("/api/users/")
         .set("Authorization", `Bearer ${jwtToken}`)
         .send(newUser)
         .end((err, res) => {
@@ -69,7 +70,7 @@ describe("User API", () => {
     it("it should GET all users", (done) => {
       chai
         .request(app)
-        .get("/api/user/")
+        .get("/api/users/")
         .set("Authorization", `Bearer ${jwtToken}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -83,7 +84,7 @@ describe("User API", () => {
     it("it should GET single user", (done) => {
       chai
         .request(app)
-        .get("/api/user/2")
+        .get("/api/users/2")
         .set("Authorization", `Bearer ${jwtToken}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -92,11 +93,11 @@ describe("User API", () => {
         });
     });
   });
-  describe("/DELETE /api/user/:id", () => {
+  describe("/DELETE /api/users/:id", () => {
     it("it should delete single user", (done) => {
       chai
         .request(app)
-        .delete(`/api/user/${userIdCreated}`)
+        .delete(`/api/users/${userIdCreated}`)
         .set("Authorization", `Bearer ${jwtToken}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -105,11 +106,11 @@ describe("User API", () => {
         });
     });
   });
-  describe("/UPDATE /api/user/:id", () => {
+  describe("/UPDATE /api/users/:id", () => {
     it("it should update single user", (done) => {
       chai
         .request(app)
-        .put(`/api/user/5`)
+        .put(`/api/users/5`)
         .set("Authorization", `Bearer ${jwtToken}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -120,7 +121,7 @@ describe("User API", () => {
   });
 });
 describe("FORM API", () => {
-  describe("POST /api/form/createform", () => {
+  describe("POST /api/forms/", () => {
     const newForm = {
       name: "sssssssss1min",
       dueDate: "2042-11-12 17:00:00",
@@ -132,7 +133,7 @@ describe("FORM API", () => {
     it("it should return error because some users haven't finish their form yet ", (done) => {
       chai
         .request(app)
-        .post("/api/form/createform")
+        .post("/api/forms/")
         .set("Authorization", `Bearer ${jwtToken}`)
         .send(newForm)
         .end((err, res) => {

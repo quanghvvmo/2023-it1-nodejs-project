@@ -12,7 +12,7 @@ import { verifyToken, authorize } from "../middlewares/auth.js";
 const userRouter = express.Router();
 
 userRouter.get("/users/:id", verifyToken, authorize, getUserByID);
-userRouter.get("/users/details", verifyToken, authorize, getCurrentUserDetails);
+userRouter.get("/user-details", verifyToken, authorize, getCurrentUserDetails);
 userRouter.get("/users", verifyToken, getListUser);
 userRouter.post("/users/login", loginController);
 userRouter.post("/users", verifyToken, authorize, createUserController);

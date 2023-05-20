@@ -84,7 +84,7 @@ const editUser = async (req, res, next) => {
 const getCurrentUserDetails = async (req, res, next) => {
   try {
     const userID = req.user.userId;
-    const user = await getCurrentUser(req.user.userId);
+    const user = await getCurrentUser(userID);
     res.status(200).json(user);
   } catch (err) {
     next(err);

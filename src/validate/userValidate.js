@@ -24,6 +24,7 @@ const UserSchema = Joi.object({
   firstName: Joi.string().min(3).max(30),
   lastName: Joi.string().min(3).max(30),
   email: Joi.string().min(10).pattern(EMAIL_REGEX).required(),
+  managerId: Joi.string().required(),
   phone: Joi.string().min(10).max(11),
   avatar: Joi.string(),
   address: Joi.string().max(100),

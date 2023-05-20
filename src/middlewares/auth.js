@@ -36,8 +36,7 @@ const authorize = async (req, res, next) => {
   } else {
     api = path.substring(0, path.lastIndexOf("?"));
   }
-  console.log("this is PATH: " + path);
-  console.log("this is API: " + api);
+  console.log("this is api: " + api);
   const { method } = req;
   let isPass = false;
   for (let i = 0; i < user.roles.length; i++) {
@@ -47,12 +46,13 @@ const authorize = async (req, res, next) => {
       switch (method) {
         case "GET":
           if (permission.read) isPass = true;
+          console.log(permission.read);
           break;
         case "POST":
           if (permission.write) isPass = true;
           break;
         case "PUT":
-          if (permission.update) isPass = true;
+          if (permission.updatee) isPass = true;
           break;
         case "DELETE":
           if (permission.delete) isPass = true;

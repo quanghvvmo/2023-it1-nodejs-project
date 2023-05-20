@@ -57,9 +57,9 @@ const createFormDetail = async (payload, currentUser) => {
   try {
     t = await sequelize.transaction();
     const existUserForm = await UserForm.findOne({ where: { id: payload.userformId } });
-    if (existUserForm.userId == currentUser) {
+    if (existUserForm.userId == currentUser.userId) {
       const result = await formDetail.create(
-        { ...payload, createdBy: currentUser },
+        { ...payload, createdBy: currentUser.username },
         { transaction: t }
       );
       t.commit();
@@ -146,7 +146,7 @@ const updateUserForm = async (payload, formId, uId, currentUser) => {
   } catch (err) {
     await t.rollback();
     throw new APIError({
-      message: FORM_MESSAGE.ROLLBACK_FAILED,
+      message: FORM_MESSAGE.UPDATE_FAILED,
       status: httpStatus.NOT_MODIFIED,
     });
   }
@@ -167,16 +167,28 @@ const approveForm = async (payload, currentUser, formId, roleId) => {
     const now = new Date(currentDate);
     const dueDate = new Date(deadline);
     if (now <= dueDate) {
-      formStatus = USER_FORM_STATUS.APPROVED;
-      userForm.update(
-        { ...payload, updatedBy: currentUser, status: formStatus },
-        {
-          where: { id: formId },
-        },
-        { transaction: t }
-      );
-      t.commit();
-      return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
+      if (userForm.status == USER_FORM_STATUS.SUBMITTED) {
+        formStatus = USER_FORM_STATUS.APPROVED;
+        userForm.update(
+          {
+            ...payload,
+            updatedBy: currentUser.username,
+            managerId: currentUser.userId,
+            status: formStatus,
+          },
+          {
+            where: { id: formId },
+          },
+          { transaction: t }
+        );
+        t.commit();
+        return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
+      } else {
+        return new errorResponse(
+          httpStatus.BAD_REQUEST,
+          USER_FORM_STATUS.APPROVED_FAILED
+        );
+      }
     } else {
       return new errorResponse(httpStatus.BAD_REQUEST, USER_FORM_STATUS.OVER_DUEDATE);
     }
@@ -220,6 +232,36 @@ const getAllForms = async (currentUser, Page, Size) => {
       status: httpStatus.NOT_FOUND,
     });
   }
+};
+const getFormsByStatus = async (status, Page, Size) => {
+  const { count, rows } = await UserForm.findAndCountAll({
+    include: [{ model: User }, { model: Form }],
+    where: { status: status },
+  });
+  if (count <= 0) {
+    throw new APIError({
+      message: FORM_MESSAGE.NOT_FOUND,
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+  const totalForms = rows.length;
+  const totalPages = Math.ceil(totalForms / Size);
+  if (Page > totalPages) {
+    throw new APIError({
+      message: FORM_MESSAGE.INVALID_INDEX,
+      status: httpStatus.BAD_REQUEST,
+    });
+  }
+  const startIndex = (Page - 1) * Size;
+  const endIndex = startIndex + Size;
+
+  return new paginatedResponse(
+    Page,
+    Size,
+    totalForms,
+    totalPages,
+    rows.slice(startIndex, endIndex)
+  );
 };
 const getUsersIncompletedForm = async () => {
   try {
@@ -265,4 +307,5 @@ export {
   createFormDetail,
   getUsersCompletedForm,
   updateFormDetail,
+  getFormsByStatus,
 };

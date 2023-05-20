@@ -2,12 +2,16 @@ const FORM_STATUS = {
   CLOSE: "close",
   OPEN: "open",
 };
+const FORM_CATEGORY = {
+  PROBATIONARY: 1,
+  ANNUAL: 2,
+};
 
 const USER_FORM_STATUS = {
   NEW: "new",
   SUBMITTED: "submitted",
   APPROVED: "approved",
-  APPROVED_FAILED: "Can not approve form with status is not new",
+  APPROVED_FAILED: "Can not approve form with status is new",
   CLOSED: "closed",
   OVER_DUEDATE: "date is over due",
   USER_FORM_UPDATE: "updated successfully",
@@ -46,4 +50,4 @@ const USER_STATUS = {
   AUTHENTICATION: "Login success",
   UNAUTHENTICATED: "unauthenticated",
 };
-export { FORM_STATUS, USER_FORM_STATUS, FORM_MESSAGE, USER_STATUS };
+export { FORM_CATEGORY, FORM_STATUS, USER_FORM_STATUS, FORM_MESSAGE, USER_STATUS };

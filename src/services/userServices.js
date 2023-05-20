@@ -78,7 +78,7 @@ const createUser = async (payload, currentUser) => {
   } catch (err) {
     console.error(err);
     await t.rollback();
-    throw new errorResponse({
+    throw new APIError({
       message: err,
       status: httpStatus.CONFLICT,
     });
@@ -125,15 +125,16 @@ const getUsers = async (Page, Size) => {
     users.slice(startIndex, endIndex)
   );
 };
-const getCurrentUser = async (id) => {
-  const user = await User.findOne({ where: { id: id } });
-  if (!user) {
-    throw new errorResponse({
+const getCurrentUser = async (uId) => {
+  const result = await User.findByPk(uId);
+  if (!result) {
+    console.log("OK");
+    throw new APIError({
       message: USER_STATUS.USER_NOTFOUND,
       status: httpStatus.BAD_REQUEST,
     });
   }
-  return new response(httpStatus.OK, USER_STATUS.USER_FOUND, user);
+  return new response(httpStatus.OK, USER_STATUS.USER_FOUND, result);
 };
 const updateUser = async (userId, payload) => {
   let t;
@@ -164,21 +165,19 @@ const updateUser = async (userId, payload) => {
   }
 };
 const disableUser = async (userID) => {
+  let t;
   try {
-    const t = await sequelize.transaction();
-    const user = await User.update(
-      { isActive: false },
-      { where: { id: userID } },
-      { transaction: t }
-    );
-    await t.commit();
-    if (!user) {
-      throw new APIError({
-        message: USER_STATUS.USER_NOTFOUND,
-        status: httpStatus.NOT_FOUND,
-      });
+    t = await sequelize.transaction();
+    const user = await User.findOne({ where: { id: userID } });
+    if (user) {
+      user.update({ isActive: false }, { where: { id: userID } }, { transaction: t });
+      await t.commit();
+      return new response(httpStatus.OK, USER_STATUS.USER_DELETE, user);
     }
-    return new response(httpStatus.OK, USER_STATUS.USER_DELETE, user);
+    throw new APIError({
+      message: USER_STATUS.USER_NOTFOUND,
+      status: httpStatus.NOT_FOUND,
+    });
   } catch (err) {
     await t.rollback();
     throw new APIError({

@@ -7,6 +7,7 @@ import {
   createFormDetail,
   updateFormDetail,
   getUsersCompletedForm,
+  getFormsByStatus,
 } from "../services/userFormServices";
 import httpStatus from "http-status";
 import {
@@ -42,7 +43,7 @@ const createFormDetails = async (req, res, next) => {
     if (error) {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
-    const currentUser = req.user.id;
+    const currentUser = req.user;
     const result = await createFormDetail(value, currentUser);
     res.status(httpStatus.CREATED).json(result);
   } catch (err) {
@@ -86,7 +87,7 @@ const approvedForm = async (req, res, next) => {
       return res.status(httpStatus.BAD_REQUEST).json(error.details[0].message);
     }
     const formId = req.params.id;
-    const currentUser = req.user.username;
+    const currentUser = req.user;
     const role = req.user.roles;
     const result = await approveForm(value, currentUser, formId, role);
     res.status(httpStatus.OK).json(result);
@@ -110,6 +111,15 @@ const getListCompletedForm = async (req, res, next) => {
     next(err);
   }
 };
+const getAllFormsByStatus = async (req, res, next) => {
+  try {
+    const { status, page, size } = req.query;
+    const forms = await getFormsByStatus(status, page, size);
+    res.status(httpStatus.OK).json(forms);
+  } catch (err) {
+    next(err);
+  }
+};
 export {
   GetListUserForm,
   EditUserForm,
@@ -119,4 +129,5 @@ export {
   createFormDetails,
   EditUserFormDetail,
   getListCompletedForm,
+  getAllFormsByStatus,
 };

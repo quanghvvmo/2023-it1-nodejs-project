@@ -30,7 +30,7 @@ module.exports = {
   email: {
     type: Sequelize.STRING(100),
     allowNull: true,
-    unique: true,
+    unique: false,
   },
   phone: {
     type: Sequelize.STRING(100),

@@ -1,5 +1,11 @@
 import httpStatus from "http-status";
-import { createForm, updateForm, closeForm, getListForm } from "../services/formServices";
+import {
+  createForm,
+  updateForm,
+  closeForm,
+  getListForm,
+  getFormsByStatus,
+} from "../services/formServices";
 import { createFormSchema, editFormSchema } from "../validate/formValidate";
 const createNewForm = async (req, res, next) => {
   try {
@@ -38,6 +44,15 @@ const editForm = async (req, res, next) => {
     next(err);
   }
 };
+const getAllFormsByStatus = async (req, res, next) => {
+  try {
+    const { status, page, size } = req.query;
+    const forms = await getFormsByStatus(status, page, size);
+    res.status(httpStatus.OK).json(forms);
+  } catch (err) {
+    next(err);
+  }
+};
 const close = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -47,4 +62,4 @@ const close = async (req, res, next) => {
     next(err);
   }
 };
-export { createNewForm, editForm, close, getForms };
+export { createNewForm, editForm, close, getForms, getAllFormsByStatus };

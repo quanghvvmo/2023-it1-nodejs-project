@@ -22,7 +22,7 @@ module.exports = {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  update: {
+  updatee: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
