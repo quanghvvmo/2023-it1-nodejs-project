@@ -52,41 +52,41 @@ const createForm = async (payload, currentUser, currentUserId) => {
       transaction: t,
     });
     await t.commit();
-    if (!created) {
-      return new errorResponse({
-        message: FORM_MESSAGE.EXIST,
+    if (created) {
+      const mails = await User.findAll({ attributes: ["email"] });
+      const listmail = [];
+      for (let i = 0; i < mails.length; i++) {
+        listmail.push(mails[i].dataValues.email);
+      }
+      sendEmail(listmail.join(", "));
+      const user = await User.findAll();
+      const userFoms = user.map((user) => {
+        return {
+          userId: user.dataValues.id,
+          formId: newForm.id,
+          managerId: user.dataValues.managerId,
+          createdBy: currentUser,
+          updatedBy: currentUser,
+          status: USER_FORM_STATUS.NEW,
+        };
+      });
+      await UserForm.bulkCreate(userFoms, { t });
+
+      return new response(httpStatus.OK, FORM_MESSAGE.CREATED, newForm);
+    }
+
+    return new errorResponse({
+      message: FORM_MESSAGE.EXIST,
+      status: httpStatus.CONFLICT,
+    });
+  } catch (err) {
+    if (t) {
+      await t.rollback();
+      throw new APIError({
+        message: FORM_MESSAGE.FORM_CREATED_FAIL,
         status: httpStatus.CONFLICT,
       });
     }
-
-    const mails = await User.findAll({ attributes: ["email"] });
-    const listmail = [];
-    for (let i = 0; i < mails.length; i++) {
-      listmail.push(mails[i].dataValues.email);
-    }
-    sendEmail(listmail.join(", "));
-    const user = await User.findAll();
-    const userFoms = user.map((user) => {
-      return {
-        //id: user.dataValues.id,
-        userId: user.dataValues.id,
-        formId: newForm.id,
-        managerId: user.dataValues.managerId,
-        createdBy: currentUser,
-        updatedBy: currentUser,
-        status: USER_FORM_STATUS.NEW,
-      };
-    });
-    console.log(userFoms);
-    await UserForm.bulkCreate(userFoms, { t });
-
-    return new response(httpStatus.OK, FORM_MESSAGE.CREATED, newForm);
-  } catch (err) {
-    await t.rollback();
-    throw new APIError({
-      message: FORM_MESSAGE.FORM_CREATED_FAIL,
-      status: httpStatus.CONFLICT,
-    });
   }
 };
 const getListForm = async (Page, Size) => {

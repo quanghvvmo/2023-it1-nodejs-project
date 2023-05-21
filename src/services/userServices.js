@@ -14,7 +14,7 @@ import jwt from "jsonwebtoken";
 const login = async (payload) => {
   const user = await User.findOne({
     where: {
-       username: payload.username ,
+      username: payload.username,
     },
     include: [
       {
@@ -27,25 +27,24 @@ const login = async (payload) => {
       },
     ],
   });
-  if (!user) {
-    throw new APIError({
-      message: USER_STATUS.AUTHENTICATION_FAIL,
-      status: httpStatus.NOT_FOUND,
-    });
+  if (user) {
+    if (bcrypt.compareSync(payload.password, user.password)) {
+      const roleArr = user.userRoles.map((user) => user.Role.id);
+      const dataForAccessToken = {
+        userId: user.id,
+        username: user.username,
+        roles: roleArr,
+      };
+      const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
+        expiresIn: process.env.TOKEN_EXPIRATION,
+      });
+      return new response(httpStatus.OK, USER_STATUS.AUTHENTICATION, token);
+    }
   }
-  if(bcrypt.compareSync(payload.password, user.password)  ){
-
-    const roleArr = user.userRoles.map((user) => user.Role.id);
-    const dataForAccessToken = {
-      userId: user.id,
-      username: user.username,
-      roles: roleArr,
-    };
-    const token = jwt.sign(dataForAccessToken, process.env.JWT_SECRET, {
-      expiresIn: process.env.TOKEN_EXPIRATION,
-    });
-    return new response(httpStatus.OK, USER_STATUS.AUTHENTICATION, token);
-  }
+  throw new APIError({
+    message: USER_STATUS.AUTHENTICATION_FAIL,
+    status: httpStatus.BAD_REQUEST,
+  });
 };
 
 const createUser = async (payload, currentUser) => {
@@ -56,10 +55,10 @@ const createUser = async (payload, currentUser) => {
     const hash = bcrypt.hashSync(payload.password, salt);
     const [newUser, created] = await User.findOrCreate({
       where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
-      defaults: { ...payload,password:hash, createdBy: currentUser },
+      defaults: { ...payload, password: hash, createdBy: currentUser },
       transaction: t,
     });
-    
+
     const assignRole = await UserRole.create(
       {
         createdBy: currentUser,
