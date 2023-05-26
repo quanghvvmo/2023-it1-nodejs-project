@@ -28,7 +28,7 @@ const createForm = async (payload, currentUser, currentUserId) => {
       include: [
         {
           model: Form,
-          where: { formCategoryId: cateId },
+          where: { formCategoryId: FORM_CATEGORY[cateId] },
           include: { model: FormCategory },
         },
       ],
@@ -51,7 +51,6 @@ const createForm = async (payload, currentUser, currentUserId) => {
       },
       transaction: t,
     });
-    await t.commit();
     if (created) {
       const mails = await User.findAll({ attributes: ["email"] });
       const listmail = [];
@@ -60,6 +59,7 @@ const createForm = async (payload, currentUser, currentUserId) => {
       }
       sendEmail(listmail.join(", "));
       const user = await User.findAll();
+
       const userFoms = user.map((user) => {
         return {
           userId: user.dataValues.id,
@@ -70,14 +70,14 @@ const createForm = async (payload, currentUser, currentUserId) => {
           status: USER_FORM_STATUS.NEW,
         };
       });
-      await UserForm.bulkCreate(userFoms, { t });
-
-      return new response(httpStatus.OK, FORM_MESSAGE.CREATED, newForm);
+      console.log(userFoms);
+      await UserForm.bulkCreate(userFoms, { transaction: t });
+      await t.commit();
+      return new response(httpStatus.CREATED, FORM_MESSAGE.CREATED, newForm);
     }
-
     return new errorResponse({
       message: FORM_MESSAGE.EXIST,
-      status: httpStatus.CONFLICT,
+      status: httpStatus.BAD_REQUEST,
     });
   } catch (err) {
     if (t) {
@@ -147,24 +147,17 @@ const getFormsByStatus = async (status, Page, Size) => {
 };
 const updateForm = async (payload, formID) => {
   let t;
-  try {
-    t = await sequelize.transaction();
-    const form = await Form.findOne({ where: { id: formID } });
-    if (form) {
-      await form.update(payload, { where: { id: formID } }, { transaction: t });
-      return new response(httpStatus.OK, FORM_MESSAGE.FORM_UPDATED, form);
-    }
-    throw new APIError({
-      message: FORM_MESSAGE.FORM_UPDATED_FAIL,
-      status: httpStatus.NOT_MODIFIED,
-    });
-  } catch (e) {
-    await t.rollback();
-    throw new APIError({
-      message: FORM_MESSAGE.FORM_UPDATED_FAIL,
-      status: httpStatus.BAD_REQUEST,
-    });
+
+  t = await sequelize.transaction();
+  const form = await Form.findOne({ where: { id: formID } });
+  if (form) {
+    await form.update(payload, { where: { id: formID } }, { transaction: t });
+    return new response(httpStatus.OK, FORM_MESSAGE.FORM_UPDATED, form);
   }
+  throw new APIError({
+    message: FORM_MESSAGE.NOT_FOUND,
+    status: httpStatus.NOT_MODIFIED,
+  });
 };
 const closeForm = async (formID) => {
   try {

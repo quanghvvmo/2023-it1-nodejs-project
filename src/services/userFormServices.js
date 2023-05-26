@@ -52,6 +52,80 @@ const getUserForms = async (uId, Page, Size) => {
     });
   }
 };
+const getUserFormsOrderByDateASC = async (uId, Page, Size) => {
+  try {
+    const userForms = await UserForm.findAll({
+      where: { userId: uId },
+      include: [{ model: Form }],
+      order: [["updatedAt", "ASC"]],
+    });
+    const totalForms = userForms.length;
+    const totalPages = Math.ceil(totalForms / Size);
+    if (Page > totalPages) {
+      throw new APIError({
+        message: FORM_MESSAGE.INVALID_INDEX,
+        status: httpStatus.BAD_REQUEST,
+      });
+    }
+    const startIndex = (Page - 1) * Size;
+    const endIndex = startIndex + Size;
+    if (!userForms) {
+      throw new APIError({
+        message: FORM_MESSAGE.NOT_FOUND,
+        status: httpStatus.NOT_FOUND,
+      });
+    }
+    return new paginatedResponse(
+      Page,
+      Size,
+      totalForms,
+      totalPages,
+      userForms.slice(startIndex, endIndex)
+    );
+  } catch (err) {
+    throw new APIError({
+      message: FORM_MESSAGE.NOT_FOUND,
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+};
+const getUserFormsOrderByDateDESC = async (uId, Page, Size) => {
+  try {
+    const userForms = await UserForm.findAll({
+      where: { userId: uId },
+      include: [{ model: Form }],
+      order: [["updatedAt", "DESC"]],
+    });
+    const totalForms = userForms.length;
+    const totalPages = Math.ceil(totalForms / Size);
+    if (Page > totalPages) {
+      throw new APIError({
+        message: FORM_MESSAGE.INVALID_INDEX,
+        status: httpStatus.BAD_REQUEST,
+      });
+    }
+    const startIndex = (Page - 1) * Size;
+    const endIndex = startIndex + Size;
+    if (!userForms) {
+      throw new APIError({
+        message: FORM_MESSAGE.NOT_FOUND,
+        status: httpStatus.NOT_FOUND,
+      });
+    }
+    return new paginatedResponse(
+      Page,
+      Size,
+      totalForms,
+      totalPages,
+      userForms.slice(startIndex, endIndex)
+    );
+  } catch (err) {
+    throw new APIError({
+      message: FORM_MESSAGE.NOT_FOUND,
+      status: httpStatus.NOT_FOUND,
+    });
+  }
+};
 const createFormDetail = async (payload, currentUser) => {
   let t;
   try {
@@ -73,7 +147,7 @@ const createFormDetail = async (payload, currentUser) => {
   } catch (err) {
     await t.rollback();
     throw new APIError({
-      message: FORM_MESSAGE.ROLLBACK_FAILED,
+      message: FORM_MESSAGE.NOT_FOUND,
       status: httpStatus.BAD_REQUEST,
     });
   }
@@ -146,20 +220,21 @@ const updateUserForm = async (payload, formId, uId, currentUser) => {
   } catch (err) {
     await t.rollback();
     throw new APIError({
-      message: FORM_MESSAGE.UPDATE_FAILED,
+      message: FORM_MESSAGE.NOT_FOUND,
       status: httpStatus.NOT_MODIFIED,
     });
   }
 };
 const approveForm = async (payload, currentUser, formId, roleId) => {
   let t;
+  console.log(formId);
   try {
     let formStatus;
     t = await sequelize.transaction();
-    const userForm = await UserForm.findOne(
-      { include: [{ model: Form }] },
-      { where: { id: formId } }
-    );
+    const userForm = await UserForm.findOne({
+      where: { id: formId },
+      include: [{ model: Form }],
+    });
     const role = await Role.findOne({ where: { id: roleId } });
     const date = new Date();
     const currentDate = date.toISOString().slice(0, 19).replace("T", " ");
@@ -184,6 +259,7 @@ const approveForm = async (payload, currentUser, formId, roleId) => {
         t.commit();
         return new response(httpStatus.OK, USER_FORM_STATUS.USER_FORM_UPDATE, userForm);
       } else {
+        console.log(userForm.status);
         return new errorResponse(
           httpStatus.BAD_REQUEST,
           USER_FORM_STATUS.APPROVED_FAILED
@@ -308,4 +384,6 @@ export {
   getUsersCompletedForm,
   updateFormDetail,
   getFormsByStatus,
+  getUserFormsOrderByDateASC,
+  getUserFormsOrderByDateDESC,
 };

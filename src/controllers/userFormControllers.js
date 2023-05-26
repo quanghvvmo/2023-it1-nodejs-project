@@ -8,6 +8,8 @@ import {
   updateFormDetail,
   getUsersCompletedForm,
   getFormsByStatus,
+  getUserFormsOrderByDateASC,
+  getUserFormsOrderByDateDESC,
 } from "../services/userFormServices";
 import httpStatus from "http-status";
 import {
@@ -21,6 +23,26 @@ const GetListUserForm = async (req, res, next) => {
     const { page, size } = req.query;
     const uId = req.user.userId;
     const userForms = await getUserForms(uId, page, size);
+    res.status(httpStatus.FOUND).json(userForms);
+  } catch (err) {
+    next(err);
+  }
+};
+const GetListUserFormOrderByDateASC = async (req, res, next) => {
+  try {
+    const { page, size } = req.query;
+    const uId = req.user.userId;
+    const userForms = await getUserFormsOrderByDateASC(uId, page, size);
+    res.status(httpStatus.FOUND).json(userForms);
+  } catch (err) {
+    next(err);
+  }
+};
+const GetListUserFormOrderByDateDESC = async (req, res, next) => {
+  try {
+    const { page, size } = req.query;
+    const uId = req.user.userId;
+    const userForms = await getUserFormsOrderByDateDESC(uId, page, size);
     res.status(httpStatus.FOUND).json(userForms);
   } catch (err) {
     next(err);
@@ -130,4 +152,6 @@ export {
   EditUserFormDetail,
   getListCompletedForm,
   getAllFormsByStatus,
+  GetListUserFormOrderByDateASC,
+  GetListUserFormOrderByDateDESC,
 };

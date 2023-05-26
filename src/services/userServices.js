@@ -53,6 +53,10 @@ const createUser = async (payload, currentUser) => {
     t = await sequelize.transaction();
     const salt = bcrypt.genSaltSync(Number(process.env.SALTROUNDS));
     const hash = bcrypt.hashSync(payload.password, salt);
+    const manager = await User.findOne({ where: { id: payload.managerId } });
+    if (!manager) {
+      throw new APIError({ message: "Manager not found", status: 400 });
+    }
     const [newUser, created] = await User.findOrCreate({
       where: { [Op.or]: [{ username: payload.username }, { email: payload.email }] },
       defaults: { ...payload, password: hash, createdBy: currentUser },
@@ -128,9 +132,9 @@ const getUsers = async (Page, Size) => {
   );
 };
 const getCurrentUser = async (uId) => {
-  const result = await User.findByPk(uId);
+  const result = await User.findOne({ where: { id: uId } });
   if (!result) {
-    console.log("OK");
+    console.log(uId);
     throw new APIError({
       message: USER_STATUS.USER_NOTFOUND,
       status: httpStatus.BAD_REQUEST,
@@ -140,31 +144,28 @@ const getCurrentUser = async (uId) => {
 };
 const updateUser = async (userId, payload) => {
   let t;
-  try {
-    t = await sequelize.transaction();
-    const user = await User.findOne({
-      where: { [Op.and]: [{ id: userId }, { isActive: true }] },
-    });
-    if (user) {
-      user.update(
-        payload,
-        { where: { [Op.and]: [{ id: userId }, { isActive: true }] } },
-        { transaction: t }
-      );
-      await t.commit();
-      return new response(httpStatus.OK, USER_STATUS.USER_UPDATE, user);
-    }
-    return new errorResponse({
-      message: USER_STATUS.USER_NOTFOUND,
-      status: httpStatus.NOT_FOUND,
-    });
-  } catch (err) {
-    await t.rollback();
-    throw new APIError({
-      message: USER_STATUS.USER_UPDATE_FAILED,
-      status: httpStatus.NOT_FOUND,
-    });
+  const salt = bcrypt.genSaltSync(Number(process.env.SALTROUNDS));
+  let hash;
+  if (payload.password) {
+    hash = bcrypt.hashSync(payload.password, salt);
   }
+  t = await sequelize.transaction();
+  const user = await User.findOne({
+    where: { [Op.and]: [{ id: userId }, { isActive: true }] },
+  });
+  if (user) {
+    user.update(
+      { password: hash, payload },
+      { where: { [Op.and]: [{ id: userId }, { isActive: true }] } },
+      { transaction: t }
+    );
+    await t.commit();
+    return new response(httpStatus.OK, USER_STATUS.USER_UPDATE, user);
+  }
+  throw new APIError({
+    message: USER_STATUS.USER_NOTFOUND,
+    status: httpStatus.NOT_FOUND,
+  });
 };
 const disableUser = async (userID) => {
   let t;
@@ -183,8 +184,8 @@ const disableUser = async (userID) => {
   } catch (err) {
     await t.rollback();
     throw new APIError({
-      message: USER_STATUS.USER_DELETE_FAILED,
-      status: httpStatus.NOT_FOUND,
+      message: USER_STATUS.USER_NOTFOUND,
+      status: httpStatus.BAD_REQUEST,
     });
   }
 };

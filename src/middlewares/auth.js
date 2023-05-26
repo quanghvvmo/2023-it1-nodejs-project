@@ -3,7 +3,7 @@ const permissions = require("../database/models/permission");
 import APIError from "../utils/errorHandler";
 import httpStatus from "http-status";
 import { USER_STATUS } from "../utils/constant";
-import { errorResponse } from "../utils/responseHandler";
+import { errorResponse, response } from "../utils/responseHandler";
 
 const getToken = (req) => {
   if (req.headers.authorization && req.headers.authorization.length > 0) {
@@ -14,11 +14,19 @@ const getToken = (req) => {
 const verifyToken = (req, res, next) => {
   const token = getToken(req);
   if (!token) {
-    return res.status(401).json(USER_STATUS.UNAUTHENTICATED);
+    const apiError = new errorResponse({
+      status: httpStatus.UNAUTHORIZED,
+      message: "unauthenticated",
+    });
+    return res.status(httpStatus.UNAUTHORIZED).json(apiError);
   }
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json(USER_STATUS.AUTHENTICATION_FAIL);
+      const apiError = new errorResponse({
+        status: httpStatus.FORBIDDEN,
+        message: USER_STATUS.AUTHENTICATION_FAIL,
+      });
+      return res.status(httpStatus.FORBIDDEN).json(apiError);
     }
     req.user = user;
     next();

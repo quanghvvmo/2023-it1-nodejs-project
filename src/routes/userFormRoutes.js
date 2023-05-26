@@ -7,6 +7,8 @@ import {
   EditUserFormDetail,
   getListCompletedForm,
   getAllFormsByStatus,
+  GetListUserFormOrderByDateASC,
+  GetListUserFormOrderByDateDESC,
 } from "../controllers/userFormControllers";
 import express from "express";
 import { verifyToken, authorize } from "../middlewares/auth.js";
@@ -18,6 +20,19 @@ userFormRouter.get(
   verifyToken,
   authorize,
   getListIncompletedForm
+);
+
+userFormRouter.get(
+  "/userforms/asc",
+  verifyToken,
+
+  GetListUserFormOrderByDateASC
+);
+userFormRouter.get(
+  "/userforms/desc",
+  verifyToken,
+
+  GetListUserFormOrderByDateDESC
 );
 userFormRouter.get("/userforms/completed", verifyToken, authorize, getListCompletedForm);
 userFormRouter.get("/userforms/status", verifyToken, authorize, getAllFormsByStatus);

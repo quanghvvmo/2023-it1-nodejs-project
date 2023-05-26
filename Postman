@@ -7,206 +7,727 @@
 	},
 	"item": [
 		{
-			"name": "Login",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"hoang\",\r\n    \"password\":\"123123\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/api/user/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"user",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create User",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"hoanghehe\",\r\n    \"password\":\"123456\",\r\n    \"createdBy\":\"Admin\",\r\n    \"updatedBy\":\"Admin\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/api/user/createuser",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"user",
-						"createuser"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get one user",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNjgxNjcwODgyLCJleHAiOjE2ODE3NTcyODJ9.MYjaN8RLzvZeJJvhoGZlbr5rlhPRwN7rxMT2O5F7zGs",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/api/user/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"user",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get list user",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhvYW5nIiwicm9sZXMiOlsiMSJdLCJpYXQiOjE2ODIwMjAwNTYsImV4cCI6MTY4MjEwNjQ1Nn0.0PmWyj1PhCeSZSd9zT_JCzEApISCLrkd_OYtjAe9viY",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/api/user?page=1&size=3",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"user"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": "1"
+			"name": "USER",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"123123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "size",
-							"value": "3"
+						"url": {
+							"raw": "http://localhost:3000/api/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDYzODEzLCJleHAiOjE2ODUwNjg2MTN9.kHzJCEVdy8mhoC4hsHCRRz-qrnsOUci7UULK3QomsrI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin2a2\",\r\n    \"password\":\"123123\",\r\n    \"email\":\"admin2a@gmail.com\",\r\n    \"RoleId\":1,\r\n    \"managerId\":\"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzNzIzNzMyLCJleHAiOjE2ODM4MTAxMzJ9.PwW9RAO0l8oMvAeu8iF2C1McY2t0LqYyMhp0kHV-sRw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/8f2295e0-ef3f-11ed-8527-3b2830055f8e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"8f2295e0-ef3f-11ed-8527-3b2830055f8e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get list user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzNzIzNzMyLCJleHAiOjE2ODM4MTAxMzJ9.PwW9RAO0l8oMvAeu8iF2C1McY2t0LqYyMhp0kHV-sRw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users?page=2&size=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "size",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDYzODEzLCJleHAiOjE2ODUwNjg2MTN9.kHzJCEVdy8mhoC4hsHCRRz-qrnsOUci7UULK3QomsrI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/1a1720e0-f9df-11ed-8608-6f0e24632fa2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"1a1720e0-f9df-11ed-8608-6f0e24632fa2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzNzIzNzMyLCJleHAiOjE2ODM4MTAxMzJ9.PwW9RAO0l8oMvAeu8iF2C1McY2t0LqYyMhp0kHV-sRw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\":\"changedpasword\",\r\n    \"email\":\"321123@gmail.com\",\r\n    \"phone\":\"1234567890\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/8f2295e0-ef3f-11ed-8527-3b2830055f8e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"8f2295e0-ef3f-11ed-8527-3b2830055f8e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current user detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0Mzg0ODkwLCJleHAiOjE2ODQ5ODk2OTB9.N43ko6FLAiNodhpR4t52lDjB8VlgFo3qUn9lX7CAlOE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/user-details/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"user-details",
+								""
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Delete user",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhvYW5nIiwicm9sZXMiOlsiMSJdLCJpYXQiOjE2ODIwNjQ1MTMsImV4cCI6MTY4MjE1MDkxM30.fZCusqodZNA5YBvwUII5ArxrJ6a5ghQ63FpoW4GwbKg",
-							"type": "string"
+			"name": "FORM",
+			"item": [
+				{
+					"name": "Create form",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5MjljOGQzMC1mODBkLTExZWQtOGNlMy0zMWQxMDgzYjcyM2MiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZXMiOlsiMSJdLCJpYXQiOjE2ODQ3MTExMzYsImV4cCI6MTY4NTMxNTkzNn0.MHE6S8gOTh7gLhNhjk66z4NhuvAnaBNwjNbTmzxVc_o",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"adsdsdsddxxsdsdsd\",\r\n    \"dueDate\":\"2046-11-12 17:00:00\",\r\n    \"description\":\"okokok\",\r\n    \"formCategoryId\":\"PROBATIONARY\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/forms/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"forms",
+								""
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/api/user/2",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"user",
-						"2"
-					]
+				{
+					"name": "Get list form",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzNjU2MTUxLCJleHAiOjE2ODM3NDI1NTF9.6dZu-HKRthEsEYsA9NGWaRb-MnjdzoZKqPpcxssWXVs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/forms?page=1&size=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"forms"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update form",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDMzNjExLCJleHAiOjE2ODUwMzg0MTF9.Xt-dy-eZOtC3o_y9E3K7BC18eboQjK04Hz_08E4eiT8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"updated form\",\r\n    \"dueDate\":\"2023-08-10 10:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/forms/6a168070-f5c7-11ed-ae58-7d5b6e72ef46",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"forms",
+								"6a168070-f5c7-11ed-ae58-7d5b6e72ef46"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Close form",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/forms/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"forms",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get form by status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/forms/status?status=x&page=1&size=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"forms",
+								"status"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "x"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Update user",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhvYW5nIiwicm9sZXMiOlsiMSJdLCJpYXQiOjE2ODIwNjUzOTEsImV4cCI6MTY4MjE1MTc5MX0.0ZrwD21mtKTtefWCELxUjzh98fn1w7NnILEzmUkqdrs",
-							"type": "string"
+			"name": "USER FORM",
+			"item": [
+				{
+					"name": "submit form",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDMzNjExLCJleHAiOjE2ODUwMzg0MTF9.Xt-dy-eZOtC3o_y9E3K7BC18eboQjK04Hz_08E4eiT8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userComment\":\"this form was updated\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/6a1c25c0-f5c7-11ed-ae58-7d5b6e72ef46",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"6a1c25c0-f5c7-11ed-ae58-7d5b6e72ef46"
+							]
 						}
-					]
+					},
+					"response": []
 				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"password\":\"falsefalse\",\r\n    \"email\":\"321123@gmail.com\",\r\n    \"updatedBy\":\"hoang\",\r\n    \"phone\":\"1234567890\"\r\n    }",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "Get list user form",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDMzNjExLCJleHAiOjE2ODUwMzg0MTF9.Xt-dy-eZOtC3o_y9E3K7BC18eboQjK04Hz_08E4eiT8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/userforms?page=1&size=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "3"
+								}
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:3000/api/user/a08c4600-e026-11ed-8b79-6ddf80ac44c0",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"user",
-						"a08c4600-e026-11ed-8b79-6ddf80ac44c0"
-					]
+				{
+					"name": "Create form's detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzNzIzNzMyLCJleHAiOjE2ODM4MTAxMzJ9.PwW9RAO0l8oMvAeu8iF2C1McY2t0LqYyMhp0kHV-sRw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"task\":\"oksss\",\r\n    \"rate\":\"10/10\",\r\n    \"result\":\"EXELENT\",\r\n    \"userformId\":\"af886161-ef31-11ed-a08b-cd9ce895bd9d\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/details",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve form",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjgzOTM0MjgwLCJleHAiOjE2ODQ1MzkwODB9.e3VQ4FpycAyHNv_l4iL5oegiEVypWV4w7M6nVBn9UuE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"managerComment\":\"OKOKOKOKOKO\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/approve/5d201c60-f27e-11ed-95c9-fb395223d59a",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"approve",
+								"5d201c60-f27e-11ed-95c9-fb395223d59a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get incompleted forms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/incompleted",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"incompleted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get completed forms",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDA3OTM1LCJleHAiOjE2ODUwMTI3MzV9.g7UQdPmIhUr4bY-G6S4VlLxKKLebIbNFHb-OxRb6LI4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/completed",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"completed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user forms by status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGVzIjpbIjEiXSwiaWF0IjoxNjg0NDMzNjExLCJleHAiOjE2ODUwMzg0MTF9.Xt-dy-eZOtC3o_y9E3K7BC18eboQjK04Hz_08E4eiT8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/status?status=submitted&page=1&size=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"status"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "submitted"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get list user form order byy date asc",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/userforms/asc?page=1&size=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"userforms",
+								"asc"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }
