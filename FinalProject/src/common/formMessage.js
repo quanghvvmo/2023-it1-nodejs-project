@@ -9,5 +9,6 @@ export const FORM_MESSAGE = {
     FORM_APPROVALED: "Form approvaled successfully",
     FORM_FOUND: "Success",
     FORM_CLOSE: "Form closed successfully",
-    FORM_NULL_PARAMETTER: "Missing required parameter"
+    FORM_NULL_PARAMETTER: "Missing required parameter",
+    FORM_ASSIGNED: "Form assigned successfully"
 }

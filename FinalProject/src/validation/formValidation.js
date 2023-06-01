@@ -23,7 +23,13 @@ const formValidation = {
         managerComment: Joi.string().required(),
         result: Joi.string().required(),
         point: Joi.number().greater(0).required(),
-    })
+    }),
+    assignUserForm: Joi.object({
+        formId: Joi.string().required(),
+        userIds: Joi.array().required(),
+        managerId: Joi.string().required(),
+    }),
+
 }
 
 

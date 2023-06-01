@@ -2,6 +2,7 @@ import formService from "../_services/formService"
 import formValidation from "../validation/formValidation"
 import http_status from "http-status"
 import { getPaginInfor } from "../_ultis/getPage"
+import { FORM_MESSAGE } from "../common/formMessage"
 
 
 
@@ -42,7 +43,20 @@ class FormController {
             }
             return res.status(result.status).json(result)
         } catch (error) {
-            console.log(error);
+            return res.status(http_status.INTERNAL_SERVER_ERROR).json(error);
+        }
+    }
+
+    assignUserForm = async (req, res) => {
+        try {
+            const data = req.body;
+            const { error, value } = formValidation.assignUserForm.validate(data)
+            if (error) {
+                return res.status(http_status.BAD_REQUEST).json(error.details[0].message);
+            }
+            const result = await formService.assignUserForm(value);
+            return res.status(result.status).json(result)
+        } catch (error) {
             return res.status(http_status.INTERNAL_SERVER_ERROR).json(error);
         }
     }

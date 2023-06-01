@@ -171,6 +171,86 @@ class formService {
         })
     }
 
+    assignUserForm = async (data) => {
+        //Check form is exist or not
+        const form = await Form.findOne({
+            where: {
+                id: data.formId,
+                isDeleted: 0
+            },
+            raw: true
+        })
+        if (!form) {
+            return ({
+                errCode: ERR_CODE.ERROR_FROM_CLIENT,
+                errMsg: FORM_MESSAGE.FORM_NOT_FOUND,
+                status: status.CONFLICT
+            })
+        }
+
+        //Check user is assigning any form or not
+        const check = await UserForm.findAll({
+            where: {
+                userId: {
+                    [Op.in]: data.userIds
+                },
+                status: {
+                    [Op.notLike]: FORM_STATUS.CLOSE
+                },
+                isDeleted: 0
+            }
+        })
+        if (check && check.length > 0) {
+            return ({
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.USER_CONFLICT,
+                status: status.CONFLICT
+            })
+        }
+        const transaction = await sequelize.transaction();
+        try {
+            let userForms = [];
+            for (let i = 0; i < data.userIds.length; i++) {
+                userForms.push({
+                    userId: data.userIds[i],
+                    formId: data.formId,
+                    managerId: data.managerId,
+                })
+            }
+            await UserForm.bulkCreate(userForms, { transaction })
+
+            //Get list users to take user's emails for email sending
+            const listUsers = await User.findAll({
+                where: {
+                    id: {
+                        [Op.in]: data.userIds
+                    },
+                    isDeleted: 0
+                },
+                raw: true
+            });
+            //Sending email for announcement to user
+            await Promise.all(
+                listUsers.map(async (user) => {
+                    await sendMail(user.email, form.name, MAIL_CONTENT)
+                })
+            )
+            await transaction.commit();
+            return ({
+                errCode: ERR_CODE.OK,
+                errMsg: FORM_MESSAGE.FORM_ASSIGNED,
+                status: status.OK
+            })
+        } catch (error) {
+            await transaction.rollback();
+            return ({
+                errCode: ERR_CODE.ERROR_FROM_SEVER,
+                errMsg: FORM_MESSAGE.TRANSACTION_ERROR,
+                status: status.INTERNAL_SERVER_ERROR
+            })
+        }
+    }
+
     createUserForm = async (data) => {
         //Check user only have 1 form status not closing before create
         const check = await UserForm.findAll({
@@ -208,7 +288,6 @@ class formService {
                     })
                 }
                 await UserForm.bulkCreate(userForms, { transaction })
-                await transaction.commit();
 
                 //Get list users to take user's emails for email sending
                 const listUsers = await User.findAll({
@@ -226,6 +305,7 @@ class formService {
                         await sendMail(user.email, data.name, MAIL_CONTENT)
                     })
                 )
+                await transaction.commit();
                 return ({
                     data: form,
                     errCode: ERR_CODE.OK,

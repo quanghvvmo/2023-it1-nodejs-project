@@ -30,5 +30,6 @@ formRouter.patch("/form/close-user-form/:id", authService.authJWT, authService.a
 formRouter.patch("/form/close-form/:id", authService.authJWT, authService.authorizationUser, FormController.closeForm)
 formRouter.get("/report-labour", authService.authJWT, authService.authorizationUser, FormController.reportLabour)
 formRouter.get("/report-performance", authService.authJWT, authService.authorizationUser, FormController.reportPerfomance)
+formRouter.post("/assign-user-form", authService.authJWT, authService.authorizationUser, FormController.assignUserForm)
 
 module.exports = formRouter
